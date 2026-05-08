@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+html,
+body {
+  @apply bg-white dark:bg-gray-950;
+
+  @media (prefers-color-scheme: dark) {
+    color-scheme: dark;
+  }
+}
+
+/* scrollbar */
+
+/* Base */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Track (fundo) */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Thumb (barra) */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover sutil */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.card-center .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* Icons */
+
+.icon-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.slash {
+  position: absolute;
+  width: 120%;
+  height: 2px;
+  background: red;
+
+  transform: rotate(-45deg);
+}
+
+/* .ant-menu-item {
+  margin: 0px !important;
+  padding: 0px !important;
+  background-color: transparent !important;
+}
+
+.ant-menu-item.ant-menu-item-selected::before {
+  content: "";
+  height: 100%;
+  margin-right: 8px;
+  border-radius: 0px 6px 6px 0px !important;
+  border-left: solid 5px var(--ant-color-primary);
+}
+
+.ant-menu-item.ant-menu-item-selected:last-child {
+  border-radius: 0 8px 8px 0 !important;
+}
+
+.ant-menu-item.ant-menu-item-selected>* {
+  background-color: var(--ant-color-primary);
+  height: 100%;
+  margin: 0 !important;
+  padding-left: 12px !important;
+} */

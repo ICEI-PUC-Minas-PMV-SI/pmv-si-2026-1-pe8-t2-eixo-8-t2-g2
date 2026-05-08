@@ -1,0 +1,33 @@
+import type { DeliveryType, PaymentMethod } from '../generated/prisma/enums.ts';
+import type { SchedulerFilter, SchedulerSort } from './page-metadata.js';
+import type { Product } from './product';
+import type { Request } from './server';
+
+export type ProductItem = {
+  id: Product['id'];
+  quantity: number;
+};
+
+export type SchedulerRequest = Request<SchedulerFilter, SchedulerSort>;
+
+export type SchedulerCreatePayload = {
+  customerId: string;
+  scheduledAt: string;
+  paymentMethod: PaymentMethod;
+  deliveryType: DeliveryType;
+  products: ProductItem[];
+};
+
+export type LeadTimeConfig = {
+  leadTimeInMinutes?: number | undefined;
+  leadTimeInDays?: number | undefined;
+};
+
+export type SchedulerEvent = {
+  title: string;
+  description: string;
+  startDate?: string;
+  endDate?: string;
+  startDateTime?: string;
+  endDateTime?: string;
+};

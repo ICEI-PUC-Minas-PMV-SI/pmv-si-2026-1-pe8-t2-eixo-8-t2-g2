@@ -1,0 +1,202 @@
+import React, { useMemo, useContext } from 'react';
+import { Card, Space, Button, Table, message, Input } from 'antd';
+import { HolderOutlined, PlusOutlined } from '@ant-design/icons';
+
+import { DndContext, type DragEndEvent } from '@dnd-kit/core';
+
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+
+import { CSS } from '@dnd-kit/utilities';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import type { ProductCategory } from '~/@types/product';
+import ProductCategoryController from '~/controllers/ProductCategoryController';
+import { useTableQuery } from '~/hooks/useTableQuery';
+// import { ref } from 'process';
+
+interface Props {
+  setCategoryModalOpen: (v: boolean) => void;
+}
+
+interface RowContextProps {
+  setActivatorNodeRef?: (el: HTMLElement | null) => void;
+  listeners?: any;
+}
+
+const RowContext = React.createContext<RowContextProps>({});
+
+// 🔥 Botão de drag
+const DragHandle = () => {
+  const { setActivatorNodeRef, listeners } = useContext(RowContext);
+
+  return (
+    <Button
+      type="text"
+      size="small"
+      icon={<HolderOutlined />}
+      style={{ cursor: 'grab' }}
+      ref={setActivatorNodeRef}
+      {...listeners}
+    />
+  );
+};
+
+// 🔥 Row customizada com sortable
+const SortableRow = (props: any) => {
+  const isPlaceholder = props.className?.includes('ant-table-placeholder');
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: props['data-row-key'], disabled: isPlaceholder });
+
+  if (isPlaceholder) {
+    return <tr {...props} />;
+  }
+
+  const style: React.CSSProperties = {
+    ...props.style,
+    transform: CSS.Transform.toString(transform),
+    transition,
+    ...(isDragging ? { position: 'relative', zIndex: 9999 } : {}),
+  };
+
+  const contextValue = useMemo(
+    () => ({ setActivatorNodeRef, listeners }),
+    [setActivatorNodeRef, listeners],
+  );
+
+  return (
+    <RowContext.Provider value={contextValue}>
+      <tr {...props} ref={setNodeRef} style={style} {...attributes} />
+    </RowContext.Provider>
+  );
+};
+
+export function ProductCategoryList({ setCategoryModalOpen }: Props) {
+  const { tableProps, forceRefetch, params, setSearch } = useTableQuery<ProductCategory>(
+    'product-category',
+    (params) => ProductCategoryController.list<ProductCategory>(params),
+  );
+
+  // 🔥 Drag end
+  const onDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+
+    // setCategories((prev) => {
+    //   const oldIndex = prev.findIndex((c) => c.id === active.id);
+    //   const newIndex = prev.findIndex((c) => c.id === over.id);
+
+    //   const newArray = arrayMove(prev, oldIndex, newIndex);
+
+    //   return newArray.map((item, index) => ({
+    //     ...item,
+    //     ordem: index + 1,
+    //   }));
+    // });
+  };
+
+  // 🔥 Colunas
+  const columns = [
+    {
+      key: 'sort',
+      width: 60,
+      align: 'center' as const,
+      render: () => <DragHandle />,
+    },
+    {
+      title: 'Nome',
+      dataIndex: 'name',
+    },
+    {
+      title: 'Slug',
+      dataIndex: 'slug',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+    },
+    {
+      title: 'Ordem',
+      dataIndex: 'orderIndex',
+    },
+    {
+      title: 'Ações',
+      render: (_: any, record: ProductCategory) => (
+        <Space>
+          <Button
+            size="small"
+            onClick={() => {
+              // exemplo de edição
+              message.info(`Editar ${record.name}`);
+            }}
+          >
+            Editar
+          </Button>
+
+          <Button
+            size="small"
+            danger
+            onClick={async () => {
+              await ProductCategoryController.delete(record.id);
+              // setCategories((c) => c.filter((x) => x.id !== record.id));
+              forceRefetch();
+              message.success('Categoria removida.');
+            }}
+          >
+            Excluir
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
+  return (
+    <Card
+      title="Categorias"
+      extra={
+        <Space>
+          {/* <Button onClick={() => setCategoryModalOpen(true)}>Nova categoria</Button> */}
+          <Input
+            placeholder="Buscar..."
+            value={params.search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          {/* <Button onClick={() => setCharModalOpen(true)}>Nova característica</Button> */}
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => setCategoryModalOpen(true)}
+          >
+            Nova categoria
+          </Button>
+        </Space>
+      }
+    >
+      <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
+        <SortableContext
+          items={tableProps.dataSource?.map((c) => c.id) || []}
+          strategy={verticalListSortingStrategy}
+        >
+          <Table
+            components={{
+              body: {
+                row: SortableRow,
+              },
+            }}
+            dataSource={tableProps.dataSource}
+            columns={columns}
+            {...tableProps}
+          />
+        </SortableContext>
+      </DndContext>
+    </Card>
+  );
+}

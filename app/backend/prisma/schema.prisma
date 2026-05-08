@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// datasource db {
+//   provider = "postgresql"
+// }
+
+enum UserRole {
+  admin
+  customer
+}
+
+model User {
+  id                 String      @id @default(uuid())
+  name               String
+  email              String      @unique
+  googleId           String?     @unique
+  role               UserRole    @default(customer)
+  password           String?
+  otpSecret          String?
+  twoFactorSecret    String?
+  enabledTwoFactor   Boolean     @default(false)
+  customerSchedulers Scheduler[] @relation("SchedulerCustomer")
+  createdAt          DateTime    @default(now())
+  recoveryCodes      RecoveryCode[]
+}
+
+model Category {
+  id          String  @id @default(uuid())
+  name        String
+  slug        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+  orderIndex  Int     @default(0)
+
+  parentId String?
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+
+  products ProductCategory[]
+
+  createdAt DateTime @default(now())
+
+  @@index([parentId])
+  @@index([isActive])
+}
+
+model ProductCategory {
+  id String @id @default(uuid())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([productId, categoryId])
+  @@index([categoryId])
+  @@index([productId])
+}
+
+model Characteristic {
+  id   String @id @default(uuid())
+  name String @unique
+
+  products ProductCharacteristic[]
+}
+
+model ProductCharacteristic {
+  productId        String
+  characteristicId String
+
+  product        Product        @relation(fields: [productId], references: [id])
+  characteristic Characteristic @relation(fields: [characteristicId], references: [id])
+
+  @@id([productId, characteristicId])
+}
+
+model Product {
+  id                     String  @id @default(uuid())
+  name                   String
+  slug                   String  @unique
+  description            String?
+  price                  Float   @default(0)
+  estimatedMinPrice      Float   @default(0)
+  estimatedMaxPrice      Float   @default(0)
+  bookingLeadTimeMinutes Int     @default(0)
+  bookingLeadDays        Int     @default(0)
+  isActive               Boolean @default(true)
+
+  categories     ProductCategory[]
+  schedulerItems SchedulerItem[]
+  characteristics ProductCharacteristic[]
+
+  createdAt DateTime @default(now())
+
+  @@index([isActive])
+}
+
+model SchedulerItem {
+  id String @id @default(uuid())
+
+  schedulerId String
+  scheduler   Scheduler @relation("SchedulerItems", fields: [schedulerId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  quantity Int @default(1)
+
+  priceAtBooking  Float?
+  durationMinutes Int?
+
+  orderIndex Int
+
+  createdAt DateTime @default(now())
+}
+
+enum SchedulerStatus {
+  pending
+  confirmed
+  in_progress
+  completed
+  cancelled
+}
+
+enum IntegrationType {
+  gmail
+  calendar
+}
+
+enum PaymentMethod {
+  credit_card
+  pix
+  bank_transfer
+  cash
+}
+
+enum DeliveryType {
+  pickup
+  delivery
+}
+
+model Scheduler {
+  id                 String          @id @default(uuid())
+  customerId         String
+  customer           User            @relation("SchedulerCustomer", fields: [customerId], references: [id])
+  scheduledAt        DateTime
+  estimatedStartAt   DateTime?
+  estimatedEndAt     DateTime?
+  items              SchedulerItem[] @relation("SchedulerItems")
+  status             SchedulerStatus @default(pending)
+  paymentMethod      PaymentMethod
+  deliveryType       DeliveryType
+  cancellationReason String?
+  createdAt          DateTime        @default(now())
+}
+
+model GoogleCredentials {
+  id                    String          @id @default(uuid())
+  encryptedRefreshToken String
+  encryptedAccessToken  String
+  tokenType             String
+  tokenId               String
+  integration           IntegrationType
+}
+
+model RecoveryCode {
+  id        String   @id @default(cuid())
+  codeHash  String
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
