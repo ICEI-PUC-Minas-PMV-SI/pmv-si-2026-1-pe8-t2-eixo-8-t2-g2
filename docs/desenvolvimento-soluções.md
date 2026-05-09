@@ -154,7 +154,6 @@ Fonte: Elaborado pelos autores (2026).
 
 ### Ferramentas e plataformas a serem utilizadas
 
-
 A definição das tecnologias, ferramentas e plataformas adotadas no desenvolvimento deste sistema foi realizada com base em critérios como curva de aprendizagem, tempo disponível para desenvolvimento, complexidade da aplicação e custo de implementação, assegurando a viabilidade técnica e financeira do projeto.
 
 Sob a perspectiva técnica, será utilizado o *Visual Studio Code* como ambiente de desenvolvimento integrado, devido à sua natureza gratuita, ampla compatibilidade com linguagens e diversas extensões que ampliam sua capacidade de suporte ao time. Tal escolha contribui para a produtividade da equipe e redução de barreiras técnicas durante o desenvolvimento.
@@ -301,18 +300,18 @@ Figura 29 - Dashboard de controle de agenda e planejamento dos pedidos
 <img width="1600" height="410" alt="image" src="https://github.com/user-attachments/assets/e633b624-69e5-4ae0-a07d-70d39b7086a2" />
 Fontes: Elaborados pelos autores (2026).
 
-A partir da análise do painel de visão geral, observa-se que a empresa apresenta um volume diário de 14 pedidos, com faturamento estimado em R$2.480 e *ticket* médio de R$177. Esses indicadores demonstram um desempenho financeiro positivo e permitem avaliar a evolução das vendas em comparação com períodos anteriores. O crescimento apresentado no faturamento semanal indica aumento da demanda e potencial de expansão das operações.
+Os indicadores presentes no *dashboard* permitem avaliar a evolução das vendas em comparação com períodos anteriores. Com indicadores que demonstram em comparativo aumentos ou reduções em pedidos e receita é possível avaliar o potencial de expansão das operações.
 
-Outro ponto relevante identificado nos *dashboards* é o controle do *status* dos pedidos. As informações mostram que a maior parte dos pedidos encontra-se confirmada ou em produção, enquanto uma pequena parcela corresponde a cancelamentos. Essa análise responde à KIQ relacionada à eficiência operacional e satisfação do cliente, evidenciando que o fluxo produtivo está funcionando de maneira adequada, embora o índice de cancelamento de 4,2% indique a necessidade de monitoramento contínuo para evitar perdas financeiras e impactos na experiência do consumidor.
+Outro ponto relevante presente nos *dashboards* é o controle do status dos pedidos, permitindo a análise rápida de índices críticos como taxas de cancelamentos elevadas. Essa análise responde à KIQ relacionada à eficiência operacional e satisfação do cliente, evidenciando se o fluxo produtivo está funcionando de maneira adequada.
 
-Os gráficos de demanda e volume de pedidos permitem identificar tendências de crescimento mensal. Observa-se aumento gradual no número de pedidos entre novembro e abril, demonstrando sazonalidade e crescimento da procura pelos produtos. Essa informação responde à KIQ sobre o comportamento da demanda e auxilia a empresa no planejamento de estoque, compra de insumos e organização da produção em períodos de maior movimento.
+Os gráficos de demanda e volume de pedidos permitem identificar tendências de crescimento mensal. Com estes gráficos torna-se possível identificar a sazonalidade e crescimento da procura pelos produtos. Essa informação responde à KIQ sobre o comportamento da demanda e auxilia a empresa no planejamento de estoque, compra de insumos e organização da produção em períodos de maior movimento.
 
-Na análise de produtos mais vendidos, destaca-se o “Bolo de Chocolate Decorado” como o item com maior quantidade de pedidos e maior receita gerada. Em seguida aparecem brigadeiros *gourmet* e tortas personalizadas. Esses dados fornecem inteligência sobre quais produtos possuem maior aceitação pelo público, permitindo à empresa direcionar campanhas promocionais, aumentar investimentos nos itens mais rentáveis e revisar produtos com menor saída.
+A análise de produtos mais vendidos, fornece inteligência sobre quais produtos possuem maior aceitação pelo público, permitindo à empresa direcionar campanhas promocionais, aumentar investimentos nos itens mais rentáveis e revisar produtos com menor saída.
 
 O *dashboard* de tempo médio de produção evidencia que bolos decorados e *naked cakes* possuem maior tempo de preparo, enquanto produtos como brigadeiros *gourmet* e bolo no pote demandam menos tempo operacional. Essa análise responde à KIQ relacionada à eficiência produtiva, permitindo identificar gargalos na produção e auxiliar no balanceamento das atividades da equipe.
 
 O painel de agenda e planejamento apresenta as entregas do dia, horários e *status* dos pedidos, oferecendo uma visão clara da operação diária. Além disso, o gráfico de antecedência mínima por produto demonstra quais itens exigem maior prazo para encomenda. Bolos decorados e tortas apresentam necessidade de planejamento antecipado superior a 70 horas, enquanto produtos simples demandam menor antecedência. Essas informações ajudam na definição de políticas de pedidos e organização da capacidade produtiva.
-Com base nas análises realizadas, algumas decisões estratégicas podem ser sugeridas para a empresa:
+Com base nas informações apresentadas no *dashboard*, a depender dos valores, algumas decisões estratégicas podem ser tomadas pela empresa:
 - Intensificar campanhas promocionais dos produtos mais vendidos, aproveitando sua alta aceitação e rentabilidade;
 - Criar estratégias para redução da taxa de cancelamento, como confirmação automática de pedidos e melhoria da comunicação com clientes;
 - Ajustar o planejamento de estoque e produção conforme os períodos de maior demanda identificados nos dashboards;
