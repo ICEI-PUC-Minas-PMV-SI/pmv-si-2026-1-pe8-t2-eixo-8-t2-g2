@@ -209,57 +209,105 @@ Figura 8 - Tela de recuperação de senha
 Figura 9 - Tela de confirmação da recuperação de senha
 <img width="1037" height="588" alt="image" src="https://github.com/user-attachments/assets/24bf058f-b3b5-4173-8f0e-a91cf905bbc0" />
 
-Figura 10 - Tela de solicitação de um novo pedido
-<img width="881" height="575" alt="image" src="https://github.com/user-attachments/assets/849bdb2d-cfa5-49a6-8d96-69236990dc9b" />
+Figura 10 - Pop-up de *logout*
+<img width="689" height="130" alt="image" src="https://github.com/user-attachments/assets/ad9e42f1-ef33-4e88-803c-2238db0234bd" />
+
+Figura 11 - *Footer* 
+<img width="1116" height="215" alt="image" src="https://github.com/user-attachments/assets/fde4d7ea-01a1-4cf4-850f-57ba05ffcd70" />
 
 ## Telas acessíveis apenas para o usuário administrador:
 
-Figura 11 - Tela de exibição dos *dashboards*
+Figura 12 - Tela de exibição dos *dashboards*
 <img width="885" height="642" alt="image" src="https://github.com/user-attachments/assets/717d68a4-2130-465a-af60-ad2a71a5d387" />
 
-Figura 12 - Tela de gerenciamento dos pedidos
+Figura 13 - Tela de gerenciamento dos pedidos em lista
 <img width="882" height="609" alt="image" src="https://github.com/user-attachments/assets/f366aa11-1f81-4f16-916a-4f82d9d7b545" />
 
-Figura 13 - Tela de gerenciamento dos pedidos com o pedido detalhado
+Figura 14 - Tela de gerenciamento dos pedidos com o pedido detalhado
 <img width="881" height="643" alt="image" src="https://github.com/user-attachments/assets/8d6f68a7-4abc-474c-a0d4-76101e6c2c26" />
 
-Figura 14 - Tela de gerenciamento dos produtos
-<img width="880" height="568" alt="image" src="https://github.com/user-attachments/assets/86113c4c-a3cd-478e-91ed-ecef889376df" />
+Figura 15 - Tela de gerenciamento dos pedidos por calendário
+<img width="891" height="659" alt="image" src="https://github.com/user-attachments/assets/09f6b1c2-b3dd-4fcc-82d4-6e7f52265b14" />
 
-Figura 15 - Tela de cadastro de um novo produto
-<img width="880" height="655" alt="image" src="https://github.com/user-attachments/assets/aba71751-0a4c-4673-a6ad-a59d7f2f66f2" />
+Figura 16 - Tela de solicitação de um novo pedido
+<img width="1049" height="776" alt="image" src="https://github.com/user-attachments/assets/563c4fcd-433c-463f-9892-38f5fe01ef6f" />
 
-Figura 16 - Tela de gerenciamento das categorias de produtos
-<img width="881" height="624" alt="image" src="https://github.com/user-attachments/assets/68e22704-8576-4ed3-91ef-3a2484d2c069" />
+Figura 17 - Tela de gerenciamento dos produtos
+<img width="949" height="702" alt="image" src="https://github.com/user-attachments/assets/44f93f93-84ab-496a-b192-105c410e3542" />
 
-Figura 17 - Tela de cadastro de uma nova categoria de produtos
-<img width="882" height="623" alt="image" src="https://github.com/user-attachments/assets/4dc86d65-4a3a-4060-89d4-90eb32ed83fa" />
+Figura 18 - Tela de cadastro de um novo produto
+<img width="949" height="703" alt="image" src="https://github.com/user-attachments/assets/e2619995-85b7-4607-938d-e314481855c1" />
 
-Figura 18 - Tela de gerenciamento das informações sobre o negócio
-<img width="577" height="814" alt="image" src="https://github.com/user-attachments/assets/7126f0ab-96eb-4431-9bf3-43729019d8ac" />
+Figura 19 - Tela de gerenciamento das categorias de produtos
+<img width="950" height="705" alt="image" src="https://github.com/user-attachments/assets/8d6fabe6-058e-435b-968d-a538471ca028" />
 
-Figura 19 - Tela de gerenciamento das configurações do site
+Figura 20 - Tela de cadastro de uma nova categoria de produtos
+<img width="952" height="709" alt="image" src="https://github.com/user-attachments/assets/2747d55b-4590-4f03-b3ce-fb13368ebd1f" />
+
+Figura 21 - Tela de gerenciamento das características dos produtos
+<img width="798" height="593" alt="image" src="https://github.com/user-attachments/assets/694c1ce1-f841-41ab-887f-dc511c0206e5" />
+
+Figura 22 - Tela de cadastro de uma nova característica de produtos
+<img width="801" height="589" alt="image" src="https://github.com/user-attachments/assets/2a96d283-2194-4b1c-9d31-7a62fbd993ed" />
+
+Figura 23 - Tela de gerenciamento das informações sobre o negócio
+<img width="557" height="793" alt="image" src="https://github.com/user-attachments/assets/cd883e94-802b-46be-9626-5e611a401f88" />
+
+Figura 24 - Tela de gerenciamento das configurações do site
+<img width="873" height="647" alt="image" src="https://github.com/user-attachments/assets/49587b9b-f6bd-40cd-ad0f-f3d9faecdc58" />
 
 ## Telas acessíveis para os usuários clientes:
 
-Figura 20 - Tela de acesso aos produtos do catálogo
-<img width="727" height="586" alt="image" src="https://github.com/user-attachments/assets/f1ec6630-6977-4b30-b215-5dfd29b27ede" />
+Figura 25 - Tela de acesso aos produtos do catálogo para usuários não logados
+<img width="520" height="737" alt="image" src="https://github.com/user-attachments/assets/dbea1877-34bd-408a-be3c-f55e63f0cf1d" />
 
-Figura 21 - Tela de detalhamento dos produtos do catálogo
-<img width="731" height="680" alt="image" src="https://github.com/user-attachments/assets/4cb47592-7d59-4684-a964-354deb30263a" />
+Figura 26 - Tela de detalhamento dos produtos do catálogo para usuários não logados
+<img width="519" height="739" alt="image" src="https://github.com/user-attachments/assets/914179b9-dad0-49c1-abc9-dbe46a6a4cf9" />
 
-Figura 22 - Tela de detalhamento dos produtos adicionados ao carrinho de compras
-<img width="731" height="617" alt="image" src="https://github.com/user-attachments/assets/78103317-e5a4-40e6-952b-8d5609613e42" />
+Figura 27 - Tela de acesso aos produtos do catálogo para usuários logados
+<img width="523" height="739" alt="image" src="https://github.com/user-attachments/assets/4e482ac3-ae1a-40e2-a960-2282fc23d425" />
 
-Figura 23 - Tela de histórico de pedidos
-<img width="917" height="493" alt="image" src="https://github.com/user-attachments/assets/61712df0-1877-4c77-adbf-bee0d9be0ac9" />
+Figura 28 - Tela de detalhamento dos produtos do catálogo para usuários logados
+<img width="522" height="739" alt="image" src="https://github.com/user-attachments/assets/9b2701f3-68b7-46bc-a210-5d7c72ec3d0f" />
 
-Figura 24 - Tela de histórico de pedidos com o detalhamento do pedido selecionado
-<img width="729" height="347" alt="image" src="https://github.com/user-attachments/assets/eede3edd-1f72-49a5-b3ac-4e4be123bed3" />
+Figura 29 - Tela de detalhamento dos produtos adicionados ao carrinho de compras
+<img width="523" height="741" alt="image" src="https://github.com/user-attachments/assets/5ce41f63-aea2-4e5d-a901-6fafd4a8300d" />
 
-Figura 25 - Tela de visualização das informações sobre o negócio
-<img width="576" height="815" alt="image" src="https://github.com/user-attachments/assets/d26c22e6-daa3-4b96-8e5b-a6232cad2bc7" />
+Figura 30 - Tela de histórico de pedidos
+<img width="523" height="309" alt="image" src="https://github.com/user-attachments/assets/a7a350f6-6419-4e98-9965-8ad2c06913fa" />
+
+Figura 31 - Tela de histórico de pedidos com o detalhamento do pedido selecionado
+<img width="980" height="515" alt="image" src="https://github.com/user-attachments/assets/1357ccc2-cad9-44b7-8e39-9c6f1da2b1c4" />
+
+Figura 32 - Tela de visualização das informações sobre o negócio
+<img width="577" height="752" alt="image" src="https://github.com/user-attachments/assets/9916ed28-0e2b-40e6-b291-65355d27b809" />
+
+Figura 33 - Tela de gerenciamento das configurações do site
+<img width="729" height="501" alt="image" src="https://github.com/user-attachments/assets/5138d504-5caa-4750-884c-f0b5013a89b7" />
+
 Fontes: Elaborados pelos autores (2026).
+
+Com base nas necessidades do negócio, identificadas através do levantamento dos requisitos funcionais e não funcionais, foram definidos dois perfis principais de acesso: administrador e cliente. O administrador possui acesso às funcionalidades de gerenciamento interno da plataforma, enquanto os clientes possuem acesso ao catálogo de produtos, histórico de pedidos e informações do negócio.
+
+Durante o processo de modelagem inicial, foram elaborados *wireframes* e protótipos navegáveis no Figma, permitindo visualizar previamente a estrutura do sistema, a disposição dos elementos visuais e o fluxo de navegação entre as telas. Essa etapa foi essencial para validar a experiência do usuário, organizar a arquitetura das informações e reduzir possíveis inconsistências antes da implementação do sistema.
+
+As primeiras telas desenvolvidas correspondem ao fluxo de autenticação dos usuários, incluindo a tela de *login*, cadastro de usuário, recuperação de senha, confirmação da recuperação de senha e *pop-up* de *logout*. Essas interfaces foram projetadas com foco em simplicidade e acessibilidade, permitindo que os usuários realizem o acesso à plataforma de forma intuitiva e segura.
+
+Também foi criada a estrutura padrão de navegação do sistema, incluindo o rodapé (*footer*), responsável por centralizar informações institucionais e facilitar o acesso às principais funcionalidades da aplicação.
+
+Para o perfil administrador, foram desenvolvidas telas voltadas ao gerenciamento completo da confeitaria. Entre elas estão a tela de *dashboards*, responsável pela visualização estratégica de indicadores do negócio; o gerenciamento de pedidos em lista e por calendário; o detalhamento dos pedidos; a solicitação de novos pedidos; além das telas de gerenciamento de produtos, categorias e características dos produtos.
+
+O sistema administrativo também contempla funcionalidades de cadastro, edição e exclusão de informações, presentes nas telas de cadastro de novos produtos, categorias e características. Além disso, foram modeladas telas específicas para gerenciamento das informações do negócio e configurações gerais do site, permitindo maior controle administrativo da plataforma.
+
+Para os usuários clientes, foram desenvolvidas telas voltadas à navegação e compra de produtos. O catálogo foi projetado para funcionar tanto para usuários não autenticados quanto para usuários logados, oferecendo visualização dos produtos disponíveis, detalhamento dos itens e acesso ao carrinho de compras. As telas de detalhamento dos produtos apresentam informações completas, imagens e opções relacionadas ao pedido.
+
+Também foram desenvolvidas telas de histórico de pedidos e detalhamento dos pedidos realizados, permitindo que os clientes acompanhem suas compras e consultem informações anteriores. Além disso, foi criada uma tela de visualização das informações sobre o negócio, aproximando o cliente da identidade da confeitaria.
+
+No planejamento da arquitetura do sistema, foi definida uma estrutura baseada na separação entre *front-end*, *back-end* e banco de dados. O fluxo de navegação foi organizado para garantir facilidade de uso, com menus intuitivos, controle de permissões por perfil de usuário e integração entre as funcionalidades administrativas e comerciais.
+
+O armazenamento dos dados foi planejado para contemplar informações de usuários, produtos, categorias, pedidos, configurações e dados institucionais do negócio. O acesso às informações ocorre por meio de APIs responsáveis pela comunicação entre a interface e o banco de dados, garantindo segurança, organização e escalabilidade da aplicação.
+
+Dessa forma, o processo de levantamento de requisitos, prototipação e planejamento arquitetural possibilitou estruturar uma solução alinhada às necessidades do negócio, oferecendo uma visão clara do funcionamento do sistema antes do início da implementação, além de contribuir para uma melhor experiência dos usuários e maior eficiência no desenvolvimento do projeto.
 
 ## Estrutura de navegação do sistema
 
