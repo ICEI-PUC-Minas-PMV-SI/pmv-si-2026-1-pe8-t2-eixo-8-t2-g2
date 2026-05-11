@@ -86,6 +86,7 @@ class AuthMiddleware {
         }
         next();
       } catch (err) {
+        console.log(err);
         return ResponseUtil.handleError(
           res,
           new AppError('Invalid token', HttpCode.UNAUTHORIZED),

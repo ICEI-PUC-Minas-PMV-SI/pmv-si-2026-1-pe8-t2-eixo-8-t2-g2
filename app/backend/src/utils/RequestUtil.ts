@@ -33,7 +33,7 @@ class RequestUtil {
     });
   }
   getPaginationParams(req: GenericRequest) {
-    if (!req.body.page || !req.body.pageSize) {
+    if (!req.body || !req.body.page || !req.body.pageSize) {
       return null;
     }
     const page = Number(req.body.page);

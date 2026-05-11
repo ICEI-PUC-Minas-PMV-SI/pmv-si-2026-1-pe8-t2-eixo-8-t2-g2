@@ -183,6 +183,7 @@ model Scheduler {
   deliveryType       DeliveryType
   cancellationReason String?
   createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt @default(now())
 }
 
 model GoogleCredentials {

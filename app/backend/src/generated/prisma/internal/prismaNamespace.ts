@@ -1374,7 +1374,8 @@ export const SchedulerScalarFieldEnum = {
   paymentMethod: 'paymentMethod',
   deliveryType: 'deliveryType',
   cancellationReason: 'cancellationReason',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 } as const
 
 export type SchedulerScalarFieldEnum = (typeof SchedulerScalarFieldEnum)[keyof typeof SchedulerScalarFieldEnum]

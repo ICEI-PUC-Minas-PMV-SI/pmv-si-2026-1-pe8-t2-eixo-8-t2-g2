@@ -16,6 +16,7 @@ import {
   Segmented,
   List,
   Avatar,
+  Spin,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
@@ -56,6 +57,8 @@ import type {
   Payload,
 } from 'recharts/types/component/DefaultTooltipContent';
 import { SchedulerConstant } from '~/constants/SchedulerConstant';
+import { useQuery } from '@tanstack/react-query';
+import DashboardController from '~/controllers/DashboardController';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -294,6 +297,20 @@ const getLabelAndColor = (status: SchedulerStatus) => {
   };
 };
 
+const getStatusPercent = (statusPercent: Record<SchedulerStatus, number> | null) => {
+  if (!statusPercent) return [];
+  return Object.keys(statusPercent || {})
+    .map((status) => {
+      const config = getLabelAndColor(status as SchedulerStatus);
+      return {
+        name: config.label,
+        value: statusPercent[status as SchedulerStatus],
+        color: config.color,
+      };
+    })
+    .sort((a, b) => b.value - a.value);
+};
+
 // ─── Status config ────────────────────────────────────────────────────────────
 const statusConfig: Record<
   SchedulerStatus,
@@ -351,6 +368,7 @@ interface KpiCardProps {
   trendLabel?: string;
   icon: React.ReactNode;
   color?: string;
+  loading?: boolean;
 }
 
 function KpiCard({
@@ -361,10 +379,12 @@ function KpiCard({
   trend,
   trendLabel,
   icon,
+  loading = false,
   color = C.primary,
 }: KpiCardProps) {
   return (
     <Card
+      loading={loading}
       style={{ ...cardStyle, borderTop: `3px solid ${color}` }}
       styles={{ body: { padding: '16px 20px' } }}
     >
@@ -470,12 +490,33 @@ function CustomTooltip(props: CustomTooltipProps) {
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 export function DashboardPage() {
-  const [volPeriod, setVolPeriod] = useState<'Semanal' | 'Mensal'>('Semanal');
   const [agendaFilter, setAgendaFilter] = useState<'Todos' | 'Entrega' | 'Retirada'>(
     'Todos',
   );
 
-  const volData = volPeriod === 'Semanal' ? weeklyData : monthlyData;
+  const todaySummary = useQuery({
+    queryKey: ['today-summary'],
+    queryFn: () => {
+      return DashboardController.todaySummary();
+    },
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const latestMonthsSummary = useQuery({
+    queryKey: ['latest-months-summary'],
+    queryFn: () => {
+      return DashboardController.latestMonths();
+    },
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const latestMonthsBillingSummary = useQuery({
+    queryKey: ['latest-months-billing-summary'],
+    queryFn: () => {
+      return DashboardController.latestMonthsBilling();
+    },
+    staleTime: 60 * 60 * 1000,
+  });
 
   const filteredAgenda: AgendaItem[] =
     agendaFilter === 'Todos'
@@ -549,8 +590,9 @@ export function DashboardPage() {
         <Row gutter={[12, 12]}>
           <Col xs={24} sm={12} md={8} lg={4}>
             <KpiCard
+              loading={todaySummary.isLoading}
               title="Pedidos hoje"
-              value={14}
+              value={todaySummary.data?.created || 0}
               icon={<ShoppingOutlined />}
               trend={2}
               trendLabel="↑ 2 vs ontem"
@@ -558,8 +600,9 @@ export function DashboardPage() {
           </Col>
           <Col xs={24} sm={12} md={8} lg={5}>
             <KpiCard
+              loading={todaySummary.isLoading}
               title="Faturamento estimado"
-              value={2480}
+              value={todaySummary.data?.totalPrice || 0}
               prefix="R$"
               icon={<DollarOutlined />}
               trend={12}
@@ -569,8 +612,9 @@ export function DashboardPage() {
           </Col>
           <Col xs={24} sm={12} md={8} lg={4}>
             <KpiCard
+              loading={todaySummary.isLoading}
               title="Ticket médio"
-              value={177}
+              value={todaySummary.data?.avgPrice || 0}
               prefix="R$"
               icon={<RiseOutlined />}
               color="#722ed1"
@@ -578,8 +622,9 @@ export function DashboardPage() {
           </Col>
           <Col xs={24} sm={12} md={8} lg={4}>
             <KpiCard
+              loading={todaySummary.isLoading}
               title="Em produção"
-              value={5}
+              value={todaySummary.data?.inProgress || 0}
               suffix=" pedidos"
               icon={<FireOutlined />}
               color={C.progress}
@@ -587,8 +632,9 @@ export function DashboardPage() {
           </Col>
           <Col xs={24} sm={12} md={8} lg={4}>
             <KpiCard
+              loading={todaySummary.isLoading}
               title="Entregas hoje"
-              value={8}
+              value={todaySummary.data?.schedulers || 0}
               icon={<CarOutlined />}
               trend={0}
               trendLabel="3 retirada · 5 entrega"
@@ -597,8 +643,17 @@ export function DashboardPage() {
           </Col>
           <Col xs={24} sm={12} md={8} lg={4}>
             <KpiCard
+              loading={todaySummary.isLoading}
               title="Cancelamentos"
-              value={4.2}
+              value={
+                (todaySummary.data?.created || 0) === 0
+                  ? 0
+                  : ((Math.round((todaySummary.data?.cancelled || 0) * 100) /
+                      (todaySummary.data?.created || 0) +
+                      Number.EPSILON) *
+                      100) /
+                    100
+              }
               suffix="%"
               icon={<WarningOutlined />}
               trend={-1}
@@ -630,12 +685,6 @@ export function DashboardPage() {
                   <Text strong style={{ fontSize: 13 }}>
                     Volume de pedidos
                   </Text>
-                  <Segmented
-                    size="small"
-                    options={['Semanal', 'Mensal']}
-                    value={volPeriod}
-                    onChange={(v) => setVolPeriod(v as 'Semanal' | 'Mensal')}
-                  />
                 </div>
               }
             >
@@ -663,37 +712,48 @@ export function DashboardPage() {
                   <Text style={{ fontSize: 11, color: '#888' }}>Pendentes</Text>
                 </Space>
               </div>
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={volData} barCategoryGap="30%">
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#f0f0f0"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                  <RTooltip content={<CustomTooltip />} />
-                  <Bar
-                    dataKey="confirmados"
-                    name="Confirmados"
-                    stackId="a"
-                    fill={C.primary}
-                    radius={[0, 0, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="pendentes"
-                    name="Pendentes"
-                    stackId="a"
-                    fill={C.primaryLight}
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+              <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart
+                    data={(latestMonthsSummary.data?.months || []).map((month) => {
+                      return {
+                        label: month.monthYear,
+                        confirmados: month.status.confirmed,
+                        pendentes: month.status.pending,
+                      };
+                    })}
+                    barCategoryGap="30%"
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#f0f0f0"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="label"
+                      tick={{ fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                    <RTooltip content={<CustomTooltip />} />
+                    <Bar
+                      dataKey="confirmados"
+                      name="Confirmados"
+                      stackId="a"
+                      fill={C.primary}
+                      radius={[0, 0, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="pendentes"
+                      name="Pendentes"
+                      stackId="a"
+                      fill={C.primaryLight}
+                      radius={[4, 4, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Spin>
             </Card>
           </Col>
 
@@ -718,28 +778,34 @@ export function DashboardPage() {
                   gap: 12,
                 }}
               >
-                <ResponsiveContainer width="100%" height={180}>
-                  <PieChart>
-                    <Pie
-                      data={statusData}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={45}
-                      outerRadius={72}
-                      paddingAngle={2}
-                    >
-                      {statusData.map((s, i) => (
-                        <Cell key={i} fill={s.color} />
-                      ))}
-                    </Pie>
+                <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <PieChart>
+                      <Pie
+                        data={getStatusPercent(
+                          latestMonthsSummary.data?.statusPercent || null,
+                        )}
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius={45}
+                        outerRadius={72}
+                        paddingAngle={2}
+                      >
+                        {getStatusPercent(
+                          latestMonthsSummary.data?.statusPercent || null,
+                        ).map((s, i) => (
+                          <Cell key={i} fill={s.color} />
+                        ))}
+                      </Pie>
 
-                    <RTooltip
-                      formatter={(v: ValueType | undefined) =>
-                        v != null ? [`${v}%`] : []
-                      }
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                      <RTooltip
+                        formatter={(v: ValueType | undefined) =>
+                          v != null ? [`${v}%`] : []
+                        }
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Spin>
 
                 {/* Legenda */}
                 <div
@@ -749,56 +815,58 @@ export function DashboardPage() {
                     gap: 8,
                   }}
                 >
-                  {statusData.map((s, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: 12,
-                        minWidth: 0,
-                      }}
-                    >
-                      <Space
-                        size={6}
+                  {getStatusPercent(latestMonthsSummary.data?.statusPercent || null).map(
+                    (s, i) => (
+                      <div
+                        key={i}
                         style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: 12,
                           minWidth: 0,
-                          flex: 1,
                         }}
                       >
-                        <div
+                        <Space
+                          size={6}
                           style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: 2,
-                            background: s.color,
-                            flexShrink: 0,
-                          }}
-                        />
-
-                        <Text
-                          ellipsis
-                          style={{
-                            fontSize: 11,
-                            color: '#666',
+                            minWidth: 0,
+                            flex: 1,
                           }}
                         >
-                          {s.name}
-                        </Text>
-                      </Space>
+                          <div
+                            style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: 2,
+                              background: s.color,
+                              flexShrink: 0,
+                            }}
+                          />
 
-                      <Text
-                        strong
-                        style={{
-                          fontSize: 11,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {s.value}%
-                      </Text>
-                    </div>
-                  ))}
+                          <Text
+                            ellipsis
+                            style={{
+                              fontSize: 11,
+                              color: '#666',
+                            }}
+                          >
+                            {s.name}
+                          </Text>
+                        </Space>
+
+                        <Text
+                          strong
+                          style={{
+                            fontSize: 11,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {s.value}%
+                        </Text>
+                      </div>
+                    ),
+                  )}
                 </div>
               </div>
             </Card>

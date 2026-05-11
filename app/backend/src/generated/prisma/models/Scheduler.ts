@@ -35,6 +35,7 @@ export type SchedulerMinAggregateOutputType = {
   deliveryType: $Enums.DeliveryType | null
   cancellationReason: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type SchedulerMaxAggregateOutputType = {
@@ -48,6 +49,7 @@ export type SchedulerMaxAggregateOutputType = {
   deliveryType: $Enums.DeliveryType | null
   cancellationReason: string | null
   createdAt: Date | null
+  updatedAt: Date | null
 }
 
 export type SchedulerCountAggregateOutputType = {
@@ -61,6 +63,7 @@ export type SchedulerCountAggregateOutputType = {
   deliveryType: number
   cancellationReason: number
   createdAt: number
+  updatedAt: number
   _all: number
 }
 
@@ -76,6 +79,7 @@ export type SchedulerMinAggregateInputType = {
   deliveryType?: true
   cancellationReason?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type SchedulerMaxAggregateInputType = {
@@ -89,6 +93,7 @@ export type SchedulerMaxAggregateInputType = {
   deliveryType?: true
   cancellationReason?: true
   createdAt?: true
+  updatedAt?: true
 }
 
 export type SchedulerCountAggregateInputType = {
@@ -102,6 +107,7 @@ export type SchedulerCountAggregateInputType = {
   deliveryType?: true
   cancellationReason?: true
   createdAt?: true
+  updatedAt?: true
   _all?: true
 }
 
@@ -188,6 +194,7 @@ export type SchedulerGroupByOutputType = {
   deliveryType: $Enums.DeliveryType
   cancellationReason: string | null
   createdAt: Date
+  updatedAt: Date
   _count: SchedulerCountAggregateOutputType | null
   _min: SchedulerMinAggregateOutputType | null
   _max: SchedulerMaxAggregateOutputType | null
@@ -222,6 +229,7 @@ export type SchedulerWhereInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFilter<"Scheduler"> | $Enums.DeliveryType
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   items?: Prisma.SchedulerItemListRelationFilter
 }
@@ -237,6 +245,7 @@ export type SchedulerOrderByWithRelationInput = {
   deliveryType?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
   items?: Prisma.SchedulerItemOrderByRelationAggregateInput
 }
@@ -255,6 +264,7 @@ export type SchedulerWhereUniqueInput = Prisma.AtLeast<{
   deliveryType?: Prisma.EnumDeliveryTypeFilter<"Scheduler"> | $Enums.DeliveryType
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   items?: Prisma.SchedulerItemListRelationFilter
 }, "id">
@@ -270,6 +280,7 @@ export type SchedulerOrderByWithAggregationInput = {
   deliveryType?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
   _count?: Prisma.SchedulerCountOrderByAggregateInput
   _max?: Prisma.SchedulerMaxOrderByAggregateInput
   _min?: Prisma.SchedulerMinOrderByAggregateInput
@@ -289,6 +300,7 @@ export type SchedulerScalarWhereWithAggregatesInput = {
   deliveryType?: Prisma.EnumDeliveryTypeWithAggregatesFilter<"Scheduler"> | $Enums.DeliveryType
   cancellationReason?: Prisma.StringNullableWithAggregatesFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Scheduler"> | Date | string
+  updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Scheduler"> | Date | string
 }
 
 export type SchedulerCreateInput = {
@@ -301,6 +313,7 @@ export type SchedulerCreateInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutSchedulersInput
   items?: Prisma.SchedulerItemCreateNestedManyWithoutSchedulerInput
 }
@@ -316,6 +329,7 @@ export type SchedulerUncheckedCreateInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   items?: Prisma.SchedulerItemUncheckedCreateNestedManyWithoutSchedulerInput
 }
 
@@ -329,6 +343,7 @@ export type SchedulerUpdateInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSchedulersNestedInput
   items?: Prisma.SchedulerItemUpdateManyWithoutSchedulerNestedInput
 }
@@ -344,6 +359,7 @@ export type SchedulerUncheckedUpdateInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.SchedulerItemUncheckedUpdateManyWithoutSchedulerNestedInput
 }
 
@@ -358,6 +374,7 @@ export type SchedulerCreateManyInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type SchedulerUpdateManyMutationInput = {
@@ -370,6 +387,7 @@ export type SchedulerUpdateManyMutationInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SchedulerUncheckedUpdateManyInput = {
@@ -383,6 +401,7 @@ export type SchedulerUncheckedUpdateManyInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SchedulerListRelationFilter = {
@@ -411,6 +430,7 @@ export type SchedulerCountOrderByAggregateInput = {
   deliveryType?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type SchedulerMaxOrderByAggregateInput = {
@@ -424,6 +444,7 @@ export type SchedulerMaxOrderByAggregateInput = {
   deliveryType?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type SchedulerMinOrderByAggregateInput = {
@@ -437,6 +458,7 @@ export type SchedulerMinOrderByAggregateInput = {
   deliveryType?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  updatedAt?: Prisma.SortOrder
 }
 
 export type SchedulerCreateNestedManyWithoutCustomerInput = {
@@ -521,6 +543,7 @@ export type SchedulerCreateWithoutCustomerInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   items?: Prisma.SchedulerItemCreateNestedManyWithoutSchedulerInput
 }
 
@@ -534,6 +557,7 @@ export type SchedulerUncheckedCreateWithoutCustomerInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   items?: Prisma.SchedulerItemUncheckedCreateNestedManyWithoutSchedulerInput
 }
 
@@ -576,6 +600,7 @@ export type SchedulerScalarWhereInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFilter<"Scheduler"> | $Enums.DeliveryType
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
 }
 
 export type SchedulerCreateWithoutItemsInput = {
@@ -588,6 +613,7 @@ export type SchedulerCreateWithoutItemsInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
   customer: Prisma.CustomerCreateNestedOneWithoutSchedulersInput
 }
 
@@ -602,6 +628,7 @@ export type SchedulerUncheckedCreateWithoutItemsInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type SchedulerCreateOrConnectWithoutItemsInput = {
@@ -630,6 +657,7 @@ export type SchedulerUpdateWithoutItemsInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSchedulersNestedInput
 }
 
@@ -644,6 +672,7 @@ export type SchedulerUncheckedUpdateWithoutItemsInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type SchedulerCreateManyCustomerInput = {
@@ -656,6 +685,7 @@ export type SchedulerCreateManyCustomerInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type SchedulerUpdateWithoutCustomerInput = {
@@ -668,6 +698,7 @@ export type SchedulerUpdateWithoutCustomerInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.SchedulerItemUpdateManyWithoutSchedulerNestedInput
 }
 
@@ -681,6 +712,7 @@ export type SchedulerUncheckedUpdateWithoutCustomerInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   items?: Prisma.SchedulerItemUncheckedUpdateManyWithoutSchedulerNestedInput
 }
 
@@ -694,6 +726,7 @@ export type SchedulerUncheckedUpdateManyWithoutCustomerInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -738,6 +771,7 @@ export type SchedulerSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   deliveryType?: boolean
   cancellationReason?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Scheduler$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.SchedulerCountOutputTypeDefaultArgs<ExtArgs>
@@ -754,6 +788,7 @@ export type SchedulerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   deliveryType?: boolean
   cancellationReason?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
 
@@ -768,6 +803,7 @@ export type SchedulerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   deliveryType?: boolean
   cancellationReason?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
 
@@ -782,9 +818,10 @@ export type SchedulerSelectScalar = {
   deliveryType?: boolean
   cancellationReason?: boolean
   createdAt?: boolean
+  updatedAt?: boolean
 }
 
-export type SchedulerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "scheduledAt" | "estimatedStartAt" | "estimatedEndAt" | "status" | "paymentMethod" | "deliveryType" | "cancellationReason" | "createdAt", ExtArgs["result"]["scheduler"]>
+export type SchedulerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "scheduledAt" | "estimatedStartAt" | "estimatedEndAt" | "status" | "paymentMethod" | "deliveryType" | "cancellationReason" | "createdAt" | "updatedAt", ExtArgs["result"]["scheduler"]>
 export type SchedulerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Scheduler$itemsArgs<ExtArgs>
@@ -814,6 +851,7 @@ export type $SchedulerPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     deliveryType: $Enums.DeliveryType
     cancellationReason: string | null
     createdAt: Date
+    updatedAt: Date
   }, ExtArgs["result"]["scheduler"]>
   composites: {}
 }
@@ -1249,6 +1287,7 @@ export interface SchedulerFieldRefs {
   readonly deliveryType: Prisma.FieldRef<"Scheduler", 'DeliveryType'>
   readonly cancellationReason: Prisma.FieldRef<"Scheduler", 'String'>
   readonly createdAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
+  readonly updatedAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
 }
     
 
