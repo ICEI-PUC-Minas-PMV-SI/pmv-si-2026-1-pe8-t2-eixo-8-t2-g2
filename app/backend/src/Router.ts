@@ -8,6 +8,7 @@ import { ProductRoute } from './routes/ProductRoute';
 import { SMTPRoute } from './routes/SMTPRoute';
 import { SchedulerRoute } from './routes/SchedulerRoute';
 import { UserRoute } from './routes/UserRoute';
+import { DashboardRoute } from 'routes/DashboardRoute';
 class Router {
   register(app: Application) {
     AuthRoute.register(app);
@@ -18,6 +19,7 @@ class Router {
     SMTPRoute.register(app);
     SchedulerRoute.register(app);
     UserRoute.register(app);
+    DashboardRoute.register(app);
     // const { ...allRoutes } = routes;
     // Object.values(allRoutes).forEach((route) => {
     //   if ('register' in route) {

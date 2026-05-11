@@ -13,10 +13,15 @@
  * 🟢 You can import this file directly.
  */
 
-import * as Prisma from './internal/prismaNamespaceBrowser.js'
+import * as Prisma from './internal/prismaNamespaceBrowser'
 export { Prisma }
-export * as $Enums from './enums.js'
-export * from './enums.js';
+export * as $Enums from './enums'
+export * from './enums';
+/**
+ * Model Customer
+ * 
+ */
+export type Customer = Prisma.CustomerModel
 /**
  * Model User
  * 
@@ -62,3 +67,8 @@ export type Scheduler = Prisma.SchedulerModel
  * 
  */
 export type GoogleCredentials = Prisma.GoogleCredentialsModel
+/**
+ * Model RecoveryCode
+ * 
+ */
+export type RecoveryCode = Prisma.RecoveryCodeModel

@@ -21,7 +21,7 @@ export function SchedulerCancel({ open, onCancel, onConfirm }: ComponentProps) {
 
   return (
     <Modal
-      title="Cancelar agendamento"
+      title="Cancelar pedido"
       open={open}
       onCancel={() => {
         setReason('');
@@ -35,7 +35,7 @@ export function SchedulerCancel({ open, onCancel, onConfirm }: ComponentProps) {
       <Space orientation="vertical" style={{ width: '100%' }}>
         <Typography.Text type="secondary">
           Informe o motivo do cancelamento. Esta informação será registrada no
-          agendamento.
+          pedido.
         </Typography.Text>
         <Input.TextArea
           rows={4}

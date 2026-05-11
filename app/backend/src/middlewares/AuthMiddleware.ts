@@ -20,6 +20,7 @@ class AuthMiddleware {
       '/user/forgot-password',
       '/user/forgot-password/validate-otp',
       '/google-calendar/oauth2callback',
+      '/dashboard',
     ];
     const cleanedPath = req.path.replace(/\/$/, '');
     const [basePath, uuid = ''] = cleanedPath.split('/').slice(1);
@@ -57,13 +58,19 @@ class AuthMiddleware {
       if (!token) {
         return ResponseUtil.handleError(
           res,
-          new AppError('Token not provided', HttpCode.UNAUTHORIZED),
+          new AppError('Token not provided or expired', HttpCode.UNAUTHORIZED),
         );
       }
 
       try {
         const decoded = JWT.validate(token);
         const paginationParams = RequestUtil.getPaginationParams(req);
+        if (!decoded) {
+          return ResponseUtil.handleError(
+            res,
+            new AppError('Token not provided or expired', HttpCode.UNAUTHORIZED),
+          );
+        }
         if (paginationParams) {
           req.pagination = paginationParams;
         }
@@ -73,11 +80,9 @@ class AuthMiddleware {
         if (req.body && req.body.filters) {
           req.filters = req.body.filters;
         }
-        if (decoded) {
-          req.user = decoded.user;
-          if (decoded.operation) {
-            req.operation = decoded.operation;
-          }
+        req.user = decoded.user;
+        if (decoded.operation) {
+          req.operation = decoded.operation;
         }
         next();
       } catch (err) {

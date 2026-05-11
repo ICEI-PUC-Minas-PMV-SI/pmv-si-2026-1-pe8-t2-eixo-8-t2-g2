@@ -9,6 +9,7 @@ import { CalendarOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
 import { SchedulerCreateForm } from './SchedulerCreateForm';
 import { SchedulerList } from './SchedulerList';
 import { SchedulerCalendar } from './SchedulerCalendar';
+import { SchedulerConstant } from '~/constants/SchedulerConstant';
 
 export function SchedulerTab() {
   const schedulerQuery = useTableQuery<Scheduler>('scheduler', (params) =>
@@ -30,13 +31,15 @@ export function SchedulerTab() {
     const pending = schedulers.filter((s) => s.status === 'pending').length;
     const completed = schedulers.filter((s) => s.status === 'completed').length;
     const cancelled = schedulers.filter((s) => s.status === 'cancelled').length;
+    const inProgress = schedulers.filter((s) => s.status === 'in_progress').length;
 
     const stats = {
       status: [
-        { label: 'Confirmados', value: confirmed, color: '#185FA5', bg: '#E6F1FB' },
-        { label: 'Pendentes', value: pending, color: '#BA7517', bg: '#FAEEDA' },
-        { label: 'Concluídos', value: completed, color: '#3B6D11', bg: '#EAF3DE' },
-        { label: 'Cancelados', value: cancelled, color: '#A32D2D', bg: '#FCEBEB' },
+        { ...SchedulerConstant.status.pending, value: pending },
+        { ...SchedulerConstant.status.confirmed, value: confirmed },
+        { ...SchedulerConstant.status.in_progress, value: inProgress },
+        { ...SchedulerConstant.status.completed, value: completed },
+        { ...SchedulerConstant.status.cancelled, value: cancelled },
       ],
       total,
     };
@@ -106,7 +109,7 @@ export function SchedulerTab() {
               icon={<PlusOutlined />}
               onClick={() => setDrawerOpen(true)}
             >
-              Novo agendamento
+              Novo pedido
             </Button>
           </Space>
         }
@@ -117,10 +120,10 @@ export function SchedulerTab() {
           <SchedulerCalendar calendarEvents={calendarEvents} />
         )}
       </Card>
-      {/* Drawer: Novo agendamento */}
+      {/* Drawer: Novo pedido */}
       <Drawer
         size="large"
-        title="Novo agendamento"
+        title="Novo pedido"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         extra={

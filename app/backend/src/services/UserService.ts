@@ -126,7 +126,6 @@ class UserService {
 
     await this.updateOTPSecret(user.id, secret);
     const otp = OTPUtil.generate(secret, ms('5m'));
-    console.log(`OTP: ${otp}`);
 
     const { template, attachments } = OTPTemplate.buildOTP(otp);
     await SMTP.sendMail({

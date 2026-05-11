@@ -83,7 +83,7 @@ export function SchedulerSummary({ stats }: ComponentProps) {
             Distribuição por status
           </Text>
           <Text type="secondary" style={{ fontSize: 12 }}>
-            {stats.total} agendamentos exibidos
+            {stats.total} pedidos exibidos
           </Text>
         </div>
 

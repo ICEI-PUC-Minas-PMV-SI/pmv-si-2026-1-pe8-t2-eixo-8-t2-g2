@@ -5,7 +5,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  // url      = "file:./dev.db"
 }
 
 // datasource db {
@@ -17,19 +17,39 @@ enum UserRole {
   customer
 }
 
+model Customer {
+  id String @id @default(uuid())
+
+  name  String
+  phone String?
+  email String? @unique
+
+  notes String?
+
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  schedulers Scheduler[]
+
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+  @@index([email])
+}
+
 model User {
-  id                 String      @id @default(uuid())
-  name               String
-  email              String      @unique
-  googleId           String?     @unique
-  role               UserRole    @default(customer)
-  password           String?
-  otpSecret          String?
-  twoFactorSecret    String?
-  enabledTwoFactor   Boolean     @default(false)
-  customerSchedulers Scheduler[] @relation("SchedulerCustomer")
-  createdAt          DateTime    @default(now())
-  recoveryCodes      RecoveryCode[]
+  id               String         @id @default(uuid())
+  name             String
+  email            String         @unique
+  googleId         String?        @unique
+  role             UserRole       @default(customer)
+  password         String?
+  otpSecret        String?
+  twoFactorSecret  String?
+  enabledTwoFactor Boolean        @default(false)
+  customer         Customer?
+  createdAt        DateTime       @default(now())
+  recoveryCodes    RecoveryCode[]
 }
 
 model Category {
@@ -97,8 +117,8 @@ model Product {
   bookingLeadDays        Int     @default(0)
   isActive               Boolean @default(true)
 
-  categories     ProductCategory[]
-  schedulerItems SchedulerItem[]
+  categories      ProductCategory[]
+  schedulerItems  SchedulerItem[]
   characteristics ProductCharacteristic[]
 
   createdAt DateTime @default(now())
@@ -153,7 +173,7 @@ enum DeliveryType {
 model Scheduler {
   id                 String          @id @default(uuid())
   customerId         String
-  customer           User            @relation("SchedulerCustomer", fields: [customerId], references: [id])
+  customer           Customer        @relation(fields: [customerId], references: [id])
   scheduledAt        DateTime
   estimatedStartAt   DateTime?
   estimatedEndAt     DateTime?
@@ -175,13 +195,13 @@ model GoogleCredentials {
 }
 
 model RecoveryCode {
-  id        String   @id @default(cuid())
-  codeHash  String
-  used      Boolean  @default(false)
-  usedAt    DateTime?
+  id       String    @id @default(cuid())
+  codeHash String
+  used     Boolean   @default(false)
+  usedAt   DateTime?
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 

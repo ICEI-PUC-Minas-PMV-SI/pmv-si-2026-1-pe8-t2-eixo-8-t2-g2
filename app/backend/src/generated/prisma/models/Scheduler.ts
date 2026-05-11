@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums.js"
-import type * as Prisma from "../internal/prismaNamespace.js"
+import type * as $Enums from "../enums"
+import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model Scheduler
@@ -222,7 +222,7 @@ export type SchedulerWhereInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFilter<"Scheduler"> | $Enums.DeliveryType
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
-  customer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   items?: Prisma.SchedulerItemListRelationFilter
 }
 
@@ -237,7 +237,7 @@ export type SchedulerOrderByWithRelationInput = {
   deliveryType?: Prisma.SortOrder
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  customer?: Prisma.UserOrderByWithRelationInput
+  customer?: Prisma.CustomerOrderByWithRelationInput
   items?: Prisma.SchedulerItemOrderByRelationAggregateInput
 }
 
@@ -255,7 +255,7 @@ export type SchedulerWhereUniqueInput = Prisma.AtLeast<{
   deliveryType?: Prisma.EnumDeliveryTypeFilter<"Scheduler"> | $Enums.DeliveryType
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
-  customer?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   items?: Prisma.SchedulerItemListRelationFilter
 }, "id">
 
@@ -301,7 +301,7 @@ export type SchedulerCreateInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
-  customer: Prisma.UserCreateNestedOneWithoutCustomerSchedulersInput
+  customer: Prisma.CustomerCreateNestedOneWithoutSchedulersInput
   items?: Prisma.SchedulerItemCreateNestedManyWithoutSchedulerInput
 }
 
@@ -329,7 +329,7 @@ export type SchedulerUpdateInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  customer?: Prisma.UserUpdateOneRequiredWithoutCustomerSchedulersNestedInput
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutSchedulersNestedInput
   items?: Prisma.SchedulerItemUpdateManyWithoutSchedulerNestedInput
 }
 
@@ -588,7 +588,7 @@ export type SchedulerCreateWithoutItemsInput = {
   deliveryType: $Enums.DeliveryType
   cancellationReason?: string | null
   createdAt?: Date | string
-  customer: Prisma.UserCreateNestedOneWithoutCustomerSchedulersInput
+  customer: Prisma.CustomerCreateNestedOneWithoutSchedulersInput
 }
 
 export type SchedulerUncheckedCreateWithoutItemsInput = {
@@ -630,7 +630,7 @@ export type SchedulerUpdateWithoutItemsInput = {
   deliveryType?: Prisma.EnumDeliveryTypeFieldUpdateOperationsInput | $Enums.DeliveryType
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  customer?: Prisma.UserUpdateOneRequiredWithoutCustomerSchedulersNestedInput
+  customer?: Prisma.CustomerUpdateOneRequiredWithoutSchedulersNestedInput
 }
 
 export type SchedulerUncheckedUpdateWithoutItemsInput = {
@@ -738,7 +738,7 @@ export type SchedulerSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   deliveryType?: boolean
   cancellationReason?: boolean
   createdAt?: boolean
-  customer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Scheduler$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.SchedulerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
@@ -754,7 +754,7 @@ export type SchedulerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   deliveryType?: boolean
   cancellationReason?: boolean
   createdAt?: boolean
-  customer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
 
 export type SchedulerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -768,7 +768,7 @@ export type SchedulerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   deliveryType?: boolean
   cancellationReason?: boolean
   createdAt?: boolean
-  customer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
 
 export type SchedulerSelectScalar = {
@@ -786,21 +786,21 @@ export type SchedulerSelectScalar = {
 
 export type SchedulerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "scheduledAt" | "estimatedStartAt" | "estimatedEndAt" | "status" | "paymentMethod" | "deliveryType" | "cancellationReason" | "createdAt", ExtArgs["result"]["scheduler"]>
 export type SchedulerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  customer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Scheduler$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.SchedulerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SchedulerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  customer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }
 export type SchedulerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  customer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }
 
 export type $SchedulerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Scheduler"
   objects: {
-    customer: Prisma.$UserPayload<ExtArgs>
+    customer: Prisma.$CustomerPayload<ExtArgs>
     items: Prisma.$SchedulerItemPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1208,7 +1208,7 @@ readonly fields: SchedulerFieldRefs;
  */
 export interface Prisma__SchedulerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  customer<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  customer<T extends Prisma.CustomerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CustomerDefaultArgs<ExtArgs>>): Prisma.Prisma__CustomerClient<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.Scheduler$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Scheduler$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SchedulerItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.

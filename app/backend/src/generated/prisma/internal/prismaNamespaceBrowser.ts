@@ -17,8 +17,8 @@
 
 import * as runtime from "@prisma/client/runtime/index-browser"
 
-export type * from '../models.js'
-export type * from './prismaNamespace.js'
+export type * from '../models'
+export type * from './prismaNamespace'
 
 export const Decimal = runtime.Decimal
 
@@ -51,6 +51,7 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Customer: 'Customer',
   User: 'User',
   Category: 'Category',
   ProductCategory: 'ProductCategory',
@@ -59,7 +60,8 @@ export const ModelName = {
   Product: 'Product',
   SchedulerItem: 'SchedulerItem',
   Scheduler: 'Scheduler',
-  GoogleCredentials: 'GoogleCredentials'
+  GoogleCredentials: 'GoogleCredentials',
+  RecoveryCode: 'RecoveryCode'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -73,6 +75,19 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const CustomerScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  notes: 'notes',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -188,6 +203,18 @@ export const GoogleCredentialsScalarFieldEnum = {
 } as const
 
 export type GoogleCredentialsScalarFieldEnum = (typeof GoogleCredentialsScalarFieldEnum)[keyof typeof GoogleCredentialsScalarFieldEnum]
+
+
+export const RecoveryCodeScalarFieldEnum = {
+  id: 'id',
+  codeHash: 'codeHash',
+  used: 'used',
+  usedAt: 'usedAt',
+  userId: 'userId',
+  createdAt: 'createdAt'
+} as const
+
+export type RecoveryCodeScalarFieldEnum = (typeof RecoveryCodeScalarFieldEnum)[keyof typeof RecoveryCodeScalarFieldEnum]
 
 
 export const SortOrder = {

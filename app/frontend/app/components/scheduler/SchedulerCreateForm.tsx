@@ -83,7 +83,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
       <Row gutter={16}>
         <Col span={12}>
           <Form.Item
-            label="Data e hora do agendamento"
+            label="Data e hora do pedido"
             name="scheduledAt"
             rules={[{ required: true, message: 'Informe a data' }]}
           >

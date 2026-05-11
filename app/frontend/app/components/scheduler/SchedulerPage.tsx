@@ -79,7 +79,7 @@ export function SchedulerPage() {
 
   return (
     <Layout style={{ minHeight: '100vh', background: '#f5f7fb' }}>
-      <Header
+      {/* <Header
         style={{
           background: '#fff',
           borderBottom: '1px solid #f0f0f0',
@@ -90,21 +90,23 @@ export function SchedulerPage() {
         }}
       >
         <Button
-          loading={googleCalendarUrlQuery.isLoading}
-          icon={<GoogleCalendar style={{ fontSize: 24, display: 'flex' }} />}
-          onClick={() => openGoogleAuthPopup(googleCalendarUrl)}
-        >
-          Conectar agenda Google
-        </Button>
-        <Button
           loading={gmailUrlQuery.isLoading}
           icon={<Gmail style={{ fontSize: 24, display: 'flex' }} />}
           onClick={() => openGoogleAuthPopup(gmailUrl)}
         >
           Configurar E-mail
         </Button>
-      </Header>
+      </Header> */}
       <TabbedPage
+        extraContent={
+          <Button
+            loading={googleCalendarUrlQuery.isLoading}
+            icon={<GoogleCalendar style={{ fontSize: 24, display: 'flex' }} />}
+            onClick={() => openGoogleAuthPopup(googleCalendarUrl)}
+          >
+            Conectar agenda Google
+          </Button>
+        }
         defaultTab="schedules"
         items={[
           {

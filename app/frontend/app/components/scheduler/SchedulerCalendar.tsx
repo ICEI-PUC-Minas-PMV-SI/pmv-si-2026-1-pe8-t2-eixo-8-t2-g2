@@ -1,15 +1,7 @@
 import { Calendar, Tooltip } from 'antd';
 import dayjs from 'dayjs';
-import type { Scheduler, SchedulerStatus } from '~/@types/scheduler';
+import type { Scheduler } from '~/@types/scheduler';
 import { SchedulerConstant } from '~/constants/SchedulerConstant';
-
-const STATUS_DOT_COLOR: Record<SchedulerStatus, string> = {
-  pending: '#faad14',
-  confirmed: '#1677ff',
-  in_progress: '#1677ff',
-  completed: '#52c41a',
-  cancelled: '#ff4d4f',
-};
 
 type ComponentProps = {
   calendarEvents: Map<string, Scheduler[]>;
@@ -59,8 +51,8 @@ export function SchedulerCalendar({ calendarEvents }: ComponentProps) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: 4,
-                        background: `${STATUS_DOT_COLOR[event.status]}18`,
-                        borderLeft: `3px solid ${STATUS_DOT_COLOR[event.status]}`,
+                        background: `${SchedulerConstant.status[event.status].color}18`,
+                        borderLeft: `3px solid ${SchedulerConstant.status[event.status].color}`,
                         borderRadius: '0 4px 4px 0',
                         padding: '1px 5px',
                         overflow: 'hidden',

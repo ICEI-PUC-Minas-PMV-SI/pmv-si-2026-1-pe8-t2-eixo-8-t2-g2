@@ -196,11 +196,12 @@ class SchedulerService {
         omit: {
           customerId: true,
         },
-        where: {},
+        where,
         orderBy: orderBy && orderBy.length > 0 ? orderBy : { createdAt: 'desc' },
       }),
       prisma.scheduler.count({ where }),
     ]);
+
     return {
       data: schedulers,
       total,

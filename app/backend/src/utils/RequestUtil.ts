@@ -33,11 +33,11 @@ class RequestUtil {
     });
   }
   getPaginationParams(req: GenericRequest) {
-    if (!('page' in req.query) || !('pageSize' in req.query)) {
+    if (!req.body.page || !req.body.pageSize) {
       return null;
     }
-    const page = Number(req.query.page);
-    const pageSize = Number(req.query.pageSize);
+    const page = Number(req.body.page);
+    const pageSize = Number(req.body.pageSize);
     const skip = (page - 1) * pageSize;
 
     return { skip, take: pageSize };
