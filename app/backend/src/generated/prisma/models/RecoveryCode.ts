@@ -205,16 +205,16 @@ export type RecoveryCodeOrderByWithRelationInput = {
 
 export type RecoveryCodeWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  codeHash?: string
   AND?: Prisma.RecoveryCodeWhereInput | Prisma.RecoveryCodeWhereInput[]
   OR?: Prisma.RecoveryCodeWhereInput[]
   NOT?: Prisma.RecoveryCodeWhereInput | Prisma.RecoveryCodeWhereInput[]
-  codeHash?: Prisma.StringFilter<"RecoveryCode"> | string
   used?: Prisma.BoolFilter<"RecoveryCode"> | boolean
   usedAt?: Prisma.DateTimeNullableFilter<"RecoveryCode"> | Date | string | null
   userId?: Prisma.StringFilter<"RecoveryCode"> | string
   createdAt?: Prisma.DateTimeFilter<"RecoveryCode"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-}, "id">
+}, "id" | "codeHash">
 
 export type RecoveryCodeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

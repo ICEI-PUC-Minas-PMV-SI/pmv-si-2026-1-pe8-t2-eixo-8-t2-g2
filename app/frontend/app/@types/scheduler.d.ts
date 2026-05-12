@@ -13,7 +13,7 @@ export type Scheduler = {
   status: SchedulerStatus;
   items: SchedulerItem[];
   paymentMethod?: PaymentMethod;
-  deliveryType?: DeliveryType;
+  deliveryType: DeliveryType;
   cancellationReason?: string;
 };
 

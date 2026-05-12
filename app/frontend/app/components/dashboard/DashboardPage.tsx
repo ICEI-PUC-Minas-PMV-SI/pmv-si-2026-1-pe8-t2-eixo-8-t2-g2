@@ -33,7 +33,6 @@ import {
   RiseOutlined,
   FallOutlined,
   ToolOutlined,
-  BellOutlined,
   BarChartOutlined,
 } from '@ant-design/icons';
 import {
@@ -58,10 +57,15 @@ import type {
 } from 'recharts/types/component/DefaultTooltipContent';
 import { SchedulerConstant } from '~/constants/SchedulerConstant';
 import { useQuery } from '@tanstack/react-query';
-import DashboardController from '~/controllers/DashboardController';
+import DashboardController, {
+  type MonthSummary,
+  type TodaySummary,
+  type TopProducts,
+} from '~/controllers/DashboardController';
+import type { DeliveryType, Scheduler } from '~/@types/scheduler';
 
 const { Content } = Layout;
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 // ─── Palette ────────────────────────────────────────────────────────────────
 const C = {
@@ -85,7 +89,7 @@ type SchedulerStatus =
   | 'in_progress'
   | 'completed'
   | 'cancelled';
-type DeliveryType = 'pickup' | 'delivery';
+// type DeliveryType = 'pickup' | 'delivery';
 
 interface AgendaItem {
   time: string;
@@ -95,12 +99,20 @@ interface AgendaItem {
   type: DeliveryType;
 }
 
+type DeliveryToday = {
+  time: string;
+  customerName: string;
+  productLabel: string;
+  deliveryType: DeliveryType;
+  status: SchedulerStatus;
+};
+
 interface ProductRow {
   key: number;
   name: string;
   orders: number;
   revenue: number;
-  pct: number;
+  percent: number;
 }
 
 interface FlowStep {
@@ -111,25 +123,6 @@ interface FlowStep {
 }
 
 // ─── Data ────────────────────────────────────────────────────────────────────
-const weeklyData = [
-  { label: 'Sem 1', confirmados: 18, pendentes: 4 },
-  { label: 'Sem 2', confirmados: 22, pendentes: 3 },
-  { label: 'Sem 3', confirmados: 17, pendentes: 5 },
-  { label: 'Sem 4', confirmados: 28, pendentes: 2 },
-  { label: 'Sem 5', confirmados: 24, pendentes: 4 },
-  { label: 'Sem 6', confirmados: 31, pendentes: 3 },
-  { label: 'Sem 7', confirmados: 26, pendentes: 5 },
-  { label: 'Sem 8', confirmados: 33, pendentes: 2 },
-];
-
-const monthlyData = [
-  { label: 'Nov', confirmados: 72, pendentes: 12 },
-  { label: 'Dez', confirmados: 68, pendentes: 9 },
-  { label: 'Jan', confirmados: 83, pendentes: 14 },
-  { label: 'Fev', confirmados: 90, pendentes: 11 },
-  { label: 'Mar', confirmados: 78, pendentes: 13 },
-  { label: 'Abr', confirmados: 97, pendentes: 8 },
-];
 
 const revenueData = [
   { label: 'Nov', value: 8200 },
@@ -161,12 +154,12 @@ const paymentData = [
 ];
 
 const topProducts: ProductRow[] = [
-  { key: 1, name: 'Bolo de Chocolate Decorado', orders: 34, revenue: 5780, pct: 100 },
-  { key: 2, name: 'Brigadeiro Gourmet (cx 30)', orders: 28, revenue: 2240, pct: 82 },
-  { key: 3, name: 'Torta de Morango', orders: 19, revenue: 3610, pct: 56 },
-  { key: 4, name: 'Cupcake Personalizado', orders: 17, revenue: 1020, pct: 50 },
-  { key: 5, name: 'Bolo no Pote (6un)', orders: 14, revenue: 840, pct: 41 },
-  { key: 6, name: 'Naked Cake', orders: 9, revenue: 2700, pct: 26 },
+  { key: 1, name: 'Bolo de Chocolate Decorado', orders: 34, revenue: 5780, percent: 100 },
+  { key: 2, name: 'Brigadeiro Gourmet (cx 30)', orders: 28, revenue: 2240, percent: 82 },
+  { key: 3, name: 'Torta de Morango', orders: 19, revenue: 3610, percent: 56 },
+  { key: 4, name: 'Cupcake Personalizado', orders: 17, revenue: 1020, percent: 50 },
+  { key: 5, name: 'Bolo no Pote (6un)', orders: 14, revenue: 840, percent: 41 },
+  { key: 6, name: 'Naked Cake', orders: 9, revenue: 2700, percent: 26 },
 ];
 
 const prodTimes = [
@@ -309,6 +302,22 @@ const getStatusPercent = (statusPercent: Record<SchedulerStatus, number> | null)
       };
     })
     .sort((a, b) => b.value - a.value);
+};
+
+const getMonthSummaryDelivery = (months: MonthSummary[]) => {
+  const summary = months.reduce(
+    (summary, monthData) => {
+      summary.delivery += monthData.deliveryType.delivery;
+      summary.pickup += monthData.deliveryType.pickup;
+      return summary;
+    },
+    { delivery: 0, pickup: 0 },
+  );
+
+  return [
+    { name: 'Entrega', value: summary.delivery, color: C.primary },
+    { name: 'Retirada', value: summary.pickup, color: C.pickup },
+  ];
 };
 
 // ─── Status config ────────────────────────────────────────────────────────────
@@ -510,22 +519,62 @@ export function DashboardPage() {
     staleTime: 60 * 60 * 1000,
   });
 
-  const latestMonthsBillingSummary = useQuery({
-    queryKey: ['latest-months-billing-summary'],
+  const latestMonthsRevenueSummary = useQuery({
+    queryKey: ['latest-months-revenue-summary'],
     queryFn: () => {
-      return DashboardController.latestMonthsBilling();
+      return DashboardController.latestMonthsRevenue();
     },
     staleTime: 60 * 60 * 1000,
   });
 
-  const filteredAgenda: AgendaItem[] =
-    agendaFilter === 'Todos'
-      ? agenda
-      : agendaFilter === 'Entrega'
-        ? agenda.filter((a) => a.type === 'delivery')
-        : agenda.filter((a) => a.type === 'pickup');
+  const topProductsSummary = useQuery({
+    queryKey: ['top-products-summary'],
+    queryFn: () => {
+      return DashboardController.topProducts();
+    },
+    staleTime: 60 * 60 * 1000,
+  });
 
-  const productColumns: ColumnsType<ProductRow> = [
+  const deliveriesToday = useQuery({
+    queryKey: ['deliveries-today'],
+    queryFn: () => {
+      return DashboardController.deliveriesToday();
+    },
+    staleTime: 60 * 60 * 1000,
+  });
+
+  const getDeliveriesToday = (schedulers: Scheduler[]) => {
+    return schedulers.map((scheduler) => {
+      const scheduledAt = new Date(scheduler.scheduledAt);
+      let productLabel = scheduler.items[0].product.name;
+      if (scheduler.items.length > 1) {
+        productLabel += ` (+${scheduler.items.length - 1} produtos)`;
+      }
+      return {
+        time:
+          scheduledAt.getHours().toString().padStart(2, '0') +
+          ':' +
+          scheduledAt.getMinutes().toString().padStart(2, '0'),
+        customerName: scheduler.customer.name,
+        productLabel,
+        deliveryType: scheduler.deliveryType,
+        status: scheduler.status,
+      } satisfies DeliveryToday;
+    });
+  };
+
+  const filteredAgenda: DeliveryToday[] =
+    agendaFilter === 'Todos'
+      ? getDeliveriesToday(deliveriesToday.data || [])
+      : agendaFilter === 'Entrega'
+        ? getDeliveriesToday(deliveriesToday.data || []).filter(
+            (a) => a.deliveryType === 'delivery',
+          )
+        : getDeliveriesToday(deliveriesToday.data || []).filter(
+            (a) => a.deliveryType === 'pickup',
+          );
+
+  const productColumns: ColumnsType<TopProducts> = [
     {
       title: 'Produto',
       dataIndex: 'name',
@@ -534,15 +583,15 @@ export function DashboardPage() {
     },
     {
       title: 'Pedidos',
-      dataIndex: 'orders',
-      key: 'orders',
+      dataIndex: 'quantity',
+      key: 'quantity',
       width: 80,
       render: (v: number) => <Text strong>{v}</Text>,
     },
     {
       title: 'Volume',
-      dataIndex: 'pct',
-      key: 'pct',
+      dataIndex: 'percent',
+      key: 'percent',
       width: 120,
       render: (v: number) => (
         <Progress percent={v} size="small" strokeColor={C.primary} showInfo={false} />
@@ -560,6 +609,17 @@ export function DashboardPage() {
       ),
     },
   ];
+
+  const getTodayOrdersLabel = (todaySummary?: TodaySummary) => {
+    if (!todaySummary) return '';
+    const todayOrders = todaySummary.schedulers;
+    const tomorrowOrders = todaySummary.schedulersTomorrow;
+    if (todayOrders === tomorrowOrders) return '';
+    if (todayOrders > tomorrowOrders) {
+      return `↑ ${todayOrders - tomorrowOrders} vs ontem`;
+    }
+    return `↓${tomorrowOrders - todayOrders} vs ontem`;
+  };
 
   return (
     <Layout style={{ background: '#f8f8f7', minHeight: '100vh' }}>
@@ -595,7 +655,7 @@ export function DashboardPage() {
               value={todaySummary.data?.created || 0}
               icon={<ShoppingOutlined />}
               trend={2}
-              trendLabel="↑ 2 vs ontem"
+              trendLabel={getTodayOrdersLabel(todaySummary.data)}
             />
           </Col>
           <Col xs={24} sm={12} md={8} lg={5}>
@@ -625,7 +685,7 @@ export function DashboardPage() {
               loading={todaySummary.isLoading}
               title="Em produção"
               value={todaySummary.data?.inProgress || 0}
-              suffix=" pedidos"
+              // suffix=" pedidos"
               icon={<FireOutlined />}
               color={C.progress}
             />
@@ -637,7 +697,11 @@ export function DashboardPage() {
               value={todaySummary.data?.schedulers || 0}
               icon={<CarOutlined />}
               trend={0}
-              trendLabel="3 retirada · 5 entrega"
+              trendLabel={
+                todaySummary.data?.schedulers
+                  ? `${todaySummary.data?.pickup || 0} retirada · ${todaySummary.data?.delivery || 0} entrega`
+                  : ''
+              }
               color="#fa8c16"
             />
           </Col>
@@ -664,7 +728,9 @@ export function DashboardPage() {
         </Row>
 
         {/* ── Demanda ── */}
-        <SectionTitle icon={<BarChartOutlined />}>Demanda & Volume</SectionTitle>
+        <SectionTitle icon={<BarChartOutlined />}>
+          Demanda & Volume (Últ. 6 meses)
+        </SectionTitle>
         <Row gutter={[12, 12]}>
           {/* Volume de pedidos */}
           <Col xs={24} lg={14}>
@@ -883,40 +949,50 @@ export function DashboardPage() {
                 </Text>
               }
             >
-              <ResponsiveContainer width="100%" height={100}>
-                <PieChart>
-                  <Pie
-                    data={deliveryData}
-                    dataKey="value"
-                    nameKey="name"
-                    outerRadius={44}
-                    paddingAngle={2}
-                  >
-                    {deliveryData.map((d, i) => (
-                      <Cell key={i} fill={d.color} />
-                    ))}
-                  </Pie>
-                  <RTooltip
-                    formatter={(v: ValueType | undefined) => (v != null ? [`${v}%`] : [])}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                {deliveryData.map((d, i) => (
-                  <Space key={i} size={4}>
-                    <div
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: 2,
-                        background: d.color,
-                      }}
+              <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
+                <ResponsiveContainer width="100%" height={100}>
+                  <PieChart>
+                    <Pie
+                      data={getMonthSummaryDelivery(
+                        latestMonthsSummary.data?.months || [],
+                      )}
+                      dataKey="value"
+                      nameKey="name"
+                      outerRadius={44}
+                      paddingAngle={2}
+                    >
+                      {getMonthSummaryDelivery(
+                        latestMonthsSummary.data?.months || [],
+                      ).map((d, i) => (
+                        <Cell key={i} fill={d.color} />
+                      ))}
+                    </Pie>
+                    <RTooltip
+                      formatter={(v: ValueType | undefined) =>
+                        v != null ? [`${v}%`] : []
+                      }
                     />
-                    <Text style={{ fontSize: 11, color: '#666' }}>
-                      {d.name} {d.value}%
-                    </Text>
-                  </Space>
-                ))}
+                  </PieChart>
+                </ResponsiveContainer>
+              </Spin>
+              <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                {getMonthSummaryDelivery(latestMonthsSummary.data?.months || []).map(
+                  (d, i) => (
+                    <Space key={i} size={4}>
+                      <div
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: 2,
+                          background: d.color,
+                        }}
+                      />
+                      <Text style={{ fontSize: 11, color: '#666' }}>
+                        {d.name} {d.value}%
+                      </Text>
+                    </Space>
+                  ),
+                )}
               </div>
             </Card>
 
@@ -929,24 +1005,28 @@ export function DashboardPage() {
                 </Text>
               }
             >
-              <ResponsiveContainer width="100%" height={100}>
-                <PieChart>
-                  <Pie
-                    data={paymentData}
-                    dataKey="value"
-                    nameKey="name"
-                    outerRadius={44}
-                    paddingAngle={2}
-                  >
-                    {paymentData.map((d, i) => (
-                      <Cell key={i} fill={d.color} />
-                    ))}
-                  </Pie>
-                  <RTooltip
-                    formatter={(v: ValueType | undefined) => (v != null ? [`${v}%`] : [])}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
+                <ResponsiveContainer width="100%" height={100}>
+                  <PieChart>
+                    <Pie
+                      data={paymentData}
+                      dataKey="value"
+                      nameKey="name"
+                      outerRadius={44}
+                      paddingAngle={2}
+                    >
+                      {paymentData.map((d, i) => (
+                        <Cell key={i} fill={d.color} />
+                      ))}
+                    </Pie>
+                    <RTooltip
+                      formatter={(v: ValueType | undefined) =>
+                        v != null ? [`${v}%`] : []
+                      }
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </Spin>
               <div
                 style={{
                   display: 'flex',
@@ -989,8 +1069,10 @@ export function DashboardPage() {
                 </Text>
               }
             >
-              <Table<ProductRow>
-                dataSource={topProducts}
+              <Table<TopProducts>
+                rowKey={'id'}
+                loading={topProductsSummary.isLoading}
+                dataSource={topProductsSummary.data || []}
                 columns={productColumns}
                 pagination={false}
                 size="small"
@@ -1082,44 +1164,47 @@ export function DashboardPage() {
                 </Text>
               }
             >
-              <ResponsiveContainer width="100%" height={180}>
-                <AreaChart data={revenueData}>
-                  <defs>
-                    <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={C.primary} stopOpacity={0.18} />
-                      <stop offset="95%" stopColor={C.primary} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#f0f0f0"
-                    vertical={false}
-                  />
-                  <XAxis
-                    dataKey="label"
-                    tick={{ fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(v: number) => `R$${(v / 1000).toFixed(0)}k`}
-                  />
-                  <RTooltip content={<CustomTooltip prefix="R$ " />} />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    name="Faturamento"
-                    stroke={C.primary}
-                    strokeWidth={2.5}
-                    fill="url(#revGrad)"
-                    dot={{ r: 4, fill: C.primary }}
-                    activeDot={{ r: 6 }}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+              <Spin spinning={latestMonthsRevenueSummary.isLoading} fullscreen={false}>
+                <ResponsiveContainer width="100%" height={180}>
+                  <AreaChart data={latestMonthsRevenueSummary.data} dataKey={'revenue'}>
+                    <defs>
+                      <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={C.primary} stopOpacity={0.18} />
+                        <stop offset="95%" stopColor={C.primary} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#f0f0f0"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="monthYear"
+                      tick={{ fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      dataKey="revenue"
+                      tick={{ fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v: number) => `R$${(v / 1000).toFixed(0)}k`}
+                    />
+                    <RTooltip content={<CustomTooltip prefix="R$ " />} />
+                    <Area
+                      type="monotone"
+                      dataKey="revenue"
+                      name="Faturamento"
+                      stroke={C.primary}
+                      strokeWidth={2.5}
+                      fill="url(#revGrad)"
+                      dot={{ r: 4, fill: C.primary }}
+                      activeDot={{ r: 6 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </Spin>
             </Card>
           </Col>
         </Row>
@@ -1154,7 +1239,7 @@ export function DashboardPage() {
               }
               styles={{ ...cardHeaderStyles, body: { padding: '0 16px' } }}
             >
-              <List<AgendaItem>
+              <List<DeliveryToday>
                 dataSource={filteredAgenda}
                 renderItem={(item) => (
                   <List.Item style={{ padding: '10px 0' }}>
@@ -1180,20 +1265,22 @@ export function DashboardPage() {
                         size={32}
                         style={{
                           background:
-                            item.type === 'delivery' ? `${C.primary}22` : `${C.pickup}22`,
-                          color: item.type === 'delivery' ? C.primary : C.pickup,
+                            item.deliveryType === 'delivery'
+                              ? `${C.primary}22`
+                              : `${C.pickup}22`,
+                          color: item.deliveryType === 'delivery' ? C.primary : C.pickup,
                           fontSize: 13,
                           flexShrink: 0,
                         }}
                       >
-                        {item.type === 'delivery' ? '🚗' : '🏪'}
+                        {item.deliveryType === 'delivery' ? '🚗' : '🏪'}
                       </Avatar>
                       <div style={{ flex: 1 }}>
                         <Text strong style={{ fontSize: 13, display: 'block' }}>
-                          {item.name}
+                          {item.customerName}
                         </Text>
                         <Text style={{ fontSize: 12, color: '#888' }}>
-                          {item.product}
+                          {item.productLabel}
                         </Text>
                       </div>
                       <StatusTag status={item.status} />

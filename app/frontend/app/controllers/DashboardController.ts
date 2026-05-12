@@ -1,15 +1,19 @@
+import type { Scheduler } from '~/@types/scheduler';
 import Request from '~/utils/Request';
 
-type TodaySummary = {
+export type TodaySummary = {
   totalPrice: number;
   avgPrice: number;
   inProgress: number;
   schedulers: number;
+  schedulersTomorrow: number;
   created: number;
   cancelled: number;
+  delivery: number;
+  pickup: number;
 };
 
-type MonthSummary = {
+export type MonthSummary = {
   timestamp: number;
   dateStr: string;
   monthYear: string;
@@ -44,12 +48,20 @@ type LatestMonthsSummary = {
   };
 };
 
-type LatestMonthsBillingSummary = {
+type LatestMonthsRevenueSummary = {
   timestamp: number;
   dateStr: string;
   monthYear: string;
-  billing: number;
-}[];
+  revenue: number;
+};
+
+export type TopProducts = {
+  id: string;
+  name: string;
+  quantity: number;
+  revenue: number;
+  percent: number;
+};
 
 class DashboardController {
   async todaySummary() {
@@ -62,10 +74,20 @@ class DashboardController {
       (result) => result.data,
     );
   }
-  async latestMonthsBilling() {
-    return Request.get<{ data: LatestMonthsBillingSummary }>(
-      '/dashboard-latest-months-billing',
+  async latestMonthsRevenue() {
+    return Request.get<{ data: LatestMonthsRevenueSummary[] }>(
+      '/dashboard-latest-months-revenue',
     ).then((result) => result.data);
+  }
+  async topProducts() {
+    return Request.get<{ data: TopProducts[] }>('/dashboard-top-products').then(
+      (result) => result.data,
+    );
+  }
+  async deliveriesToday() {
+    return Request.get<{ data: Scheduler[] }>('/dashboard-deliveries-today').then(
+      (result) => result.data,
+    );
   }
 }
 

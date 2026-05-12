@@ -5,37 +5,41 @@ import AuthController from '~/controllers/AuthController';
 
 const { Text, Title } = Typography;
 
+type ResultData = {
+  recoveryCodes?: string[];
+  otp?: string;
+};
+
 type QRCode2FAProps = {
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
-  qrCodeUrl: string;
-  otpLength?: number;
+  isOpened: boolean;
+  onClose: (reason: 'confirmed' | 'cancelled', result: ResultData) => void;
+  url: string;
+  size?: number;
   onSubmit?: (otp: string) => void;
 };
 
-export function ModalQRCode2FA({
-  isOpen,
-  setIsOpen,
-  qrCodeUrl,
-  otpLength = 6,
-  onSubmit,
-}: QRCode2FAProps) {
+export function ModalQRCode2FA({ isOpened, onClose, url, size = 6 }: QRCode2FAProps) {
   const [otp, setOtp] = useState('');
 
-  const handleClose = () => {
+  const handleClose = (reason: 'confirmed' | 'cancelled', recoveryCodes?: string[]) => {
     setOtp('');
-    setIsOpen(false);
+    onClose(reason, { otp, recoveryCodes });
   };
 
-  const handleConfirm = () => {
-    if (otp.length === otpLength) {
-      onSubmit?.(otp);
-      handleClose();
+  const handleConfirm = async () => {
+    if (otp.length === size) {
+      const result = await AuthController.enableTwoFactor(otp);
+      handleClose('confirmed', result.recoveryCodes);
     }
   };
 
   return (
-    <Modal open={isOpen} onCancel={handleClose} centered footer={null}>
+    <Modal
+      open={isOpened}
+      onCancel={() => handleClose('cancelled')}
+      centered
+      footer={null}
+    >
       <div
         style={{
           textAlign: 'center',
@@ -52,7 +56,7 @@ export function ModalQRCode2FA({
           etc) e escaneie o QR Code abaixo.
         </Text>
 
-        <QRCode value={qrCodeUrl} size={200} />
+        <QRCode value={url} size={200} />
 
         <Text type="secondary">
           Depois, insira o código gerado pelo aplicativo para confirmar.
@@ -60,24 +64,20 @@ export function ModalQRCode2FA({
 
         <div style={{ marginTop: 12 }}>
           <OTPInput
-            length={otpLength}
+            length={size}
             onSubmit={(otp) => {
               setOtp(otp);
-              AuthController.enableTwoFactor(otp).then(() => {
-                handleClose();
+              AuthController.enableTwoFactor(otp).then((result) => {
+                handleClose('confirmed', result.recoveryCodes);
               });
             }}
           />
         </div>
 
         <Space style={{ marginTop: 16 }}>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={() => handleClose('cancelled')}>Cancelar</Button>
 
-          <Button
-            type="primary"
-            onClick={handleConfirm}
-            disabled={otp.length !== otpLength}
-          >
+          <Button type="primary" onClick={handleConfirm} disabled={otp.length !== size}>
             Confirmar
           </Button>
         </Space>

@@ -9,4 +9,5 @@ export type AuthPermission = 'admin' | 'customer';
 
 export type AuthResponse = {
   token: string;
+  recoveryCodes: string[];
 };

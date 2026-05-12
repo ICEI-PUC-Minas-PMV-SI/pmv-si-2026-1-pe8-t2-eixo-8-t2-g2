@@ -8,27 +8,24 @@ import {
   Progress,
   Space,
   Typography,
-  Upload,
   Switch,
-  type UploadFile,
 } from 'antd';
 import { useEffect, useState } from 'react';
 import type { ProfileFormValues } from '~/@types/profile';
-import {
-  CheckCircleOutlined,
-  LockOutlined,
-  PictureOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { CheckCircleOutlined, LockOutlined } from '@ant-design/icons';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { ModalQRCode2FA } from './ModalQRCode2FA';
 import AuthController from '~/controllers/AuthController';
+import { ModalRecoveryCode } from './ModalRecoveryCode';
 
 export function SettingsPage() {
   const [settingsForm] = Form.useForm<ProfileFormValues>();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
-  const [profileImageFileList, setProfileImageFileList] = useState<UploadFile[]>([]);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [recoveryModalState, setRecoveryModalState] = useState({
+    recoveryCodes: [] as string[],
+    isOpened: false,
+  });
   const [twoFactorUrl, setTwoFactorUrl] = useState('');
   const { user } = useAuthStore();
   useEffect(() => {
@@ -49,9 +46,23 @@ export function SettingsPage() {
   return (
     <Row gutter={[16, 16]}>
       <ModalQRCode2FA
-        isOpen={isQrModalOpen}
-        setIsOpen={setIsQrModalOpen}
-        qrCodeUrl={twoFactorUrl}
+        isOpened={isQrModalOpen}
+        onClose={(reason, { recoveryCodes }) => {
+          setIsQrModalOpen(false);
+          console.log('result', reason, recoveryCodes);
+          if (reason === 'confirmed' && recoveryCodes) {
+            setRecoveryModalState({
+              recoveryCodes,
+              isOpened: true,
+            });
+          }
+        }}
+        url={twoFactorUrl}
+      />
+      <ModalRecoveryCode
+        isOpened={recoveryModalState.isOpened}
+        onClose={() => setRecoveryModalState({ recoveryCodes: [], isOpened: false })}
+        recoveryCodes={recoveryModalState.recoveryCodes}
       />
       <Col xs={24} lg={16}>
         <Card title="Dados do perfil">
@@ -141,7 +152,16 @@ export function SettingsPage() {
             </Space>
             <Space style={{ justifyContent: 'space-between', width: '100%' }}>
               <Typography.Text>2FA ativado</Typography.Text>
-              <Switch checked={twoFactorEnabled} onChange={setTwoFactorEnabled} />
+              <Switch
+                checked={twoFactorEnabled}
+                onChange={() => {
+                  if (twoFactorEnabled) {
+                    console.log('modal de gerenciamento de 2FA');
+                  } else {
+                    setIsQrModalOpen(true);
+                  }
+                }}
+              />
             </Space>
             <Progress
               percent={twoFactorEnabled ? 100 : 35}

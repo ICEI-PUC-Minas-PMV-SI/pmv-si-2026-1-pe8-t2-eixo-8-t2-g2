@@ -197,7 +197,7 @@ model GoogleCredentials {
 
 model RecoveryCode {
   id       String    @id @default(cuid())
-  codeHash String
+  codeHash String    @unique
   used     Boolean   @default(false)
   usedAt   DateTime?
 

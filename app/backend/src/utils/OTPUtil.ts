@@ -2,6 +2,9 @@ import crypto from 'crypto';
 import { TOTP } from 'otpauth';
 import base32Encode from 'base32-encode';
 import ms from 'ms';
+import { Prisma } from '../db/Prisma';
+
+const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 class OTPUtil {
   generateSecret(input?: string, length: number = 32): string {
@@ -59,6 +62,50 @@ class OTPUtil {
       period: ms(period) / 1000,
     });
     return { url: totp.toString(), secret };
+  }
+
+  hashRecoveryCode(code: string) {
+    return crypto.createHash('sha256').update(code).digest('hex');
+  }
+
+  generateRecoveryCode(length = 8) {
+    const bytes = crypto.randomBytes(length);
+
+    let result = '';
+
+    for (let i = 0; i < length; i++) {
+      result += CHARS[bytes[i]! % CHARS.length];
+    }
+
+    return result;
+  }
+
+  async generateRecoveryCodes(amount = 8) {
+    const prisma = await Prisma.getClient();
+    const maxAttempt = 10;
+    const codeList = [] as { code: string; hash: string }[];
+    for (let i = 0; i < amount; i++) {
+      for (let j = 0; j < maxAttempt; j++) {
+        const code = this.generateRecoveryCode();
+        const hash = this.hashRecoveryCode(code);
+        const exists = await prisma.recoveryCode.findUnique({
+          where: {
+            codeHash: hash,
+          },
+        });
+        if (exists && j === maxAttempt - 1) {
+          throw new Error('Failed to generate unique codes');
+        }
+        if (!exists) {
+          codeList.push({
+            code,
+            hash,
+          });
+          break;
+        }
+      }
+    }
+    return codeList;
   }
 }
 

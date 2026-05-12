@@ -143,6 +143,14 @@ class UserService {
       data: { password },
     });
   }
+  async generateUserRecoveryCodes(userId: string) {
+    const prisma = await Prisma.getClient();
+    const codes = await OTPUtil.generateRecoveryCodes(8);
+    await prisma.recoveryCode.createMany({
+      data: codes.map((code) => ({ codeHash: code.hash, userId })),
+    });
+    return codes.map(({ code }) => code);
+  }
 }
 
 const instance = new UserService();

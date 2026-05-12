@@ -77,8 +77,9 @@ class AuthController {
     if (!isValid) {
       throw new AppError('Invalid OTP', HttpCode.BAD_REQUEST);
     }
+    const recoveryCodes = await UserService.generateUserRecoveryCodes(userId);
     const updatedUser = await UserService.update(userId, { enabledTwoFactor: true });
-    return { token: JWT.generate({ user: updatedUser }) };
+    return { token: JWT.generate({ user: updatedUser }), recoveryCodes };
   }
 }
 
