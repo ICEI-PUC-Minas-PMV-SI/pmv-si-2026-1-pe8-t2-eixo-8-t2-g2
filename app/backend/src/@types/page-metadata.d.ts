@@ -11,3 +11,12 @@ export type SchedulerSort =
   | 'customer_date'
   | 'items_quantity'
   | 'items_price';
+
+export type ProductFilter = {
+  isActive: boolean;
+  characteristics: string[];
+};
+
+export type ProductFilterKey = keyof ProductFilter;
+
+export type ProductSort = 'name' | 'price';

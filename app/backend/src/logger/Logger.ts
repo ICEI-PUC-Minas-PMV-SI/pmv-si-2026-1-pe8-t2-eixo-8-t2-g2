@@ -1,7 +1,6 @@
 import winston from 'winston';
 import path from 'node:path';
 import fs from 'node:fs';
-import type { LogEntry } from '@types';
 import { Env } from '../utils/Env';
 
 export class Logger {
@@ -45,21 +44,8 @@ export class Logger {
     this.getContextLogger(context).debug(message, meta);
   }
 
-  private createLogger(): winston.Logger {
-    const logsDir = path.join(process.cwd(), 'logs');
-
-    // Cria diretório de logs se não existir
-    if (!fs.existsSync(logsDir)) {
-      fs.mkdirSync(logsDir, { recursive: true });
-    }
-
-    const logFormat = winston.format.combine(
-      winston.format.timestamp({
-        format: 'YYYY-MM-DD HH:mm:ss',
-      }),
-      winston.format.errors({ stack: true }),
-      winston.format.json(),
-    );
+  private createTransports(): winston.transport[] {
+    const transports: winston.transport[] = [];
 
     const consoleFormat = winston.format.combine(
       winston.format.colorize(),
@@ -72,54 +58,52 @@ export class Logger {
       }),
     );
 
-    return winston.createLogger({
-      level: Env.get('LOG_LEVEL', 'debug'),
-      format: logFormat,
-      defaultMeta: { source: this.source },
-      transports: [
-        // Console transport - sempre ativo em desenvolvimento
-        new winston.transports.Console({
-          format: consoleFormat,
-          level: Env.get('LOG_LEVEL', 'debug'),
-          handleExceptions: false, // Será tratado pelo EventManager
-          handleRejections: false, // Será tratado pelo EventManager
-        }),
+    // Console sempre ativo
+    transports.push(
+      new winston.transports.Console({
+        format:
+          process.env.NODE_ENV === 'production' ? winston.format.json() : consoleFormat,
+      }),
+    );
 
-        // File transport para todos os logs
+    // Arquivos apenas fora da Vercel
+    const isVercel = process.env.VERCEL === '1';
+
+    if (!isVercel) {
+      const logsDir = path.join(process.cwd(), 'logs');
+
+      if (!fs.existsSync(logsDir)) {
+        fs.mkdirSync(logsDir, { recursive: true });
+      }
+
+      transports.push(
         new winston.transports.File({
           filename: path.join(logsDir, 'sync-client.log'),
-          maxsize: this.parseSize(Env.get('LOG_MAX_SIZE', '10MB')),
-          maxFiles: Number(Env.get('LOG_MAX_FILES', '5')),
-          tailable: true,
         }),
+      );
 
-        // File transport para erros
+      transports.push(
         new winston.transports.File({
           filename: path.join(logsDir, 'error.log'),
           level: 'error',
-          maxsize: this.parseSize(Env.get('LOG_MAX_SIZE', '10MB')),
-          maxFiles: Number(Env.get('LOG_MAX_FILES', '5')),
-          tailable: true,
         }),
-      ],
-    });
+      );
+    }
+
+    return transports;
   }
 
-  private parseSize(sizeStr: string): number {
-    const units: { [key: string]: number } = {
-      B: 1,
-      KB: 1024,
-      MB: 1024 * 1024,
-      GB: 1024 * 1024 * 1024,
-    };
-
-    const match = sizeStr.match(/^(\d+(?:\.\d+)?)\s*([A-Z]+)$/i);
-    if (!match || !match[1] || !match[2]) return 10 * 1024 * 1024; // 10MB default
-
-    const value = parseFloat(match[1]);
-    const unit = match[2].toUpperCase();
-
-    return value * (units[unit] || 1024 * 1024);
+  private createLogger(): winston.Logger {
+    return winston.createLogger({
+      level: Env.get('LOG_LEVEL', 'debug'),
+      defaultMeta: { source: this.source },
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.errors({ stack: true }),
+        winston.format.json(),
+      ),
+      transports: this.createTransports(),
+    });
   }
 
   debug(message: string, meta?: any): void {
@@ -136,46 +120,6 @@ export class Logger {
 
   error(message: string, meta?: any): void {
     this.logger.error(message, meta);
-  }
-
-  async getRecentLogs(count: number = 100): Promise<LogEntry[]> {
-    try {
-      const logsDir = path.join(process.cwd(), 'logs');
-      const logFile = path.join(logsDir, 'sync-client.log');
-
-      if (!fs.existsSync(logFile)) {
-        return [];
-      }
-
-      const data = await fs.promises.readFile(logFile, 'utf8');
-      const lines = data.split('\n').filter((line: string) => line.trim());
-
-      // Pega as últimas N linhas
-      const recentLines = lines.slice(-count);
-
-      return recentLines.map((line: string) => {
-        try {
-          const logEntry = JSON.parse(line);
-          return {
-            timestamp: new Date(logEntry.timestamp),
-            level: logEntry.level,
-            message: logEntry.message,
-            data: logEntry,
-            source: logEntry.source || this.source,
-          };
-        } catch {
-          return {
-            timestamp: new Date(),
-            level: 'info',
-            message: line,
-            source: this.source,
-          };
-        }
-      });
-    } catch (error) {
-      this.error('Erro ao obter logs recentes:', error);
-      return [];
-    }
   }
 
   async clearLogs(): Promise<void> {

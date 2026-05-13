@@ -1,7 +1,7 @@
 import { Router, type Application } from 'express';
 import { ProductValidation } from '../validations/ProductValidation';
 import { ProductController } from '../controllers/ProductController';
-import type { GenericRequest, Response } from '@types';
+import type { GenericRequest, ProductRequest, Response } from '@types';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
 
 class ProductRoute {
@@ -17,13 +17,13 @@ class ProductRoute {
       },
     );
 
-    router.get('/product', async (req: GenericRequest, res: Response) => {
-      const result = await ProductController.list(req.pagination);
+    router.get('/product', async (req: ProductRequest, res: Response) => {
+      const result = await ProductController.list(req);
       res.json(result);
     });
 
-    router.post('/product-list', async (req: GenericRequest, res: Response) => {
-      const result = await ProductController.list(req.pagination);
+    router.post('/product-list', async (req: ProductRequest, res: Response) => {
+      const result = await ProductController.list(req);
       res.json(result);
     });
 

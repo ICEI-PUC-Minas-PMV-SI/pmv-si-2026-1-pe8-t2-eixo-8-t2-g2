@@ -32,14 +32,89 @@ import {
 } from '../icon/components';
 import { useSelectQuery } from '~/hooks/useSelectQuery';
 import TextArea from 'antd/es/input/TextArea';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import TextUtil from '~/utils/TextUtil';
 
 type ComponentProps = {
   form: FormInstance<any>;
 };
 
+const findCustomerByPhone = async (phone: string) => {
+  // simula delay
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // mock
+  if (phone === '31992222222') {
+    return {
+      id: 1,
+      name: 'Maria Silva',
+    };
+  }
+
+  return null;
+}
+
 export function SchedulerCreateForm({ form }: ComponentProps) {
   const { isAdmin } = useAuthStore();
+  const [isSearchingCustomer, setIsSearchingCustomer] = useState(false);
+  const [isCustomerNameDisabled, setIsCustomerNameDisabled] = useState(true);
+  const [phoneSearchTimeout, setPhoneSearchTimeout] =
+  useState<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCustomerPhoneChange = (
+    e: React.InputEvent<HTMLInputElement>,
+  ) => {
+    const input = e.currentTarget;
+
+    const formatted = TextUtil.formatPhone(input.value);
+    input.value = formatted;
+
+    form.setFieldValue('customerPhone', formatted);
+
+    const rawPhone = TextUtil.unformatPhone(formatted);
+    form.setFieldValue('customerId', null);
+    form.setFieldValue('customerName', '');
+
+    // limpa timeout anterior
+    if (phoneSearchTimeout) {
+      clearTimeout(phoneSearchTimeout);
+    }
+
+    // telefone incompleto
+    if (rawPhone.length < 10) {
+      setIsCustomerNameDisabled(true);
+      return;
+    }
+
+    const timeout = setTimeout(async () => {
+      setIsSearchingCustomer(true);
+      setIsCustomerNameDisabled(true);
+      try {
+        const customer = await findCustomerByPhone(rawPhone);
+
+        if (customer) {
+          form.setFieldValue('customerName', customer.name);
+
+          // AQUI
+          form.setFieldValue('customerId', customer.id);
+
+          setIsCustomerNameDisabled(true);
+        } else {
+          form.setFieldValue('customerName', '');
+
+          // AQUI
+          form.setFieldValue('customerId', null);
+
+          setIsCustomerNameDisabled(false);
+        }
+      } finally {
+        setIsSearchingCustomer(false);
+      }
+    }, 500);
+
+    setPhoneSearchTimeout(timeout);
+  };
+
   const productQuery = useTableQuery<Product>('products', (params) =>
     ProductController.list<Product>(params),
   );
@@ -60,7 +135,15 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
     refetch,
   } = useSelectQuery(
     'products',
-    () => ProductController.list<Product>().then((res) => res.data),
+    async (search) => {
+      return ProductController.list<Product>({
+        page: 1,
+        pageSize: 50,
+        filters: {},
+        sorters: [{key: 'productName', order: 'ascend'}],
+        search,
+      }).then((res) => res.data);
+    },
     300,
   );
 
@@ -71,13 +154,42 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
   return (
     <Form layout="vertical" form={form} initialValues={{ scheduledAt: dayjs() }}>
       {isAdmin() && (
-        <Form.Item
-          label="Nome do cliente"
-          name="customerName"
-          rules={[{ required: true, message: 'Informe o nome do cliente' }]}
-        >
-          <Input placeholder="Ex.: Maria Silva" />
-        </Form.Item>
+        <>
+          <Form.Item
+            label="Telefone do cliente"
+            name="customerPhone"
+            rules={[
+              { required: true, message: 'Informe o telefone do cliente' },
+            ]}
+          >
+            <Input
+              placeholder="Ex.: (31) 92222-2222"
+              onInput={handleCustomerPhoneChange}
+              maxLength={16}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Nome do cliente"
+            name="customerName"
+            rules={[
+              { required: true, message: 'Informe o nome do cliente' },
+            ]}
+          >
+            <Input
+              placeholder={
+                isSearchingCustomer
+                  ? 'Buscando cliente...'
+                  : 'Ex.: Maria Silva'
+              }
+              disabled={isCustomerNameDisabled}
+              suffix={isSearchingCustomer ? <Spin size="small" /> : null}
+            />
+          </Form.Item>
+          <Form.Item name="customerId" hidden>
+            <Input />
+          </Form.Item>
+        </>
       )}
 
       <Row gutter={16}>

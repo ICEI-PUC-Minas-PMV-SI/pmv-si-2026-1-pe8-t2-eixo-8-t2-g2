@@ -74,11 +74,16 @@ class AuthMiddleware {
         if (paginationParams) {
           req.pagination = paginationParams;
         }
-        if (req.body && req.body.sort) {
-          req.sort = req.body.sort;
-        }
-        if (req.body && req.body.filters) {
-          req.filters = req.body.filters;
+        if (req.body) {
+          if (req.body.sort) {
+            req.sort = req.body.sort;
+          }
+          if (req.body.filters) {
+            req.filters = req.body.filters;
+          }
+          if (req.body.search) {
+            req.search = req.body.search;
+          }
         }
         req.user = decoded.user;
         if (decoded.operation) {
