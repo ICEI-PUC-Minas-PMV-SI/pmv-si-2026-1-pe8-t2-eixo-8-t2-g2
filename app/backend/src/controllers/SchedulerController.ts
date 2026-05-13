@@ -30,6 +30,7 @@ class SchedulerController {
     const filter: SchedulerWhereInput = isAdmin ? {} : { customerId };
     const filters = req.filters;
     const sorters = req.sort;
+    const search = req.search?.trim();
     if (filters) {
       Object.keys(filters).forEach((key) => {
         const value = filters[key as SchedulerFilterKey];
@@ -63,6 +64,29 @@ class SchedulerController {
             break;
         }
       });
+
+      if (search) {
+        filter.OR = [
+          {
+            customer: {
+              name: {
+                contains: search,
+              },
+            },
+          },
+          {
+            items: {
+              some: {
+                product: {
+                  name: {
+                    contains: search,
+                  },
+                },
+              },
+            },
+          },
+        ];
+      }
     }
     return SchedulerService.list(filter, orderBy, req.pagination);
   }

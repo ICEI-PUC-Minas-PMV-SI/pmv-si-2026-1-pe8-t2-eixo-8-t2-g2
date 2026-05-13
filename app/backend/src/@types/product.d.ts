@@ -1,3 +1,6 @@
+import type { ProductFilter, ProductSort } from './page-metadata';
+import type { Request } from './server';
+
 export type Product = {
   id: string;
   name: string;
@@ -12,3 +15,5 @@ export type Product = {
 };
 
 export type ProductCreatePayload = Omit<Product, 'id'>;
+
+export type ProductRequest = Request<ProductFilter, ProductSort>;

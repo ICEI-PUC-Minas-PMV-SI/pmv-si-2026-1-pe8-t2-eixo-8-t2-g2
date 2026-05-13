@@ -2,6 +2,10 @@ import { Prisma } from '../db/Prisma';
 import type { PaginationParams, ProductCreatePayload } from '@types';
 import { Text } from '../utils/Text';
 import { ResponseUtil } from 'utils/ResponseUtil';
+import type {
+  ProductOrderByWithRelationInput,
+  ProductWhereInput,
+} from '../generated/prisma/models';
 
 class ProductService {
   async create(product: ProductCreatePayload) {
@@ -37,8 +41,13 @@ class ProductService {
     return product;
   }
 
-  async list(pagination?: PaginationParams | null) {
+  async list(
+    filter?: ProductWhereInput,
+    orderBy?: ProductOrderByWithRelationInput[],
+    pagination?: PaginationParams,
+  ) {
     const prisma = await Prisma.getClient();
+    const where = filter ? filter : {};
     const pageParams = pagination || {};
     const [products, total] = await Promise.all([
       prisma.product.findMany({
@@ -47,8 +56,10 @@ class ProductService {
           categories: true,
           characteristics: true,
         },
+        where,
+        orderBy: orderBy && orderBy.length > 0 ? orderBy : { createdAt: 'desc' },
       }),
-      prisma.product.count(),
+      prisma.product.count({ where }),
     ]);
     return { data: products, total, ...ResponseUtil.handlePageParams(pageParams, total) };
   }
