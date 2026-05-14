@@ -81,6 +81,37 @@ class AuthController {
     const updatedUser = await UserService.update(userId, { enabledTwoFactor: true });
     return { token: JWT.generate({ user: updatedUser }), recoveryCodes };
   }
+  async disableTwoFactor(userId: string, data: {code: string, isRecoveryCode: boolean}) {
+    const {code, isRecoveryCode} = data;
+    const savedUser = await UserService.find(
+      { id: userId },
+      { enabledTwoFactor: true, twoFactorSecret: true },
+    );
+    if (!savedUser) {
+      throw new AppError('User not found', HttpCode.NOT_FOUND);
+    }
+    if (!savedUser.enabledTwoFactor) {
+      throw new AppError('Two factor already disabled', HttpCode.BAD_REQUEST);
+    }
+    if (!savedUser.twoFactorSecret) {
+      throw new AppError('Invalid two factor', HttpCode.BAD_REQUEST);
+    }
+    let isValid = null;
+    if (isRecoveryCode) {
+      isValid = await UserService.isValidRecoveryCode(userId, code);
+    } else {
+      isValid = OTPUtil.verify(code, savedUser.twoFactorSecret);
+    }
+    if (!isValid) {
+      throw new AppError('Invalid Code', HttpCode.BAD_REQUEST);
+    }
+    const updatedUser = await UserService.update(userId, {
+      enabledTwoFactor: false,
+      twoFactorSecret: '',
+    });
+    await UserService.deleteRecoveryCodes(userId);
+    return { token: JWT.generate({ user: updatedUser }) };
+  }
 }
 
 const instance = new AuthController();

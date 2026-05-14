@@ -40,6 +40,18 @@ class AuthRoute {
         res.json(result);
       },
     );
+    app.post(
+      '/auth/disable-two-factor',
+      RequestUtil.rateLimit(),
+      AuthValidation.disableTwoFactor(),
+      async (req: GenericRequest, res) => {
+        if (!req.user) {
+          throw new AppError('Invalid user token', HttpCode.UNAUTHORIZED);
+        }
+        const result = await AuthController.disableTwoFactor(req.user.id, req.body);
+        res.json(result);
+      },
+    );
   }
 }
 

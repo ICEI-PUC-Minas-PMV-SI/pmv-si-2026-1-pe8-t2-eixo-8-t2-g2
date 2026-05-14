@@ -151,6 +151,24 @@ class UserService {
     });
     return codes.map(({ code }) => code);
   }
+  async isValidRecoveryCode(userId: string, recoveryCode: string) {
+    const prisma = await Prisma.getClient();
+    const result = await prisma.recoveryCode.findUnique({
+      where: {
+        codeHash: OTPUtil.hashRecoveryCode(recoveryCode),
+        userId,
+      }
+    });
+    return !!result;
+  }
+  async deleteRecoveryCodes(userId: string) {
+    const prisma = await Prisma.getClient();
+    await prisma.recoveryCode.deleteMany({
+      where: {
+        userId,
+      }
+    })
+  }
 }
 
 const instance = new UserService();

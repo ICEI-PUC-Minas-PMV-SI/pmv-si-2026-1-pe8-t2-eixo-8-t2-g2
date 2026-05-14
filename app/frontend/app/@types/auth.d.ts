@@ -9,5 +9,13 @@ export type AuthPermission = 'admin' | 'customer';
 
 export type AuthResponse = {
   token: string;
-  recoveryCodes: string[];
 };
+
+export type Enable2FAResponse = {
+  token: string;
+  recoveryCodes: string[];
+}
+
+export type Disable2FAResponse = {
+  token: string;
+}

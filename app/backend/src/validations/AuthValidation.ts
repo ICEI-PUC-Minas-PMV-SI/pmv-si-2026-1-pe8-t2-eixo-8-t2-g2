@@ -30,6 +30,20 @@ class AuthValidation {
       }
     };
   };
+  disableTwoFactor = () => {
+    return (req: GenericRequest, res: Response, next: NextFunction) => {
+      try {
+        const schema = {
+          code: z.string().min(6).max(8),
+          isRecoveryCode: z.boolean(),
+        };
+        z.object(schema).parse(req.body);
+        next();
+      } catch (err) {
+        ErrorValidation.handleZodError(err, res);
+      }
+    };
+  };
 }
 
 const instance = new AuthValidation();

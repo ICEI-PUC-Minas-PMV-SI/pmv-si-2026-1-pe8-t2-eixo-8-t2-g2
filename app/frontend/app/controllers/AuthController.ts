@@ -1,4 +1,4 @@
-import type { AuthResponse } from '~/@types/auth';
+import type { AuthResponse, Disable2FAResponse, Enable2FAResponse } from '~/@types/auth';
 import type { User } from '~/@types/user';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import JWT from '~/utils/JWT';
@@ -22,13 +22,19 @@ class AuthController {
     return result;
   }
   async enableTwoFactor(otp: string) {
-    const result = await Request.post<AuthResponse>('/auth/enable-two-factor', { otp });
+    const result = await Request.post<Enable2FAResponse>('/auth/enable-two-factor', { otp });
     this.persistUser(result.token);
     return result;
   }
   async createTwoFactor() {
     const url = await Request.post<string>('/auth/create-two-factor');
     return url;
+  }
+
+  async disableTwoFactor(params: {code: string, isRecoveryCode: boolean}) {
+    const result = await Request.post<Disable2FAResponse>('/auth/disable-two-factor', params);
+    this.persistUser(result.token);
+    return result;
   }
 }
 

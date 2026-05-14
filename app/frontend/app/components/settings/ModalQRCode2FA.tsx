@@ -1,4 +1,4 @@
-import { Modal, QRCode, Button, Typography, Space } from 'antd';
+import { Modal, QRCode, Button, Typography, Space, message } from 'antd';
 import { useState } from 'react';
 import { OTPInput } from './OTPInput';
 import AuthController from '~/controllers/AuthController';
@@ -35,6 +35,7 @@ export function ModalQRCode2FA({ isOpened, onClose, url, size = 6 }: QRCode2FAPr
 
   return (
     <Modal
+      destroyOnHidden
       open={isOpened}
       onCancel={() => handleClose('cancelled')}
       centered
@@ -68,6 +69,7 @@ export function ModalQRCode2FA({ isOpened, onClose, url, size = 6 }: QRCode2FAPr
             onSubmit={(otp) => {
               setOtp(otp);
               AuthController.enableTwoFactor(otp).then((result) => {
+                message.success('Autenticação de dois fatores habilitada');
                 handleClose('confirmed', result.recoveryCodes);
               });
             }}
