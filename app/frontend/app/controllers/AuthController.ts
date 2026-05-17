@@ -78,6 +78,13 @@ class AuthController {
     this.persistUser(result.token);
     return result;
   }
+  async recreateCodes(params: { code: string; isRecoveryCode: boolean }) {
+    const result = await Request.post<{ codes: string[] }>(
+      '/auth/regenerate-recovery-codes',
+      params,
+    );
+    return result;
+  }
 }
 
 export default new AuthController();

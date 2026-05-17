@@ -70,6 +70,7 @@ class AuthController {
         user: userData,
         operation,
       }),
+      userId: user.id,
     };
   }
 
@@ -193,6 +194,25 @@ class AuthController {
   }
   async resetPassword(email: string, newPassword: string) {
     await UserService.updatePassword(email, newPassword);
+  }
+  async regenerateRecoveryCodes({
+    email,
+    code,
+    isRecoveryCode,
+  }: {
+    email: string;
+    code: string;
+    isRecoveryCode: boolean;
+  }) {
+    const { userId } = await this.validate2FA({
+      email,
+      code,
+      isRecoveryCode,
+      operation: 'AUTH',
+    });
+    await UserService.deleteRecoveryCodes(userId);
+    const codes = await UserService.generateUserRecoveryCodes(userId);
+    return { codes };
   }
 }
 

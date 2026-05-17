@@ -17,13 +17,16 @@ import { useAuthStore } from '~/hooks/useAuthStore';
 import { ModalQRCode2FA } from './ModalQRCode2FA';
 import AuthController from '~/controllers/AuthController';
 import { ModalRecoveryCode } from './ModalRecoveryCode';
-import { ModalDisable2FA } from './ModalDisable2FA';
+import { Modal2FA, type Modal2FAType } from './Modal2FA';
 
 export function SettingsPage() {
   const [settingsForm] = Form.useForm<ProfileFormValues>();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
-  const [isOpenDisable2FA, setIsOpenDisable2FA] = useState(false);
+  const [modal2FAState, setModal2FAState] = useState({
+    type: '' as Modal2FAType,
+    isOpened: false,
+  });
   const [recoveryModalState, setRecoveryModalState] = useState({
     recoveryCodes: [] as string[],
     isOpened: false,
@@ -60,10 +63,17 @@ export function SettingsPage() {
         }}
         url={twoFactorUrl}
       />
-      <ModalDisable2FA
-        isOpened={isOpenDisable2FA}
-        onClose={() => {
-          setIsOpenDisable2FA(false);
+      <Modal2FA
+        type={modal2FAState.type}
+        isOpened={modal2FAState.isOpened}
+        onClose={(_, result) => {
+          setModal2FAState((oldState) => ({ ...oldState, isOpened: false }));
+          if (modal2FAState.type === 'recreateCodes') {
+            setRecoveryModalState({
+              recoveryCodes: result?.codes || [],
+              isOpened: true,
+            });
+          }
         }}
       />
       <ModalRecoveryCode
@@ -119,7 +129,7 @@ export function SettingsPage() {
                 checked={twoFactorEnabled}
                 onChange={() => {
                   if (twoFactorEnabled) {
-                    setIsOpenDisable2FA(true);
+                    setModal2FAState({ type: 'disable2FA', isOpened: true });
                   } else {
                     setIsQrModalOpen(true);
                   }
@@ -135,7 +145,7 @@ export function SettingsPage() {
                 type="primary"
                 onClick={() => {
                   if (twoFactorEnabled) {
-                    setIsOpenDisable2FA(false);
+                    setModal2FAState({ type: 'recreateCodes', isOpened: true });
                   } else {
                     setIsQrModalOpen(true);
                   }

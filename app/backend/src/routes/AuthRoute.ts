@@ -84,10 +84,17 @@ class AuthRoute {
         res.json(result);
       },
     );
-    app.post('/auth/regenerate-recovery-codes', async (req: GenericRequest, res) => {
-      // const result = await AuthController.regenerateRecoveryCodes(req.body);
-      // res.json(result);
-    });
+    app.post(
+      '/auth/regenerate-recovery-codes',
+      AuthValidation.regenerateRecoveryCodes(),
+      async (req: GenericRequest, res) => {
+        const result = await AuthController.regenerateRecoveryCodes({
+          ...req.body,
+          email: req.user?.email,
+        });
+        res.json(result);
+      },
+    );
   }
 }
 

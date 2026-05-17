@@ -5,23 +5,21 @@ import AuthController from '~/controllers/AuthController';
 
 const { Text, Title } = Typography;
 
-type Disable2FAResult = {
-  code: string;
-  method: 'otp' | 'recovery';
+type Modal2FAResult = {
+  code?: string;
+  method?: 'otp' | 'recovery';
+  codes?: string[];
 };
 
-type ModalDisable2FAProps = {
+export type Modal2FAType = 'disable2FA' | 'recreateCodes';
+
+type Modal2FAProps = {
+  type: Modal2FAType;
   isOpened: boolean;
-  onClose: (
-    reason: 'confirmed' | 'cancelled',
-    result?: Disable2FAResult,
-  ) => void;
+  onClose: (reason: 'confirmed' | 'cancelled', result?: Modal2FAResult) => void;
 };
 
-export function ModalDisable2FA({
-  isOpened,
-  onClose,
-}: ModalDisable2FAProps) {
+export function Modal2FA({ isOpened, onClose, type }: Modal2FAProps) {
   const [method, setMethod] = useState<'otp' | 'recovery'>('otp');
 
   const [otp, setOtp] = useState('');
@@ -39,35 +37,57 @@ export function ModalDisable2FA({
     setIsLoading(false);
   };
 
-  const handleClose = (
-    reason: 'confirmed' | 'cancelled',
-  ) => {
+  const handleClose = (reason: 'confirmed' | 'cancelled', data?: Modal2FAResult) => {
     const result =
       reason === 'confirmed'
         ? {
             code: otp,
             method,
           }
-        : undefined;
+        : {};
 
     resetState();
-    onClose(reason, result);
+    onClose(reason, { ...result, ...(data || {}) });
   };
+
+  const labels = {
+    disable2FA: {
+      title: 'Desativar autenticação em 2 fatores',
+      successMsg: 'Autenticação de dois fatores desabilitada',
+      preffixDescription: 'Para desativar o 2FA',
+    },
+    recreateCodes: {
+      title: 'Recriar códigos reserva',
+      successMsg: null,
+      preffixDescription: 'Para regerar os códigos reservas',
+    },
+  };
+
+  const labelData = labels[type] || { title: '', preffixDescription: '' };
 
   const handleConfirm = async () => {
     if (!isValid) return;
 
     try {
       setIsLoading(true);
+      let codes: string[] = [];
+      if (type === 'disable2FA') {
+        await AuthController.disableTwoFactor({
+          code: otp,
+          isRecoveryCode: method === 'recovery',
+        });
+      } else if (type === 'recreateCodes') {
+        const result = await AuthController.recreateCodes({
+          code: otp,
+          isRecoveryCode: method === 'recovery',
+        });
+        codes = result.codes;
+      }
+      if (labelData.successMsg) {
+        message.success(labelData.successMsg);
+      }
 
-      await AuthController.disableTwoFactor({
-        code: otp,
-        isRecoveryCode: method === 'recovery',
-      });
-
-      message.success('Autenticação de dois fatores desabilitada')
-
-      handleClose('confirmed');
+      handleClose('confirmed', { codes });
     } finally {
       setIsLoading(false);
     }
@@ -90,21 +110,17 @@ export function ModalDisable2FA({
           gap: 16,
         }}
       >
-        <Title level={4}>
-          Desativar autenticação em 2 fatores
-        </Title>
+        <Title level={4}>{labelData.title}</Title>
 
         <Text>
-          Para desativar o 2FA, informe um código válido do
-          aplicativo autenticador ou um código de recuperação.
+          {labelData.preffixDescription}, informe um código válido do aplicativo
+          autenticador ou um código de recuperação.
         </Text>
 
         <Segmented
           // block
           value={method}
-          onChange={(value) =>
-            setMethod(value as 'otp' | 'recovery')
-          }
+          onChange={(value) => setMethod(value as 'otp' | 'recovery')}
           options={[
             {
               label: 'Aplicativo autenticador',
@@ -131,13 +147,21 @@ export function ModalDisable2FA({
             length={inputLength}
             onSubmit={(value) => {
               setOtp(value);
-
-              AuthController.disableTwoFactor({
-                code: value,
-                isRecoveryCode: method === 'recovery',
-              }).then(() => {
-                handleClose('confirmed');
-              });
+              if (type === 'disable2FA') {
+                AuthController.disableTwoFactor({
+                  code: value,
+                  isRecoveryCode: method === 'recovery',
+                }).then(() => {
+                  handleClose('confirmed');
+                });
+              } else if (type === 'recreateCodes') {
+                AuthController.recreateCodes({
+                  code: value,
+                  isRecoveryCode: method === 'recovery',
+                }).then((result) => {
+                  handleClose('confirmed', result);
+                });
+              }
             }}
           />
         </div>
@@ -149,10 +173,7 @@ export function ModalDisable2FA({
         </Text>
 
         <Space style={{ marginTop: 16 }}>
-          <Button
-            onClick={() => handleClose('cancelled')}
-            disabled={isLoading}
-          >
+          <Button onClick={() => handleClose('cancelled')} disabled={isLoading}>
             Cancelar
           </Button>
 
