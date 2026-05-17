@@ -17,11 +17,16 @@ import { useAuthStore } from '~/hooks/useAuthStore';
 import { ModalQRCode2FA } from './ModalQRCode2FA';
 import AuthController from '~/controllers/AuthController';
 import { ModalRecoveryCode } from './ModalRecoveryCode';
+import { Modal2FA, type Modal2FAType } from './Modal2FA';
 
 export function SettingsPage() {
   const [settingsForm] = Form.useForm<ProfileFormValues>();
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [modal2FAState, setModal2FAState] = useState({
+    type: '' as Modal2FAType,
+    isOpened: false,
+  });
   const [recoveryModalState, setRecoveryModalState] = useState({
     recoveryCodes: [] as string[],
     isOpened: false,
@@ -49,7 +54,6 @@ export function SettingsPage() {
         isOpened={isQrModalOpen}
         onClose={(reason, { recoveryCodes }) => {
           setIsQrModalOpen(false);
-          console.log('result', reason, recoveryCodes);
           if (reason === 'confirmed' && recoveryCodes) {
             setRecoveryModalState({
               recoveryCodes,
@@ -58,6 +62,19 @@ export function SettingsPage() {
           }
         }}
         url={twoFactorUrl}
+      />
+      <Modal2FA
+        type={modal2FAState.type}
+        isOpened={modal2FAState.isOpened}
+        onClose={(_, result) => {
+          setModal2FAState((oldState) => ({ ...oldState, isOpened: false }));
+          if (modal2FAState.type === 'recreateCodes') {
+            setRecoveryModalState({
+              recoveryCodes: result?.codes || [],
+              isOpened: true,
+            });
+          }
+        }}
       />
       <ModalRecoveryCode
         isOpened={recoveryModalState.isOpened}
@@ -72,50 +89,6 @@ export function SettingsPage() {
             initialValues={{ name: '', email: '' }}
           >
             <Row gutter={16}>
-              {/* <Col span={8}>
-                <div style={{ display: 'grid', gap: 8, justifyItems: 'center' }}>
-                  <div
-                    style={{
-                      width: 96,
-                      height: 96,
-                      borderRadius: '50%',
-                      overflow: 'hidden',
-                      background: '#f5f5f5',
-                    }}
-                  >
-                    {profileImageFileList[0]?.url || profileImageFileList[0]?.thumbUrl ? (
-                      <img
-                        src={
-                          (profileImageFileList[0].url ||
-                            profileImageFileList[0].thumbUrl) as string
-                        }
-                        alt="Avatar"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          display: 'grid',
-                          placeItems: 'center',
-                        }}
-                      >
-                        <UserOutlined style={{ fontSize: 36 }} />
-                      </div>
-                    )}
-                  </div>
-                  <Upload
-                    beforeUpload={() => false}
-                    maxCount={1}
-                    fileList={profileImageFileList}
-                    onChange={({ fileList }) => setProfileImageFileList(fileList)}
-                    showUploadList={false}
-                  >
-                    <Button icon={<PictureOutlined />}>Alterar foto</Button>
-                  </Upload>
-                </div>
-              </Col> */}
               <Col span={16}>
                 <Form.Item label="Nome" name="name" rules={[{ required: true }]}>
                   <Input />
@@ -156,7 +129,7 @@ export function SettingsPage() {
                 checked={twoFactorEnabled}
                 onChange={() => {
                   if (twoFactorEnabled) {
-                    console.log('modal de gerenciamento de 2FA');
+                    setModal2FAState({ type: 'disable2FA', isOpened: true });
                   } else {
                     setIsQrModalOpen(true);
                   }
@@ -167,18 +140,20 @@ export function SettingsPage() {
               percent={twoFactorEnabled ? 100 : 35}
               status={twoFactorEnabled ? 'success' : 'normal'}
             />
-            <Button
-              type={twoFactorEnabled ? 'default' : 'primary'}
-              onClick={() => {
-                if (twoFactorEnabled) {
-                  console.log('modal de gerenciamento de 2FA');
-                } else {
-                  setIsQrModalOpen(true);
-                }
-              }}
-            >
-              {twoFactorEnabled ? 'Gerenciar 2FA' : 'Ativar 2FA'}
-            </Button>
+            {twoFactorEnabled && (
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (twoFactorEnabled) {
+                    setModal2FAState({ type: 'recreateCodes', isOpened: true });
+                  } else {
+                    setIsQrModalOpen(true);
+                  }
+                }}
+              >
+                Recriar códigos reserva
+              </Button>
+            )}
           </Space>
         </Card>
       </Col>

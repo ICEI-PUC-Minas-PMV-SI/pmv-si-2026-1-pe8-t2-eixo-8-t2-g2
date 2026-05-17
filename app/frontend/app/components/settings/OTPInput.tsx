@@ -1,78 +1,152 @@
 import { Input, Space, type InputRef } from 'antd';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type OTPInputProps = {
   length: number;
   onChange?: (otp: string) => void;
   onSubmit?: (otp: string) => void;
+
+  /**
+   * default: numeric
+   */
+  mode?: 'numeric' | 'alphanumeric';
 };
 
-export function OTPInput({ length, onChange, onSubmit }: OTPInputProps) {
-  const [values, setValues] = useState<string[]>(Array(length).fill(''));
+export function OTPInput({
+  length,
+  onChange,
+  onSubmit,
+  mode = 'numeric',
+}: OTPInputProps) {
+  const [values, setValues] = useState<string[]>(
+    Array(length).fill(''),
+  );
+
   const inputsRef = useRef<(InputRef | null)[]>([]);
 
   const isSplit = length > 4 && length % 2 === 0;
   const half = length / 2;
 
-  const handleChange = (value: string, index: number) => {
-    if (!/^\d?$/.test(value)) return;
+  useEffect(() => {
+    setValues(Array(length).fill(''));
+  }, [length]);
 
-    const newValues = [...values];
-    newValues[index] = value;
-    setValues(newValues);
-    onChange?.(newValues.join(''));
+  const normalize = (value: string) => {
+    const upper = value.toUpperCase();
 
-    // foco automático
-    if (value && index < length - 1) {
-      inputsRef.current[index + 1]?.focus();
+    if (mode === 'numeric') {
+      return upper.replace(/\D/g, '');
     }
 
-    // submit automático
+    return upper.replace(/[^A-Z0-9]/g, '');
+  };
+
+  const emit = (newValues: string[]) => {
+    const joined = newValues.join('');
+
+    onChange?.(joined);
+
     if (newValues.every((v) => v !== '')) {
-      onSubmit?.(newValues.join(''));
+      onSubmit?.(joined);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
-    if (e.key === 'Backspace' && !values[index] && index > 0) {
+  const handleChange = (
+    value: string,
+    index: number,
+  ) => {
+    const normalized = normalize(value);
+
+    if (normalized.length > 1) return;
+
+    const newValues = [...values];
+
+    newValues[index] = normalized;
+
+    setValues(newValues);
+
+    emit(newValues);
+
+    // próximo input
+    if (normalized && index < length - 1) {
+      inputsRef.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent,
+    index: number,
+  ) => {
+    if (
+      e.key === 'Backspace' &&
+      !values[index] &&
+      index > 0
+    ) {
       inputsRef.current[index - 1]?.focus();
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent) => {
+  const handlePaste = (
+    e: React.ClipboardEvent,
+  ) => {
     e.preventDefault();
 
-    const pasted = e.clipboardData.getData('text');
-    const digits = pasted.replace(/\D/g, '').slice(0, length);
+    const pasted = normalize(
+      e.clipboardData.getData('text'),
+    ).slice(0, length);
 
-    const newValues = digits.split('');
-    while (newValues.length < length) newValues.push('');
+    const chars = pasted.split('');
 
-    setValues(newValues);
-    onChange?.(newValues.join(''));
+    while (chars.length < length) {
+      chars.push('');
+    }
 
-    inputsRef.current[Math.min(digits.length - 1, length - 1)]?.focus();
+    setValues(chars);
+
+    emit(chars);
+
+    const focusIndex = Math.min(
+      pasted.length,
+      length - 1,
+    );
+
+    inputsRef.current[focusIndex]?.focus();
   };
 
-  const renderInputs = (start: number, end: number) =>
+  const renderInputs = (
+    start: number,
+    end: number,
+  ) =>
     values.slice(start, end).map((val, i) => {
       const index = start + i;
+
       return (
         <Input
-          onPaste={handlePaste}
           key={index}
+          ref={(el) => {
+            inputsRef.current[index] = el;
+          }}
           value={val}
-          onChange={(e) => handleChange(e.target.value, index)}
-          onKeyDown={(e) => handleKeyDown(e, index)}
           maxLength={1}
+          onPaste={handlePaste}
+          onChange={(e) =>
+            handleChange(e.target.value, index)
+          }
+          onKeyDown={(e) =>
+            handleKeyDown(e, index)
+          }
+          autoComplete="one-time-code"
+          inputMode={
+            mode === 'numeric'
+              ? 'numeric'
+              : 'text'
+          }
           style={{
             width: 40,
             height: 40,
             textAlign: 'center',
             fontSize: 18,
-          }}
-          ref={(el) => {
-            inputsRef.current[index] = el;
+            textTransform: 'uppercase',
           }}
         />
       );
@@ -83,8 +157,14 @@ export function OTPInput({ length, onChange, onSubmit }: OTPInputProps) {
       {isSplit ? (
         <>
           <Space>{renderInputs(0, half)}</Space>
-          <span style={{ fontSize: 18 }}>-</span>
-          <Space>{renderInputs(half, length)}</Space>
+
+          <span style={{ fontSize: 18 }}>
+            -
+          </span>
+
+          <Space>
+            {renderInputs(half, length)}
+          </Space>
         </>
       ) : (
         renderInputs(0, length)

@@ -79,7 +79,7 @@ export function SchedulerPage() {
 
   return (
     <Layout style={{ minHeight: '100vh', background: '#f5f7fb' }}>
-      {/* <Header
+      <Header
         style={{
           background: '#fff',
           borderBottom: '1px solid #f0f0f0',
@@ -96,7 +96,7 @@ export function SchedulerPage() {
         >
           Configurar E-mail
         </Button>
-      </Header> */}
+      </Header>
       <TabbedPage
         extraContent={
           <Button
