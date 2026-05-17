@@ -60,9 +60,12 @@ export function SettingsPage() {
         }}
         url={twoFactorUrl}
       />
-      <ModalDisable2FA isOpened={isOpenDisable2FA} onClose={() => {
-        setIsOpenDisable2FA(false);
-      }}/>
+      <ModalDisable2FA
+        isOpened={isOpenDisable2FA}
+        onClose={() => {
+          setIsOpenDisable2FA(false);
+        }}
+      />
       <ModalRecoveryCode
         isOpened={recoveryModalState.isOpened}
         onClose={() => setRecoveryModalState({ recoveryCodes: [], isOpened: false })}
@@ -127,18 +130,20 @@ export function SettingsPage() {
               percent={twoFactorEnabled ? 100 : 35}
               status={twoFactorEnabled ? 'success' : 'normal'}
             />
-            {/* <Button
-              type={twoFactorEnabled ? 'default' : 'primary'}
-              onClick={() => {
-                if (twoFactorEnabled) {
-                  setIsOpenDisable2FA(false);
-                } else {
-                  setIsQrModalOpen(true);
-                }
-              }}
-            >
-              {twoFactorEnabled ? 'Gerenciar 2FA' : 'Ativar 2FA'}
-            </Button> */}
+            {twoFactorEnabled && (
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (twoFactorEnabled) {
+                    setIsOpenDisable2FA(false);
+                  } else {
+                    setIsQrModalOpen(true);
+                  }
+                }}
+              >
+                Recriar códigos reserva
+              </Button>
+            )}
           </Space>
         </Card>
       </Col>

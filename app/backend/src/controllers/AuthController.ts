@@ -6,15 +6,71 @@ import { OTPUtil } from '../utils/OTPUtil';
 import { AppError } from '../error/AppError';
 import { Google } from '../utils/Google';
 import { UserRole } from '../validations/UserValidation';
+import type { User } from '../generated/prisma/client';
 
 class AuthController {
   async authenticate(credentials: AuthCredentials) {
-    const user = await UserService.find(credentials);
-    if (user) {
+    const user = await UserService.find(credentials, { twoFactorSecret: true });
+    if (!user) {
+      throw new AppError('Invalid credentials', HttpCode.UNAUTHORIZED);
+    }
+    if (user.enabledTwoFactor) {
+      const { authCode } = credentials;
+      if (authCode) {
+        let isValid = false;
+        isValid = OTPUtil.verify(authCode, user.twoFactorSecret || '');
+        if (!isValid) {
+          isValid = await UserService.isValidRecoveryCode(user.id, authCode);
+        }
+        if (!isValid) {
+          throw new AppError('Invalid authentication code', 400);
+        }
+        const token = JWT.generate({ user });
+        return { token };
+      } else {
+        return { required2FACode: true };
+      }
+    } else {
       const token = JWT.generate({ user });
       return { token };
     }
-    throw new AppError('Invalid credentials', HttpCode.UNAUTHORIZED);
+  }
+
+  async validate2FA({
+    email,
+    code,
+    isRecoveryCode,
+    operation,
+  }: {
+    email: string;
+    code: string;
+    isRecoveryCode: boolean;
+    operation: 'RESET_PASSWORD' | 'AUTH';
+  }) {
+    const user = await UserService.find({ email }, { twoFactorSecret: true });
+    let isValid = null;
+    if (!user) {
+      throw new AppError('Invalid user', HttpCode.BAD_REQUEST);
+    }
+    const { twoFactorSecret, ...userProps } = user;
+    if (isRecoveryCode) {
+      isValid = await UserService.isValidRecoveryCode(user.id, code);
+    } else {
+      isValid = OTPUtil.verify(code, user.twoFactorSecret || '');
+    }
+    if (!isValid) {
+      throw new AppError('Invalid or already used code', HttpCode.BAD_REQUEST);
+    }
+    const userData: Partial<User> = { email };
+    if (operation === 'AUTH') {
+      Object.assign(userData, userProps);
+    }
+    return {
+      token: JWT.generate({
+        user: userData,
+        operation,
+      }),
+    };
   }
 
   async googleAuth(credentials: { token: string }) {
@@ -81,8 +137,11 @@ class AuthController {
     const updatedUser = await UserService.update(userId, { enabledTwoFactor: true });
     return { token: JWT.generate({ user: updatedUser }), recoveryCodes };
   }
-  async disableTwoFactor(userId: string, data: {code: string, isRecoveryCode: boolean}) {
-    const {code, isRecoveryCode} = data;
+  async disableTwoFactor(
+    userId: string,
+    data: { code: string; isRecoveryCode: boolean },
+  ) {
+    const { code, isRecoveryCode } = data;
     const savedUser = await UserService.find(
       { id: userId },
       { enabledTwoFactor: true, twoFactorSecret: true },
@@ -103,7 +162,7 @@ class AuthController {
       isValid = OTPUtil.verify(code, savedUser.twoFactorSecret);
     }
     if (!isValid) {
-      throw new AppError('Invalid Code', HttpCode.BAD_REQUEST);
+      throw new AppError('Invalid or already used code', HttpCode.BAD_REQUEST);
     }
     const updatedUser = await UserService.update(userId, {
       enabledTwoFactor: false,
@@ -111,6 +170,29 @@ class AuthController {
     });
     await UserService.deleteRecoveryCodes(userId);
     return { token: JWT.generate({ user: updatedUser }) };
+  }
+  async forgotPassword(email: string, resetUrl: string) {
+    const user = await UserService.find({ email }, { enabledTwoFactor: true });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    if (user.enabledTwoFactor) {
+      return {
+        required2FACode: true,
+      };
+    }
+    const data = {
+      operation: 'RESET_PASSWORD',
+      user,
+    };
+    const token = JWT.generate(data);
+    await UserService.sendResetPasswordMail(user.email, `${resetUrl}?token=${token}`);
+    return {
+      message: 'Success send recovery password email',
+    };
+  }
+  async resetPassword(email: string, newPassword: string) {
+    await UserService.updatePassword(email, newPassword);
   }
 }
 

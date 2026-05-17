@@ -9,7 +9,7 @@ export type TokenData = JwtPayload & {
 
 export type RequestMetadata<T extends object, S extends string> = {
   user?: UserTokenInfo;
-  operation?: 'RESET_PASSWORD';
+  operation?: 'RESET_PASSWORD' | 'AUTH';
   page?: number;
   pageSize?: number;
   // This is calculated in the middleware and can be used in the services

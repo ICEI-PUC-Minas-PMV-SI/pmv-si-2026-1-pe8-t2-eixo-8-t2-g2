@@ -26,8 +26,15 @@ export default function LoginForm() {
         }}
         initialValues={{ remember: true }}
         onFinish={async (formData: Required<FieldType>) => {
-          await AuthController.authenticate(formData.email, formData.password);
-          navigation.goToHome();
+          const { token, required2FACode } = await AuthController.authenticate(
+            formData.email,
+            formData.password,
+          );
+          if (token) {
+            navigation.goToHome();
+          } else if (required2FACode) {
+            navigation.goToLogin({ required2FA: true, email: formData.email });
+          }
         }}
         onFinishFailed={() => {
           console.log('onFinishFailed');
@@ -58,6 +65,7 @@ export default function LoginForm() {
         <Flex justify="flex-end" style={{ paddingLeft: 6, paddingRight: 6 }}>
           <Button
             type="link"
+            href="/forgot-password"
             style={{ marginBottom: 12, paddingBottom: 0, paddingRight: 0 }}
           >
             Esqueceu a senha?

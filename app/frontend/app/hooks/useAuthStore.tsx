@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthStore>()(
 
       logout: () => set({ user: null }),
 
-      isLogged: () => !!get().user?.email,
+      isLogged: () => !!get().user?.email && !!get().user?.role,
 
       getUserShortname() {
         const name = get().user?.name || '';

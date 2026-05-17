@@ -10,7 +10,7 @@ export function ProtectedLayout() {
   const user = useAuthStore((state) => state.user);
   const isMobile = !Grid.useBreakpoint().lg;
   const [open, setOpen] = useState(false);
-  if (!user) {
+  if (!user || !user.role) {
     return <Navigate to={ROUTES.LOGIN} />;
   }
 

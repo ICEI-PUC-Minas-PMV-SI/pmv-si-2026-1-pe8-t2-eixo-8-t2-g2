@@ -12,6 +12,7 @@ class AuthMiddleware {
     const publicRoutes = [
       '/auth',
       '/auth/google',
+      '/auth/validate-2fa',
       '/product',
       '/product/:id',
       '/debug/gmail/oauth2callback',

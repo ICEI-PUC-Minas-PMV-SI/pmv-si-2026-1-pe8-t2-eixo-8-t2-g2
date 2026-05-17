@@ -52,6 +52,42 @@ class AuthRoute {
         res.json(result);
       },
     );
+    app.post(
+      '/auth/forgot-password',
+      AuthValidation.forgotPassword(),
+      async (req: GenericRequest, res) => {
+        const resetUrl = `${req.protocol}://${req.get('host')}/reset-password`;
+        const result = await AuthController.forgotPassword(req.body.email, resetUrl);
+        res.json(result);
+      },
+    );
+    app.post(
+      '/auth/reset-password',
+      AuthValidation.resetPassword(),
+      async (req: GenericRequest, res) => {
+        if (req.operation !== 'RESET_PASSWORD') {
+          throw new Error('Invalid token reset password');
+        }
+        const userEmail = req.user?.email;
+        if (!userEmail) {
+          throw new Error('Invalid email in user token');
+        }
+        const result = await AuthController.resetPassword(userEmail, req.body.password);
+        res.json(result);
+      },
+    );
+    app.post(
+      '/auth/validate-2fa',
+      AuthValidation.validate2FA(),
+      async (req: GenericRequest, res) => {
+        const result = await AuthController.validate2FA(req.body);
+        res.json(result);
+      },
+    );
+    app.post('/auth/regenerate-recovery-codes', async (req: GenericRequest, res) => {
+      // const result = await AuthController.regenerateRecoveryCodes(req.body);
+      // res.json(result);
+    });
   }
 }
 

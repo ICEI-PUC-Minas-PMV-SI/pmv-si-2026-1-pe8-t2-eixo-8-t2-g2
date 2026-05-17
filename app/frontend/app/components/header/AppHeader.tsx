@@ -1,9 +1,9 @@
-import { Avatar, Button, Flex, Grid, Modal, Tooltip } from 'antd';
+import { Button, Flex, Grid, Modal, Tooltip } from 'antd';
 import { Header } from 'antd/es/layout/layout';
 import Text from 'antd/es/typography/Text';
 import AppIcon from '../icon/AppIcon';
 import { ROUTES, useNavigation } from '~/hooks/useNavigation';
-import { ExclamationCircleOutlined, UserOutlined, MenuOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, MenuOutlined } from '@ant-design/icons';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { useLocation } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export default function AppHeader({ onMenuClick }: Props) {
-  const { goToLogin, goToDashboard } = useNavigation();
+  const { goToLogin } = useNavigation();
   const { logout, isLogged, getUserShortname } = useAuthStore();
   const { pathname } = useLocation();
   const isMobile = !Grid.useBreakpoint().lg;
@@ -45,30 +45,22 @@ export default function AppHeader({ onMenuClick }: Props) {
             />
           )}
 
-          {/* opcional: logo */}
           <Text style={{ color: 'white', fontWeight: 600 }}>Meu App</Text>
         </Flex>
 
         {/* DIREITA */}
         <Flex gap="small" align="center">
           {!isLogged() && pathname !== ROUTES.LOGIN && (
-            <Button variant="solid" color="primary" onClick={goToLogin}>
+            <Button variant="solid" color="primary" onClick={() => goToLogin()}>
               Entrar
             </Button>
           )}
 
           {isLogged() && (
             <>
-              {/* esconder nome no mobile */}
               {!isMobile && (
                 <Text style={{ color: 'white' }}>Olá, {getUserShortname()}</Text>
               )}
-
-              {/* <Avatar
-                onClick={goToDashboard}
-                style={{ backgroundColor: 'grey', cursor: 'pointer' }}
-                icon={<UserOutlined />}
-              ></Avatar> */}
 
               <Tooltip title="Sair">
                 <Button

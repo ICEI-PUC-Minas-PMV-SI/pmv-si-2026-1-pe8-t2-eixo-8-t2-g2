@@ -2,7 +2,9 @@ import { Grid, Layout } from 'antd';
 
 import Sider from 'antd/es/layout/Sider';
 import { Content } from 'antd/es/layout/layout';
+import { useLocation } from 'react-router-dom';
 import LoginForm from '~/components/login/LoginForm';
+import { Login2FA } from './Login2FA';
 
 export function WaveSvg() {
   return (
@@ -10,7 +12,7 @@ export function WaveSvg() {
       className="wave-svg"
       style={{
         position: 'absolute',
-        width: 'min(40%, 600px)',
+        width: 'min(45%, 860px)',
         height: '100%',
         right: 0,
         pointerEvents: 'none',
@@ -31,10 +33,16 @@ M0 720L19.9441 689.917C39.7611 659.833 79.6492 599.667 101.626 539.5C123.602 479
 
 export function LoginPage() {
   const { lg } = Grid.useBreakpoint();
+  const { state } = useLocation();
+
   return (
-    <Layout>
+    <Layout
+      style={{
+        position: 'relative',
+      }}
+    >
       <Sider
-        width={'72%'}
+        width={'68%'}
         hidden={!lg}
         style={{
           backgroundImage: 'url(/bg_login.png)',
@@ -44,8 +52,9 @@ export function LoginPage() {
         }}
       ></Sider>
       {lg && <WaveSvg />}
-      <Content>
-        <LoginForm />
+      <Content style={{ position: 'relative' }}>
+        {state?.required2FA && <Login2FA email={state?.email}></Login2FA>}
+        {!state?.required2FA && <LoginForm />}
       </Content>
     </Layout>
   );

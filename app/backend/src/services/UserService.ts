@@ -9,6 +9,7 @@ import type { User } from '../generated/prisma/client';
 import { AppError } from '../error/AppError';
 import { OTPTemplate } from '../templates/email/OTPTemplate';
 import type { UserSelect } from '../generated/prisma/models';
+import { PasswordResetTemplate } from 'templates/email/PasswordResetTemplate';
 
 const userSelect = {
   id: true,
@@ -135,6 +136,16 @@ class UserService {
       attachments,
     });
   }
+  async sendResetPasswordMail(email: string, resetUrl: string) {
+    console.log(resetUrl);
+    const { template, attachments } = PasswordResetTemplate.buildResetEmail(resetUrl);
+    await SMTP.sendMail({
+      body: template,
+      subject: 'Redefinição de senha',
+      to: email,
+      attachments,
+    });
+  }
   async updatePassword(email: string, newPassword: string) {
     const prisma = await Prisma.getClient();
     const password = await Crypt.hash(newPassword);
@@ -157,17 +168,23 @@ class UserService {
       where: {
         codeHash: OTPUtil.hashRecoveryCode(recoveryCode),
         userId,
-      }
+      },
     });
-    return !!result;
+    if (result && !result.used) {
+      await prisma.recoveryCode.update({
+        where: { id: result.id },
+        data: { used: true },
+      });
+    }
+    return !result?.used;
   }
   async deleteRecoveryCodes(userId: string) {
     const prisma = await Prisma.getClient();
     await prisma.recoveryCode.deleteMany({
       where: {
         userId,
-      }
-    })
+      },
+    });
   }
 }
 

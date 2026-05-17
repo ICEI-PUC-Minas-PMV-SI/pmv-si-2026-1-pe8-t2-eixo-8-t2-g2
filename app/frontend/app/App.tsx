@@ -9,6 +9,9 @@ import { ProductPage } from './components/product/ProductPage';
 import { SettingsPage } from './components/settings/SettingsPage';
 import { CostCalculator } from './components/recipe/CostCalculator';
 import { SignUp } from './components/login/SignUp';
+import { ForgotPassword } from './components/login/ForgotPassword';
+import { ResetPassword } from './components/login/ResetPassword';
+import { Validate2FA } from './components/login/Validate2FA';
 
 export default function App() {
   return (
@@ -27,6 +30,9 @@ export default function App() {
           <Route path="/home" element={<Welcome />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/validate-2fa" element={<Validate2FA />} />
         </Route>
       </Routes>
     </BrowserRouter>

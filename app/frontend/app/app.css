@@ -98,3 +98,10 @@ body {
   margin: 0 !important;
   padding-left: 12px !important;
 } */
+
+
+.gabrigol {
+  .ant-form-item-label {
+    min-width: 100px;
+  }
+}
