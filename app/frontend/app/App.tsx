@@ -12,6 +12,7 @@ import { SignUp } from './components/login/SignUp';
 import { ForgotPassword } from './components/login/ForgotPassword';
 import { ResetPassword } from './components/login/ResetPassword';
 import { Validate2FA } from './components/login/Validate2FA';
+import { CartPage } from './components/cart/CartPage';
 
 export default function App() {
   return (
@@ -28,6 +29,7 @@ export default function App() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Welcome />} />
           <Route path="/home" element={<Welcome />} />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

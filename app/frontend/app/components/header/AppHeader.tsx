@@ -6,6 +6,7 @@ import { ROUTES, useNavigation } from '~/hooks/useNavigation';
 import { ExclamationCircleOutlined, MenuOutlined } from '@ant-design/icons';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { useLocation } from 'react-router-dom';
+import { CartPreview } from '../cart/CartPreview';
 
 type Props = {
   onMenuClick?: () => void; // 👈 botão mobile
@@ -50,6 +51,8 @@ export default function AppHeader({ onMenuClick }: Props) {
 
         {/* DIREITA */}
         <Flex gap="small" align="center">
+          <CartPreview />
+
           {!isLogged() && pathname !== ROUTES.LOGIN && (
             <Button variant="solid" color="primary" onClick={() => goToLogin()}>
               Entrar

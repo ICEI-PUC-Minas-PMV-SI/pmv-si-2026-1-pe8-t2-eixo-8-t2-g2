@@ -4,6 +4,7 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   DASHBOARD: '/dashboard',
+  CART: '/cart',
   VALIDATE2FA: '/validate-2fa',
   RESET_PASSWORD: '/reset-password',
 } as const;
@@ -26,11 +27,12 @@ export type LoginParams = {
 export function useNavigation() {
   const navigate = useNavigate();
 
-  const { LOGIN, DASHBOARD, HOME, VALIDATE2FA, RESET_PASSWORD } = ROUTES;
+  const { LOGIN, DASHBOARD, HOME, CART, VALIDATE2FA, RESET_PASSWORD } = ROUTES;
   return {
     goToHome: () => navigate(HOME),
     goToLogin: (state?: LoginParams) => navigate(LOGIN, { state: state || null }),
     goToDashboard: () => navigate(DASHBOARD),
+    goToCart: () => navigate(CART),
     goToResetPassword: (state: ResetPasswordParams) =>
       navigate(RESET_PASSWORD, { state }),
     goToValidate2FA: (state: Validate2FAParams) => navigate(VALIDATE2FA, { state }),

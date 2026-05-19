@@ -4,6 +4,7 @@ import {
   PictureOutlined,
   PlusOutlined,
   DeleteOutlined,
+  ShoppingCartOutlined,
 } from '@ant-design/icons';
 import { useState } from 'react';
 import { useTableQuery } from '~/hooks/useTableQuery';
@@ -16,6 +17,7 @@ import ProductCharacteristicController from '~/controllers/ProductCharacteristic
 import { CharacteristicBadge } from './CharacteristicBadge';
 import { ModalAddProductCategory } from '../product-category/ModalAddProductCategory';
 import { ProductDrawer } from './ProductDrawer';
+import { useCartStore } from '~/hooks/useCartStore';
 
 export function ProductList() {
   const [deleteProductState, setDeleteProductState] = useState({
@@ -30,6 +32,7 @@ export function ProductList() {
   const productQuery = useTableQuery<Product>('products', (params) =>
     ProductController.list<Product>(params),
   );
+  const addItem = useCartStore((state) => state.addItem);
   const {
     tableProps: { dataSource: characteristics = [] },
   } = useTableQuery<ProductCharacteristic>('characteristics', (params) =>
@@ -125,11 +128,16 @@ export function ProductList() {
     },
     {
       title: 'Ações',
-      width: 120,
+      width: 240,
       render: (_, record) => (
-        <Button icon={<EditOutlined />} onClick={() => openProductForm(record)}>
-          Editar
-        </Button>
+        <Space>
+          <Button icon={<ShoppingCartOutlined />} onClick={() => addItem(record)}>
+            Adicionar
+          </Button>
+          <Button icon={<EditOutlined />} onClick={() => openProductForm(record)}>
+            Editar
+          </Button>
+        </Space>
       ),
     },
   ];
