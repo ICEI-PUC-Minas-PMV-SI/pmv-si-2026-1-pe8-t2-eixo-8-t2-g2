@@ -1,0 +1,21 @@
+-- CreateTable
+CREATE TABLE "AboutInfo" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "title" TEXT NOT NULL,
+    "subtitle" TEXT NOT NULL,
+    "main" TEXT NOT NULL,
+    "complementary" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "AboutItem" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "aboutId" TEXT NOT NULL,
+    "icon" TEXT NOT NULL,
+    "text" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "AboutItem_aboutId_fkey" FOREIGN KEY ("aboutId") REFERENCES "AboutInfo" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);

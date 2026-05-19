@@ -208,3 +208,30 @@ model RecoveryCode {
 
   @@index([userId])
 }
+
+
+model AboutInfo {
+  id              String    @id @default(cuid())
+  title           String   
+  subtitle        String
+  main            String
+  complementary   String
+  items           AboutItem[] @relation("AboutItem")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime        @updatedAt @default(now())
+}
+
+
+model AboutItem {
+  id      String @id @default(uuid())
+
+  aboutId String
+  about   AboutInfo @relation("AboutItem", fields: [aboutId], references: [id], onDelete: Cascade)
+
+  icon    String
+  text    String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime        @updatedAt @default(now())
+}

@@ -33,6 +33,11 @@ const menu = [
     label: 'Configurações',
     IconComponent: AppIcon.Settings,
   },
+  {
+    key: '/about',
+    label: 'Quem Somos',
+    IconComponent: AppIcon.Settings,
+  },
 ];
 
 type Props = {
