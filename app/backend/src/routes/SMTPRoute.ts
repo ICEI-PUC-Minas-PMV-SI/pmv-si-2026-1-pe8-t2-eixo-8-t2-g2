@@ -12,6 +12,10 @@ class SMTPRoute {
       const url = await GoogleApi.getAuthUrl(INTEGRATION.GMAIL);
       res.json({ url });
     });
+    router.get('/gmail/auth-url2', async (_req, res) => {
+      // const url = await GoogleApi.getAuthUrl(INTEGRATION.GMAIL);
+      res.json({ url: '' });
+    });
 
     router.get('/gmail/oauth2callback', async (req, res) => {
       const code = req.query.code;

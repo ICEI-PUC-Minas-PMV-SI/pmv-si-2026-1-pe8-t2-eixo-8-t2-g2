@@ -1,4 +1,4 @@
-import type { PaginationParams, SchedulerCreatePayload } from '@types';
+import type { PaginationParams, ProductItem, SchedulerCreatePayload } from '@types';
 import { Prisma } from '../db/Prisma';
 import { ProductService } from './ProductService';
 import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper';
@@ -6,10 +6,13 @@ import { AppError } from '../error/AppError';
 import { HttpCode } from '../utils/HttpCode';
 import type {
   SchedulerOrderByWithRelationInput,
+  SchedulerUpdateInput,
   SchedulerWhereInput,
 } from '../generated/prisma/models';
 import type { SchedulerStatus } from '../generated/prisma/enums';
-import { ResponseUtil } from 'utils/ResponseUtil';
+import { ResponseUtil } from '../utils/ResponseUtil';
+import type { Scheduler } from '../generated/prisma/client';
+import { CustomerService } from './CustomerService';
 
 const userSelect = {
   id: true,
@@ -47,7 +50,7 @@ export type CreatedScheduler = {
 };
 
 class SchedulerService {
-  private async getProductsList(products: SchedulerCreatePayload['products']) {
+  private async getProductsList(products: SchedulerCreatePayload['items']) {
     return Promise.all(
       products.map(async (product) => {
         const result = await ProductService.find(product.id);
@@ -79,10 +82,47 @@ class SchedulerService {
   }
   async create(scheduler: SchedulerCreatePayload) {
     const prisma = await Prisma.getClient();
-    const { customerId, products, scheduledAt, paymentMethod, deliveryType } = scheduler;
+    const {
+      userId,
+      customerId,
+      customerName,
+      customerPhone,
+      items: products,
+      scheduledAt,
+      scheduledTo,
+      paymentMethod,
+      deliveryType,
+    } = scheduler;
+    let customer = null;
+    if (customerId === userId) {
+      customer = await CustomerService.findByUserId(userId);
+      if (!customer) {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+          throw new AppError('Invalid user/customer', HttpCode.BAD_REQUEST);
+        }
+        customer = await prisma.customer.create({
+          data: {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            user: {
+              connect: { id: userId },
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        });
+      }
+    }
     const productsList = await this.getProductsList(products);
-    const invalidItems = this.isValidItemsByLeadTime(new Date(scheduledAt), productsList);
-    if (invalidItems.length > 0) {
+    const invalidItems = scheduledTo
+      ? this.isValidItemsByLeadTime(new Date(scheduledTo), productsList)
+      : [];
+    if (invalidItems.length > 0 && false) {
+      //temp ignore
       throw new AppError(
         `Some items do not meet the booking lead time requirements`,
         HttpCode.BAD_REQUEST,
@@ -97,20 +137,34 @@ class SchedulerService {
       );
     }
     const schedulerItems = [
-      ...productsList.map((product, orderIndex) => ({
+      ...productsList.map((product, orderIndex: number) => ({
         productId: product.id,
         quantity: product.quantity,
         priceAtBooking: product.price || null,
         orderIndex: orderIndex + 1,
       })),
     ];
+    const validCustomerId = customer?.id || customerId;
+
     const createdScheduler = await prisma.scheduler.create({
       data: {
-        customerId: customerId,
+        customer: validCustomerId
+          ? {
+              connect: {
+                id: validCustomerId,
+              },
+            }
+          : {
+              create: {
+                name: customerName!,
+                phone: customerPhone.replace(/\D/g, ''),
+              },
+            },
         deliveryType,
         paymentMethod,
         status: 'pending',
         scheduledAt: new Date(scheduledAt),
+        scheduledTo: scheduledTo ? new Date(scheduledTo) : null,
         items: {
           create: schedulerItems,
         },
@@ -217,19 +271,33 @@ class SchedulerService {
   }
 
   async update(id: string, data: Partial<SchedulerCreatePayload>) {
-    const prisma = await Prisma.getClient();
-    const dataToUpdate: Partial<SchedulerCreatePayload> = { ...data };
-
-    const updatedScheduler = await prisma.scheduler.update({
-      where: { id },
-      data: dataToUpdate,
-      include: {
-        customer: {
-          select: userSelect,
-        },
-      },
-    });
-    return updatedScheduler;
+    // const prisma = await Prisma.getClient();
+    // const { items: products, ...newData } = data;
+    // if (!products || !products.length) {
+    //   throw new AppError('Invalid products', HttpCode.BAD_REQUEST);
+    // }
+    // const dataToUpdate: Partial<SchedulerUpdateInput> = {
+    //   ...newData,
+    //   // products,
+    // };
+    // if (products) {
+    //   dataToUpdate.items = {
+    //     connectOrCreate: {
+    //       create: {
+    //       }
+    //     }
+    //   };
+    // }
+    // const updatedScheduler = await prisma.scheduler.update({
+    //   where: { id },
+    //   data: dataToUpdate,
+    //   include: {
+    //     customer: {
+    //       select: userSelect,
+    //     },
+    //   },
+    // });
+    // return updatedScheduler;
   }
 }
 

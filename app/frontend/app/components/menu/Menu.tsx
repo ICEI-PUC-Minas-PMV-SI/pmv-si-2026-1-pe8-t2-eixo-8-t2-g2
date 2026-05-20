@@ -2,6 +2,8 @@ import type { MenuProps } from 'antd';
 import { Menu as MenuAntd } from 'antd';
 import AppIcon from '../icon/AppIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '~/hooks/useAuthStore';
+import { UserRole } from '~/constants/Auth';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -10,22 +12,22 @@ const iconStyle: React.CSSProperties = {
   // paddingLeft: 24,
 };
 
-const ExtraComponent = () => <div style={{ minWidth: 10 }}></div>;
-
 const menu = [
-  {
-    key: '/dashboard',
-    label: 'Dashboard',
-    IconComponent: AppIcon.DashboardMonitor,
-  },
   {
     key: '/scheduler',
     label: 'Pedidos',
     IconComponent: AppIcon.DailyCalendar,
   },
   {
+    key: '/dashboard',
+    label: 'Dashboard',
+    role: UserRole.ADMIN,
+    IconComponent: AppIcon.DashboardMonitor,
+  },
+  {
     key: '/product',
     label: 'Produtos',
+    role: UserRole.ADMIN,
     IconComponent: AppIcon.ApplePie,
   },
   {
@@ -42,6 +44,7 @@ type Props = {
 export default function Menu({ onNavigate }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isAdmin } = useAuthStore();
 
   const onClick: MenuProps['onClick'] = (e) => {
     navigate(e.key);
@@ -49,8 +52,12 @@ export default function Menu({ onNavigate }: Props) {
   };
 
   const selectedKey = location.pathname;
-
-  const items: MenuItem[] = menu.map((item) => {
+  const filtredMenu = isAdmin()
+    ? menu
+    : menu.filter((currentMenu) => {
+        return !currentMenu.role;
+      });
+  const items: MenuItem[] = filtredMenu.map((item) => {
     const { key, label, IconComponent } = item;
     const isSelected = selectedKey === key;
 

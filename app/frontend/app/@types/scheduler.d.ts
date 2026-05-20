@@ -8,6 +8,7 @@ export type Scheduler = {
     name: string;
   };
   scheduledAt: string;
+  scheduledTo?: string;
   estimatedStartAt?: string;
   estimatedEndAt?: string;
   status: SchedulerStatus;
@@ -17,7 +18,11 @@ export type Scheduler = {
   cancellationReason?: string;
 };
 
-export type CreateScheduler = Omit<Scheduler, 'id' | 'status'>;
+export type CreateScheduler = Omit<Scheduler, 'id' | 'status' | 'customer'> & {
+  customerId?: string;
+  customerName?: string;
+  customerPhone: string;
+};
 
 export type SchedulerStatus =
   | 'pending'

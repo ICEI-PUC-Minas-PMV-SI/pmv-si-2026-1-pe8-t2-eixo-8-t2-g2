@@ -36,7 +36,7 @@ export function SchedulerPage() {
   const gmailUrlQuery = useQuery({
     queryKey: ['gmail-auth-url'],
     queryFn: () => {
-      return Request.get<{ url: string }>('/gmail/auth-url').then((result) => {
+      return Request.get<{ url: string }>('/gmail/auth-url2').then((result) => {
         console.log('URL de autenticação do Gmail:', result.url);
         setGmailUrl(result.url);
         return result;
@@ -48,7 +48,7 @@ export function SchedulerPage() {
   const googleCalendarUrlQuery = useQuery({
     queryKey: ['google-calendar-auth-url'],
     queryFn: () =>
-      Request.get<{ url: string }>('/scheduler/google-auth-url').then((result) => {
+      Request.get<{ url: string }>('/scheduler/google-auth-url2').then((result) => {
         console.log('URL de autenticação do Google Calendar:', result.url);
         setGoogleCalendarUrl(result.url);
         return result;

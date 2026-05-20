@@ -5,10 +5,16 @@ import NumberUtil from '../utils/NumberUtil';
 
 class DashboardService {
   getStartAndEndDay(date: Date | string) {
-    const startOfDay = new Date(date);
-    const endOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    endOfDay.setHours(23, 59, 59, 999);
+    const d = new Date(date);
+
+    const startOfDay = new Date(
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0),
+    );
+
+    const endOfDay = new Date(
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999),
+    );
+
     return {
       startOfDay,
       endOfDay,
@@ -16,13 +22,13 @@ class DashboardService {
   }
   async overviewToday() {
     const prisma = await Prisma.getClient();
-    const now = new Date(new Date(new Date().setDate(21)).setMonth(3));
+    const now = new Date();
     const { startOfDay, endOfDay } = this.getStartAndEndDay(now);
     const { startOfDay: startOfTomorrow, endOfDay: endOfTomorrow } =
       this.getStartAndEndDay(subDays(new Date(), 1));
     const schedulers = await prisma.scheduler.findMany({
       where: {
-        scheduledAt: {
+        scheduledTo: {
           gte: startOfDay,
           lte: endOfDay,
         },
@@ -31,6 +37,7 @@ class DashboardService {
         items: true,
       },
     });
+    console.log('schedulersToToday', schedulers.length, startOfDay, endOfDay);
     const schedulersTomorrow = await prisma.scheduler.findMany({
       where: {
         scheduledAt: {

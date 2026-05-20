@@ -1,6 +1,6 @@
 import { Button, Card, Drawer, Form, message, Segmented, Space } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
-import type { Scheduler, SchedulerItem } from '~/@types/scheduler';
+import { useMemo, useState } from 'react';
+import type { CreateScheduler, Scheduler, SchedulerItem } from '~/@types/scheduler';
 import SchedulerController from '~/controllers/SchedulerController';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import DateUtil from '~/utils/DateUtil';
@@ -61,18 +61,18 @@ export function SchedulerTab() {
     try {
       const values = await form.validateFields();
       const items: SchedulerItem[] = (values.items ?? []).map((it: any, idx: number) => ({
-        id: `it-new-${Date.now()}-${idx}`,
-        productName: it.productName,
+        id: it.productId,
         quantity: it.quantity ?? 1,
       }));
 
-      const next: Scheduler = {
-        id: `sch-${Date.now()}`,
-        customer: values.customer,
+      const next: CreateScheduler = {
+        customerId: values.customerId || undefined,
+        customerName: values.customerName,
+        customerPhone: values.customerPhone,
         scheduledAt: values.scheduledAt
           ? DateUtil.toISO(values.scheduledAt)
           : DateUtil.toISO(new Date()),
-        status: 'pending',
+        scheduledTo: values.scheduledTo ? DateUtil.toISO(values.scheduledTo) : undefined,
         paymentMethod: values.paymentMethod,
         deliveryType: values.deliveryType,
         items,

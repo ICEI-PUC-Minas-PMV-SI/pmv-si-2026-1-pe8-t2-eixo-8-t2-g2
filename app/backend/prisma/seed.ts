@@ -30,6 +30,11 @@ function getFlag(name: string) {
   return flag ? parseInt(flag.split('=')[1], 10) : null;
 }
 
+function getPhone() {
+  // return `(${faker.string.numeric(2)}) 9${faker.string.numeric(4)}-${faker.string.numeric(4)}`;
+  return `${faker.string.numeric(2)}9${faker.string.numeric(8)}`;
+}
+
 const hasFlag = (name: string) => args.includes(`--${name}`);
 
 /**
@@ -468,7 +473,7 @@ async function seedUsers() {
       data: {
         name: user.name,
         email: user.email,
-        phone: faker.phone.number(),
+        phone: getPhone(),
         notes: faker.datatype.boolean() ? faker.lorem.sentence() : null,
         userId: user.id,
       },
@@ -497,7 +502,7 @@ async function seedStandaloneCustomers() {
       data: {
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        phone: faker.phone.number(),
+        phone: getPhone(),
         notes: faker.datatype.boolean() ? faker.lorem.sentence() : null,
         // userId intentionally omitted → standalone customer
       },

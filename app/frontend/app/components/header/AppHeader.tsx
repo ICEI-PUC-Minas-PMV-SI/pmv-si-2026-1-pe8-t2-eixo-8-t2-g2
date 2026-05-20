@@ -6,6 +6,7 @@ import { ROUTES, useNavigation } from '~/hooks/useNavigation';
 import { ExclamationCircleOutlined, MenuOutlined } from '@ant-design/icons';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 
 type Props = {
   onMenuClick?: () => void; // 👈 botão mobile
@@ -16,6 +17,7 @@ export default function AppHeader({ onMenuClick }: Props) {
   const { logout, isLogged, getUserShortname } = useAuthStore();
   const { pathname } = useLocation();
   const isMobile = !Grid.useBreakpoint().lg;
+  const queryClient = useQueryClient();
   const logoutConfirm = () => {
     Modal.confirm({
       icon: <ExclamationCircleOutlined />,
@@ -26,6 +28,7 @@ export default function AppHeader({ onMenuClick }: Props) {
       },
       okText: 'Sair',
       onOk() {
+        queryClient.clear();
         logout();
       },
     });

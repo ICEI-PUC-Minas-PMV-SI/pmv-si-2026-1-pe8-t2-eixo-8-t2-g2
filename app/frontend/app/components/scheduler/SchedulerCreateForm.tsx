@@ -34,36 +34,26 @@ import { useSelectQuery } from '~/hooks/useSelectQuery';
 import TextArea from 'antd/es/input/TextArea';
 import { useEffect, useState } from 'react';
 import TextUtil from '~/utils/TextUtil';
+import CustomerController from '~/controllers/CustomerController';
 
 type ComponentProps = {
   form: FormInstance<any>;
 };
 
 const findCustomerByPhone = async (phone: string) => {
-  // simula delay
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // mock
-  if (phone === '31992222222') {
-    return {
-      id: 1,
-      name: 'Maria Silva',
-    };
-  }
-
-  return null;
-}
+  const customer = await CustomerController.findByPhone(phone);
+  return customer;
+};
 
 export function SchedulerCreateForm({ form }: ComponentProps) {
   const { isAdmin } = useAuthStore();
   const [isSearchingCustomer, setIsSearchingCustomer] = useState(false);
   const [isCustomerNameDisabled, setIsCustomerNameDisabled] = useState(true);
-  const [phoneSearchTimeout, setPhoneSearchTimeout] =
-  useState<ReturnType<typeof setTimeout> | null>(null);
+  const [phoneSearchTimeout, setPhoneSearchTimeout] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
 
-  const handleCustomerPhoneChange = (
-    e: React.InputEvent<HTMLInputElement>,
-  ) => {
+  const handleCustomerPhoneChange = (e: React.InputEvent<HTMLInputElement>) => {
     const input = e.currentTarget;
 
     const formatted = TextUtil.formatPhone(input.value);
@@ -140,7 +130,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
         page: 1,
         pageSize: 50,
         filters: {},
-        sorters: [{key: 'productName', order: 'ascend'}],
+        sorters: [{ key: 'productName', order: 'ascend' }],
         search,
       }).then((res) => res.data);
     },
@@ -152,15 +142,21 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
   }, [refetch]);
 
   return (
-    <Form layout="vertical" form={form} initialValues={{ scheduledAt: dayjs() }}>
+    <Form
+      layout="vertical"
+      form={form}
+      initialValues={{
+        scheduledAt: dayjs(),
+        paymentMethod: 'cash',
+        deliveryType: 'pickup',
+      }}
+    >
       {isAdmin() && (
         <>
           <Form.Item
             label="Telefone do cliente"
             name="customerPhone"
-            rules={[
-              { required: true, message: 'Informe o telefone do cliente' },
-            ]}
+            rules={[{ required: true, message: 'Informe o telefone do cliente' }]}
           >
             <Input
               placeholder="Ex.: (31) 92222-2222"
@@ -172,15 +168,11 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
           <Form.Item
             label="Nome do cliente"
             name="customerName"
-            rules={[
-              { required: true, message: 'Informe o nome do cliente' },
-            ]}
+            rules={[{ required: true, message: 'Informe o nome do cliente' }]}
           >
             <Input
               placeholder={
-                isSearchingCustomer
-                  ? 'Buscando cliente...'
-                  : 'Ex.: Maria Silva'
+                isSearchingCustomer ? 'Buscando cliente...' : 'Ex.: Maria Silva'
               }
               disabled={isCustomerNameDisabled}
               suffix={isSearchingCustomer ? <Spin size="small" /> : null}
@@ -203,10 +195,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item
-            label="Estimativa de retirada / entrega"
-            name="estimatedPickupDeliveryAt"
-          >
+          <Form.Item label="Estimativa de retirada / entrega" name="scheduledTo">
             <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -229,7 +218,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
                       <div style={{ fontSize: 14 }}>Dinheiro</div>
                     </div>
                   ),
-                  value: 'money',
+                  value: 'cash',
                 },
                 {
                   label: (
@@ -238,7 +227,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
                       <div style={{ fontSize: 14 }}>Crédito</div>
                     </div>
                   ),
-                  value: 'credit',
+                  value: 'credit_card',
                 },
                 {
                   label: (
@@ -247,7 +236,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
                       <div style={{ fontSize: 14 }}>Débito</div>
                     </div>
                   ),
-                  value: 'debit',
+                  value: 'debit_card',
                 },
                 {
                   label: (
@@ -317,7 +306,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
                       <Form.Item
                         {...rest}
                         label="Produto"
-                        name={[name, 'productName']}
+                        name={[name, 'productId']}
                         rules={[{ required: true, message: 'Informe o produto' }]}
                         style={{ marginBottom: 0 }}
                       >
@@ -329,7 +318,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
                           }}
                           options={productOptions.map((p) => ({
                             label: p.name,
-                            value: p.name,
+                            value: p.id,
                           }))}
                           notFoundContent={
                             isFetchingProduct ? <Spin size="small" /> : 'Sem resultados'

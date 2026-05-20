@@ -6,6 +6,7 @@ import type { Response, SchedulerRequest } from '@types';
 import { AppError } from '../error/AppError';
 import { GoogleApi } from '../integration/GoogleApi';
 import { INTEGRATION } from '../integration/GoogleApi';
+import { UserRole } from '../validations/UserValidation';
 
 class SchedulerRoute {
   register(app: Application) {
@@ -14,6 +15,10 @@ class SchedulerRoute {
     router.get('/scheduler/google-auth-url', async (_req, res) => {
       const url = await SchedulerController.getGoogleAuthUrl();
       res.json({ url });
+    });
+    router.get('/scheduler/google-auth-url2', async (_req, res) => {
+      // const url = await SchedulerController.getGoogleAuthUrl();
+      res.json({ url: '' });
     });
 
     router.get('/google-calendar/oauth2callback', async (req, res) => {
@@ -44,10 +49,23 @@ class SchedulerRoute {
       }
     });
 
-    router.post('/scheduler', SchedulerValidation.create, async (req, res) => {
-      const result = await SchedulerController.create(req.body);
-      res.json(result);
-    });
+    router.post(
+      '/scheduler',
+      SchedulerValidation.create,
+      async (req: SchedulerRequest, res) => {
+        const customerId =
+          !req.body.customerId && req.user?.role === UserRole.CUSTOMER
+            ? req.user.id
+            : req.body.customerId;
+        const data = {
+          ...req.body,
+          customerId,
+          userId: req.user?.id,
+        };
+        const result = await SchedulerController.create(data);
+        res.json(result);
+      },
+    );
 
     router.get('/scheduler', async (req: SchedulerRequest, res: Response) => {
       const result = await SchedulerController.list(req);

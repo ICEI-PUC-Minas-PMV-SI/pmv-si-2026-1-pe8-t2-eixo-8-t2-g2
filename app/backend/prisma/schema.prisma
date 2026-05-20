@@ -41,6 +41,7 @@ model User {
   id               String         @id @default(uuid())
   name             String
   email            String         @unique
+  phone            String?        @unique
   googleId         String?        @unique
   role             UserRole       @default(customer)
   password         String?
@@ -160,6 +161,7 @@ enum IntegrationType {
 
 enum PaymentMethod {
   credit_card
+  debit_card
   pix
   bank_transfer
   cash
@@ -175,6 +177,7 @@ model Scheduler {
   customerId         String
   customer           Customer        @relation(fields: [customerId], references: [id])
   scheduledAt        DateTime
+  scheduledTo        DateTime?
   estimatedStartAt   DateTime?
   estimatedEndAt     DateTime?
   items              SchedulerItem[] @relation("SchedulerItems")

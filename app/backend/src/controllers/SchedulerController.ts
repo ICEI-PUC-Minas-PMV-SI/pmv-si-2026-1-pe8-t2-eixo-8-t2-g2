@@ -16,18 +16,23 @@ import type {
   PaymentMethod,
   SchedulerStatus,
 } from '../generated/prisma/enums';
+import { CustomerService } from '../services/CustomerService';
 
 class SchedulerController {
   async create(scheduler: SchedulerCreatePayload) {
     const result = await SchedulerService.create(scheduler);
-    this.addEventExternalScheduler(result);
+    // this.addEventExternalScheduler(result);
     return result;
   }
-  list(req: SchedulerRequest) {
-    const customerId = req.user?.id || '';
+  async list(req: SchedulerRequest) {
+    const userId = req.user?.id || '';
     const isAdmin = req.user?.role === UserRole.ADMIN;
+    let customer = null;
+    if (!isAdmin) {
+      customer = await CustomerService.findByUserId(userId);
+    }
     const orderBy = [] as SchedulerOrderByWithRelationInput[];
-    const filter: SchedulerWhereInput = isAdmin ? {} : { customerId };
+    const filter: SchedulerWhereInput = isAdmin ? {} : { customerId: customer?.id || '' };
     const filters = req.filters;
     const sorters = req.sort;
     const search = req.search?.trim();

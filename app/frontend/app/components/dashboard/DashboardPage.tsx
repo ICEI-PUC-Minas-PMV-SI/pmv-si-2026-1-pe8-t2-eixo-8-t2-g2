@@ -502,13 +502,13 @@ export function DashboardPage() {
   const [agendaFilter, setAgendaFilter] = useState<'Todos' | 'Entrega' | 'Retirada'>(
     'Todos',
   );
-
+  const staleTime = 0; // 60*60*1000;
   const todaySummary = useQuery({
     queryKey: ['today-summary'],
     queryFn: () => {
       return DashboardController.todaySummary();
     },
-    staleTime: 60 * 60 * 1000,
+    staleTime,
   });
 
   const latestMonthsSummary = useQuery({
@@ -516,7 +516,7 @@ export function DashboardPage() {
     queryFn: () => {
       return DashboardController.latestMonths();
     },
-    staleTime: 60 * 60 * 1000,
+    staleTime,
   });
 
   const latestMonthsRevenueSummary = useQuery({
@@ -524,7 +524,7 @@ export function DashboardPage() {
     queryFn: () => {
       return DashboardController.latestMonthsRevenue();
     },
-    staleTime: 60 * 60 * 1000,
+    staleTime,
   });
 
   const topProductsSummary = useQuery({
@@ -532,7 +532,7 @@ export function DashboardPage() {
     queryFn: () => {
       return DashboardController.topProducts();
     },
-    staleTime: 60 * 60 * 1000,
+    staleTime,
   });
 
   const deliveriesToday = useQuery({
@@ -540,7 +540,7 @@ export function DashboardPage() {
     queryFn: () => {
       return DashboardController.deliveriesToday();
     },
-    staleTime: 60 * 60 * 1000,
+    staleTime,
   });
 
   const getDeliveriesToday = (schedulers: Scheduler[]) => {
@@ -1351,7 +1351,7 @@ export function DashboardPage() {
         {/* ── Alertas & Fluxo ── */}
         <Row gutter={[12, 12]} style={{ marginTop: 12 }}>
           {/* Alertas */}
-          <Col xs={24} lg={12}>
+          {/* <Col xs={24} lg={12}>
             <Card
               style={cardStyle}
               styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
@@ -1377,13 +1377,12 @@ export function DashboardPage() {
                   showIcon
                   description="Semana que vem: 7 entregas previstas — capacidade de forno pode ser excedida"
                 />
-                {/* <Alert type="error"   showIcon description="Geladeira com 84% de capacidade — evite novos pedidos com entrega esta semana" /> */}
               </Space>
             </Card>
-          </Col>
+          </Col> */}
 
           {/* Fluxo do processo */}
-          <Col xs={24} lg={12}>
+          {/* <Col xs={24} lg={12}>
             <Card
               style={cardStyle}
               styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
@@ -1440,7 +1439,7 @@ export function DashboardPage() {
                 </div>
               ))}
             </Card>
-          </Col>
+          </Col> */}
         </Row>
       </Content>
     </Layout>

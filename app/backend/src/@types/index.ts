@@ -1,6 +1,5 @@
 export * from './auth.d.js';
 export * from './debug.d.js';
-export * from './logger.d.js';
 export * from './product.d.js';
 export * from './scheduler.d.js';
 export * from './server.d.js';
