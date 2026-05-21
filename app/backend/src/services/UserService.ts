@@ -137,7 +137,6 @@ class UserService {
     });
   }
   async sendResetPasswordMail(email: string, resetUrl: string) {
-    console.log(resetUrl);
     const { template, attachments } = PasswordResetTemplate.buildResetEmail(resetUrl);
     await SMTP.sendMail({
       body: template,

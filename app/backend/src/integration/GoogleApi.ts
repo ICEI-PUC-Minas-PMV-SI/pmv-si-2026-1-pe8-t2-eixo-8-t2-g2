@@ -49,7 +49,7 @@ class GoogleApi {
       const refreshToken = result.encryptedRefreshToken
         ? Crypt.decrypt(result.encryptedRefreshToken)
         : '';
-      console.log(result.clientId, clientSecret, redirectUri);
+
       const client = new OAuth2Client(result.clientId, clientSecret, redirectUri);
       let accessToken = '';
       if (refreshToken) {

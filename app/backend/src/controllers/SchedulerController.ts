@@ -2,6 +2,7 @@ import type {
   SchedulerCreatePayload,
   SchedulerFilterKey,
   SchedulerRequest,
+  SchedulerUpdatePayload,
 } from '@types';
 import { SchedulerService, type CreatedScheduler } from '../services/SchedulerService';
 import type {
@@ -9,7 +10,6 @@ import type {
   SchedulerWhereInput,
 } from '../generated/prisma/models';
 import { GoogleApi, INTEGRATION } from '../integration/GoogleApi';
-import { ExternalScheduler } from '../integration/ExternalScheduler';
 import { UserRole } from '../validations/UserValidation';
 import type {
   DeliveryType,
@@ -17,11 +17,12 @@ import type {
   SchedulerStatus,
 } from '../generated/prisma/enums';
 import { CustomerService } from '../services/CustomerService';
+import { GoogleCalendarApi } from 'integration/GoogleCalendarApi';
 
 class SchedulerController {
   async create(scheduler: SchedulerCreatePayload) {
     const result = await SchedulerService.create(scheduler);
-    // this.addEventExternalScheduler(result);
+    await this.addEventExternalScheduler(result);
     return result;
   }
   async list(req: SchedulerRequest) {
@@ -98,7 +99,7 @@ class SchedulerController {
   async find(id: string) {
     return SchedulerService.find(id);
   }
-  async update(id: string, data: Partial<SchedulerCreatePayload>) {
+  async update(id: string, data: SchedulerUpdatePayload) {
     return SchedulerService.update(id, data);
   }
   async cancel(id: string, cancellationReason: string) {
@@ -122,11 +123,15 @@ class SchedulerController {
         return `${item.quantity}x - ${item.product?.name.substring(0, 20)}`;
       })
       .join('\n');
-    return ExternalScheduler.addEvent({
-      title,
+    await GoogleCalendarApi.createEvent({
+      summary: title,
       description,
-      startDateTime: scheduledAt.toISOString(),
-      endDateTime: scheduledAt.toISOString(),
+      start: {
+        dateTime: scheduledAt.toISOString(),
+      },
+      end: {
+        dateTime: scheduledAt.toISOString(),
+      },
     });
   }
 }

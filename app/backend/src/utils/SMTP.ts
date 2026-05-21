@@ -1,7 +1,11 @@
+import { GoogleApi } from 'integration/GoogleApi';
 import nodemailer from 'nodemailer';
-import type { TransportOptions, SendMailOptions } from 'nodemailer';
-// import { google } from 'googleapis';
+import type { SendMailOptions } from 'nodemailer';
 import type { Attachment } from 'nodemailer/lib/mailer/index';
+import { Crypt } from './Crypt';
+import { IntegrationsService } from '../services/IntegrationsService';
+import MailComposer from 'nodemailer/lib/mail-composer';
+import { RequestUtil } from './RequestUtil';
 
 export type SMTPOpts = {
   subject: string;
@@ -28,74 +32,99 @@ class SMTP {
       secure: secure === 'true',
       auth,
     });
-    return transporter;
+    return { transporter, sender: null, user };
   }
-  async createGmailTransporter() {
-    const {
-      MAIL_ID: clientId,
-      MAIL_SECRET: clientSecret,
-      MAIL_REFRESH_TOKEN: refreshToken,
-      MAIL_FROM: user,
-    } = process.env;
-
-    try {
-      const { google } = await import('googleapis');
-      const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
-
-      oauth2Client.setCredentials({
-        refresh_token: refreshToken || null,
-      });
-
-      const accessToken = await new Promise((resolve, reject) => {
-        oauth2Client.getAccessToken((err, token) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve(token);
-        });
-      });
-
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          type: 'OAuth2',
-          user,
-          accessToken,
-          clientId,
-          clientSecret,
-          refreshToken,
-        },
-      } as TransportOptions);
-      return transporter;
-    } catch (err) {
-      console.error(err);
-      return Promise.reject(err);
+  async getGmailCredentials() {
+    const { client } = await GoogleApi.getClient('gmail');
+    const credentials = await IntegrationsService.find('gmail');
+    if (!credentials || !credentials.encryptedRefreshToken) {
+      throw new Error('Google credentials not found for Gmail integration');
     }
+    const {
+      clientId,
+      encryptedClientSecret,
+      encryptedRefreshToken,
+      mailFrom: user,
+      mailSenderName,
+    } = credentials;
+    const clientSecret = Crypt.decrypt(encryptedClientSecret);
+    const refreshToken = Crypt.decrypt(encryptedRefreshToken);
+    client.setCredentials({
+      refresh_token: refreshToken || null,
+    });
+
+    const accessTokenResponse = await client.getAccessToken();
+    const accessToken = accessTokenResponse.token;
+    if (!accessToken) {
+      throw new Error('Failed to obtain access token for Gmail integration');
+    }
+
+    return { clientId, clientSecret, refreshToken, user, mailSenderName, accessToken };
+  }
+  async customGmailTransporter() {
+    const { accessToken, mailSenderName, user } = await this.getGmailCredentials();
+    const transporter = {
+      sendMail: async (mailOptions: SendMailOptions) => {
+        const mail = new MailComposer(mailOptions);
+        const raw = await mail.compile().build();
+
+        const encoded = raw
+          .toString('base64')
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/, '');
+        await RequestUtil.send(
+          'https://gmail.googleapis.com/gmail/v1/users/me/messages/send',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+            data: {
+              raw: encoded,
+            },
+          },
+        );
+      },
+    };
+    return {
+      transporter,
+      sender: mailSenderName,
+      user,
+    };
   }
 
   async createTransporter() {
     switch (process.env.MAIL_PROVIDER) {
       case 'GMAIL':
-        return this.createGmailTransporter();
+        return this.customGmailTransporter();
       default:
         return this.createGenericTransporter();
     }
   }
 
   async sendMail({ body, subject, to, attachments = [] }: SMTPOpts) {
-    const { MAIL_FROM } = process.env;
-
     try {
+      const {
+        transporter: emailTransporter,
+        sender,
+        user,
+      } = await this.createTransporter();
+      if (!user) {
+        throw new Error('User email is not defined');
+      }
       const mailOptions: SendMailOptions = {
-        from: MAIL_FROM,
-        to,
+        from: user,
+        to: to || user,
         subject: subject,
         html: body,
         attachments,
       };
+      if (sender) {
+        mailOptions.sender = sender;
+      }
 
-      const emailTransporter = await this.createTransporter();
       await emailTransporter.sendMail(mailOptions);
     } catch (err) {
       if (err instanceof Error) {

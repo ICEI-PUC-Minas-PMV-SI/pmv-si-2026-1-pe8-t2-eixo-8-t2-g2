@@ -162,6 +162,7 @@ export function SchedulerList({
           {
             title: 'Itens',
             key: 'items',
+            minWidth: 130,
             responsive: ['xl', 'xxl', 'xxxl'],
             render: (_, record) => (
               <Typography.Text type="secondary">

@@ -70,7 +70,25 @@ export function IntegrationsTab() {
 
   const integrationsQuery = useQuery<IntegrationsPayload>({
     queryKey: ['app-settings'],
-    queryFn: () => IntegrationsController.find(),
+    queryFn: () =>
+      IntegrationsController.list().then((data) => {
+        if (data.google) {
+          googleForm.setFieldsValue({ ...data.google, clientSecret: '**********' });
+          setUseSameGoogleAccount(true);
+        } else {
+          if (data.googleCalendar) {
+            calendarForm.setFieldsValue({
+              ...data.googleCalendar,
+              clientSecret: '**********',
+            });
+          }
+          if (data.gmail) {
+            mailForm.setFieldsValue({ ...data.gmail, clientSecret: '**********' });
+          }
+          setUseSameGoogleAccount(false);
+        }
+        return data;
+      }),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -134,7 +152,7 @@ export function IntegrationsTab() {
         }
       />
 
-      <Card>
+      <Card loading={integrationsQuery.isLoading}>
         <Row align="middle" justify="space-between">
           <Col>
             <Space orientation="vertical" size={0}>
@@ -153,7 +171,11 @@ export function IntegrationsTab() {
       </Card>
 
       {useSameGoogleAccount ? (
-        <Card title="Integração Google Unificada" extra={<GoogleOutlined size={24} />}>
+        <Card
+          loading={integrationsQuery.isLoading}
+          title="Integração Google Unificada"
+          extra={<GoogleOutlined size={24} />}
+        >
           <Form
             layout="vertical"
             form={googleForm}
@@ -234,7 +256,11 @@ export function IntegrationsTab() {
                 Salvar
               </Button>
 
-              <Button type="default" icon={<CheckCircleOutlined />}>
+              <Button
+                type="default"
+                icon={<CheckCircleOutlined />}
+                onClick={() => IntegrationsController.test('all')}
+              >
                 Testar Configurações
               </Button>
             </Space>
@@ -244,6 +270,7 @@ export function IntegrationsTab() {
         <Row gutter={[16, 16]}>
           <Col xs={24} lg={12}>
             <Card
+              loading={integrationsQuery.isLoading}
               title="Google Calendar"
               extra={<GoogleCalendar style={{ fontSize: 24 }} />}
             >
@@ -287,7 +314,11 @@ export function IntegrationsTab() {
           </Col>
 
           <Col xs={24} lg={12}>
-            <Card title="Gmail" extra={<Gmail style={{ fontSize: 24 }} />}>
+            <Card
+              title="Gmail"
+              extra={<Gmail style={{ fontSize: 24 }} />}
+              loading={integrationsQuery.isLoading}
+            >
               <Form
                 layout="vertical"
                 form={mailForm}

@@ -37,7 +37,7 @@ class DashboardService {
         items: true,
       },
     });
-    console.log('schedulersToToday', schedulers.length, startOfDay, endOfDay);
+
     const schedulersTomorrow = await prisma.scheduler.findMany({
       where: {
         scheduledAt: {

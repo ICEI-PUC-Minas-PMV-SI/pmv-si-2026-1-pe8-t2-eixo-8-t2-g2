@@ -3,6 +3,7 @@ import { Prisma } from '../db/Prisma';
 import { GoogleApi } from '../integration/GoogleApi';
 import type {
   GoogleIntegrationUpdateInput,
+  GoogleIntegrationWhereInput,
   TransactionClient,
 } from '../generated/prisma/internal/prismaNamespace';
 import { HttpCode } from '../utils/HttpCode';
@@ -85,12 +86,56 @@ class IntegrationsService {
   }
   async find(integration: IntegrationType = 'all') {
     const prisma = await Prisma.getClient();
+    const filter: GoogleIntegrationWhereInput = {};
+    if (integration === 'calendar') {
+      filter.useForCalendar = true;
+    } else if (integration === 'gmail') {
+      filter.useForEmail = true;
+    } else if (integration === 'all') {
+      filter.OR = [{ useForCalendar: true }, { useForEmail: true }];
+    } else {
+      throw new AppError('Unsupported integration type', HttpCode.BAD_REQUEST);
+    }
+
     const result = await prisma.googleIntegration.findFirst({
-      where: {
-        useForCalendar: integration === 'calendar' || integration === 'all',
-        useForEmail: integration === 'gmail' || integration === 'all',
+      where: filter,
+    });
+    return result;
+  }
+  async list() {
+    const prisma = await Prisma.getClient();
+    const result = await prisma.googleIntegration.findMany({
+      select: {
+        mailFrom: true,
+        mailSenderName: true,
+        useForCalendar: true,
+        useForEmail: true,
+        clientId: true,
       },
     });
+    if (result.length === 0) {
+      return null;
+    }
+    const [row] = result;
+    if (result.length === 1 && row) {
+      if (row.useForCalendar && row.useForEmail) {
+        return { google: row };
+      }
+      if (row.useForCalendar) {
+        return { googleCalendar: row };
+      }
+      if (row.useForEmail) {
+        return { gmail: row };
+      }
+    }
+    if (result.length === 2) {
+      const calendarRow = result.find((row) => row.useForCalendar);
+      const gmailRow = result.find((row) => row.useForEmail);
+      return {
+        googleCalendar: calendarRow || null,
+        gmail: gmailRow || null,
+      };
+    }
     return result;
   }
   async update(integration: IntegrationType, data: GoogleIntegrationUpdateInput) {
