@@ -11,3 +11,4 @@ export * from './characteristic.d.js';
 export * from './pagination.d.js';
 export * from './page-metadata.js';
 export * from './about.d.js'
+export * from './about-item.d.js'

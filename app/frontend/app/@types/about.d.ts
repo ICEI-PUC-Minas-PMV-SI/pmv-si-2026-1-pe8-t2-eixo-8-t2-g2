@@ -5,10 +5,9 @@ export type About = {
   main: string;     
   complementary: string;
   imageAboutUrl?: string;
-  items: string[];
 };
 
-export type CreateAboutPayload = Omit<About, 'id'>;
+export type CreateAbout = Omit<About, 'id'>;
 
 export type AboutItem = {
   id:   string;
@@ -16,4 +15,4 @@ export type AboutItem = {
   text: string;
 };
 
-export type CreateAboutItemPayload = Omit<AboutItem, 'id'>;
+export type CreateAboutItem = Omit<AboutItem, 'id'>;

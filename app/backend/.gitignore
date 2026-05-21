@@ -140,7 +140,7 @@ vite.config.ts.timestamp-*
 
 # Prisma Generated Files
 
-/src/generated/prisma/
+src/generated/
 
 *.db
 .vercel

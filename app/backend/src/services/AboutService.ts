@@ -10,16 +10,10 @@ import type {
 class AboutService {
   async create(about: AboutCreatePayload) {
     const prisma = await Prisma.getClient();
-    const { items = [], ...aboutProps } = about;
-    const itemsToCreate = items.length
-      ? {
-          create: items.map((id) => ({ itemId: id })),
-        }
-      : {};
+    const { ...aboutProps } = about;
     const createdAbout = await prisma.aboutInfo.create({
       data: {
-        ...aboutProps,
-        item: itemsToCreate,
+        ...aboutProps
       },
     });
 
@@ -49,7 +43,7 @@ class AboutService {
 
   async update(id: string, data: Partial<AboutCreatePayload>) {
     const prisma = await Prisma.getClient();
-    const { items, ...aboutProps } = data;
+    const { ...aboutProps } = data;
     const dataToUpdate = { ...aboutProps };
     const updatedAbout = await prisma.aboutInfo.update({
       where: { id },

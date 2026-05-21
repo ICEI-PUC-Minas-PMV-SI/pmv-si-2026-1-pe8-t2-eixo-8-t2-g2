@@ -4,7 +4,14 @@ import { UserRole } from '../validations/UserValidation';
 
 class AboutController {
   async create(product: AboutCreatePayload) {
-    const result = await AboutService.create(product);
+    var result;
+    var validateExists = await this.findOne();
+    if(validateExists){
+      result = await this.update(validateExists.id, product);
+    }else{
+      result = await AboutService.create(product);
+    }
+
     return result;
   }
 

@@ -216,7 +216,6 @@ model AboutInfo {
   subtitle        String
   main            String
   complementary   String
-  items           AboutItem[] @relation("AboutItem")
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime        @updatedAt @default(now())
@@ -225,9 +224,6 @@ model AboutInfo {
 
 model AboutItem {
   id      String @id @default(uuid())
-
-  aboutId String
-  about   AboutInfo @relation("AboutItem", fields: [aboutId], references: [id], onDelete: Cascade)
 
   icon    String
   text    String

@@ -18,13 +18,13 @@ class AboutRoute {
       res.json(result);
     });
 
-    router.get('/About/:id', async (req: AboutRequest, res: Response) => {
+    router.get('/about/:id', async (req: AboutRequest, res: Response) => {
       const id = req.params.id as string;
       const result = await AboutController.find(id);
       res.json(result);
     });
 
-    router.patch('/About/:id', async (req: AboutRequest, res: Response) => {
+    router.patch('/about/:id', async (req: AboutRequest, res: Response) => {
       const id = req.params.id as string;
       const result = await AboutController.update(id, req.body);
       res.json(result);

@@ -280,6 +280,10 @@ const STATUSES = [
 
 const ABOUT_TEXT = [{title: 'Título Sobre', subtitle: 'Subtítulo', main: 'Texto principal da tela', complementary: 'Texto Adicional'}]
 
+const ABOUT_ITEMS = [{icon: 'Truck', text: 'Lorem Ipsum'},
+  {icon: 'Hat', text: 'Dolor Sit'}
+]
+
 // ─────────────────────────────────────────────
 // Reset
 // ─────────────────────────────────────────────
@@ -580,8 +584,17 @@ async function seedAbout() {
       },
     });
   }
-
-  console.log(`Textos Sobre criados`);
+  
+  for (const aboutItem of ABOUT_ITEMS) {
+    await prisma.aboutItem.create({
+      data: {
+        icon: aboutItem.icon,
+        text: aboutItem.text,
+      },
+    });
+  }
+  
+  console.log(`Textos Sobre e itens criados`);
 }
 
 // ─────────────────────────────────────────────
