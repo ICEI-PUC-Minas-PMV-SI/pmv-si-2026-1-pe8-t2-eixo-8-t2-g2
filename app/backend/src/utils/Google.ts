@@ -1,9 +1,8 @@
-// import { OAuth2Client } from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 import { Env } from './Env';
 
 class Google {
   async verifyToken(token: string) {
-    const { OAuth2Client } = await import('google-auth-library');
     const clientId = Env.get('GOOGLE_CLIENT_ID');
     const client = new OAuth2Client(clientId);
     const ticket = await client.verifyIdToken({
