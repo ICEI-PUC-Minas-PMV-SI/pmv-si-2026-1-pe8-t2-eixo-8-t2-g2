@@ -8,8 +8,10 @@ import { ProductRoute } from './routes/ProductRoute';
 import { SMTPRoute } from './routes/SMTPRoute';
 import { SchedulerRoute } from './routes/SchedulerRoute';
 import { UserRoute } from './routes/UserRoute';
-import { DashboardRoute } from 'routes/DashboardRoute';
+import { DashboardRoute } from './routes/DashboardRoute';
 import { CustomerRoute } from './routes/CustomerRoute';
+import { AppSettingsRoute } from './routes/AppSettingsRoute';
+import { IntegrationsRoute } from './routes/IntegrationsRoute';
 class Router {
   register(app: Application) {
     AuthRoute.register(app);
@@ -22,6 +24,8 @@ class Router {
     UserRoute.register(app);
     DashboardRoute.register(app);
     CustomerRoute.register(app);
+    AppSettingsRoute.register(app);
+    IntegrationsRoute.register(app);
     // const { ...allRoutes } = routes;
     // Object.values(allRoutes).forEach((route) => {
     //   if ('register' in route) {

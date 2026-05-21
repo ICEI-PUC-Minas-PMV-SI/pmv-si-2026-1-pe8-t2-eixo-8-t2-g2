@@ -157,6 +157,7 @@ enum SchedulerStatus {
 enum IntegrationType {
   gmail
   calendar
+  all
 }
 
 enum PaymentMethod {
@@ -187,6 +188,8 @@ model Scheduler {
   cancellationReason String?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt @default(now())
+
+  googleEventId String?
 }
 
 model GoogleCredentials {
@@ -196,6 +199,29 @@ model GoogleCredentials {
   tokenType             String
   tokenId               String
   integration           IntegrationType
+}
+
+model GoogleIntegration {
+  id String @id @default(uuid())
+
+  googleEmail String?
+
+  clientId String
+  encryptedClientSecret String
+  encryptedRefreshToken String?
+
+  tokenType String?
+
+  scopes String
+
+  mailFrom String?
+  mailSenderName String?
+
+  useForCalendar Boolean @default(false)
+  useForEmail    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RecoveryCode {
@@ -210,4 +236,25 @@ model RecoveryCode {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model AppSettings {
+  id String @id @default("default")
+
+  siteName String?
+
+  logoUrl String?
+
+  whatsapp String?
+  contactEmail String?
+  serviceHours String?
+  address String?
+
+  instagram String?
+
+  primaryColor String?
+  secondaryColor String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

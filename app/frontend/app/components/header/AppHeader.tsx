@@ -54,12 +54,13 @@ export default function AppHeader({ onMenuClick }: Props) {
 
         {/* DIREITA */}
         <Flex gap="small" align="center">
-          <CartPreview />
-
           {!isLogged() && pathname !== ROUTES.LOGIN && (
-            <Button variant="solid" color="primary" onClick={() => goToLogin()}>
-              Entrar
-            </Button>
+            <>
+              <CartPreview />
+              <Button variant="solid" color="primary" onClick={() => goToLogin()}>
+                Entrar
+              </Button>
+            </>
           )}
 
           {isLogged() && (
@@ -68,6 +69,7 @@ export default function AppHeader({ onMenuClick }: Props) {
                 <Text style={{ color: 'white' }}>Olá, {getUserShortname()}</Text>
               )}
 
+              <CartPreview />
               <Tooltip title="Sair">
                 <Button
                   onClick={logoutConfirm}

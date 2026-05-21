@@ -61,7 +61,9 @@ export const ModelName = {
   SchedulerItem: 'SchedulerItem',
   Scheduler: 'Scheduler',
   GoogleCredentials: 'GoogleCredentials',
-  RecoveryCode: 'RecoveryCode'
+  GoogleIntegration: 'GoogleIntegration',
+  RecoveryCode: 'RecoveryCode',
+  AppSettings: 'AppSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -190,7 +192,8 @@ export const SchedulerScalarFieldEnum = {
   deliveryType: 'deliveryType',
   cancellationReason: 'cancellationReason',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  googleEventId: 'googleEventId'
 } as const
 
 export type SchedulerScalarFieldEnum = (typeof SchedulerScalarFieldEnum)[keyof typeof SchedulerScalarFieldEnum]
@@ -208,6 +211,25 @@ export const GoogleCredentialsScalarFieldEnum = {
 export type GoogleCredentialsScalarFieldEnum = (typeof GoogleCredentialsScalarFieldEnum)[keyof typeof GoogleCredentialsScalarFieldEnum]
 
 
+export const GoogleIntegrationScalarFieldEnum = {
+  id: 'id',
+  googleEmail: 'googleEmail',
+  clientId: 'clientId',
+  encryptedClientSecret: 'encryptedClientSecret',
+  encryptedRefreshToken: 'encryptedRefreshToken',
+  tokenType: 'tokenType',
+  scopes: 'scopes',
+  mailFrom: 'mailFrom',
+  mailSenderName: 'mailSenderName',
+  useForCalendar: 'useForCalendar',
+  useForEmail: 'useForEmail',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GoogleIntegrationScalarFieldEnum = (typeof GoogleIntegrationScalarFieldEnum)[keyof typeof GoogleIntegrationScalarFieldEnum]
+
+
 export const RecoveryCodeScalarFieldEnum = {
   id: 'id',
   codeHash: 'codeHash',
@@ -218,6 +240,24 @@ export const RecoveryCodeScalarFieldEnum = {
 } as const
 
 export type RecoveryCodeScalarFieldEnum = (typeof RecoveryCodeScalarFieldEnum)[keyof typeof RecoveryCodeScalarFieldEnum]
+
+
+export const AppSettingsScalarFieldEnum = {
+  id: 'id',
+  siteName: 'siteName',
+  logoUrl: 'logoUrl',
+  whatsapp: 'whatsapp',
+  contactEmail: 'contactEmail',
+  serviceHours: 'serviceHours',
+  address: 'address',
+  instagram: 'instagram',
+  primaryColor: 'primaryColor',
+  secondaryColor: 'secondaryColor',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppSettingsScalarFieldEnum = (typeof AppSettingsScalarFieldEnum)[keyof typeof AppSettingsScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -25,11 +25,11 @@ export default function App() {
           <Route path="/product" element={<ProductPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/cost-calculator" element={<CostCalculator />} />
+          <Route path="/cart" element={<CartPage />} />
         </Route>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Welcome />} />
           <Route path="/home" element={<Welcome />} />
-          <Route path="/cart" element={<CartPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

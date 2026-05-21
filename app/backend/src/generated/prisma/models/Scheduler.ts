@@ -37,6 +37,7 @@ export type SchedulerMinAggregateOutputType = {
   cancellationReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  googleEventId: string | null
 }
 
 export type SchedulerMaxAggregateOutputType = {
@@ -52,6 +53,7 @@ export type SchedulerMaxAggregateOutputType = {
   cancellationReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  googleEventId: string | null
 }
 
 export type SchedulerCountAggregateOutputType = {
@@ -67,6 +69,7 @@ export type SchedulerCountAggregateOutputType = {
   cancellationReason: number
   createdAt: number
   updatedAt: number
+  googleEventId: number
   _all: number
 }
 
@@ -84,6 +87,7 @@ export type SchedulerMinAggregateInputType = {
   cancellationReason?: true
   createdAt?: true
   updatedAt?: true
+  googleEventId?: true
 }
 
 export type SchedulerMaxAggregateInputType = {
@@ -99,6 +103,7 @@ export type SchedulerMaxAggregateInputType = {
   cancellationReason?: true
   createdAt?: true
   updatedAt?: true
+  googleEventId?: true
 }
 
 export type SchedulerCountAggregateInputType = {
@@ -114,6 +119,7 @@ export type SchedulerCountAggregateInputType = {
   cancellationReason?: true
   createdAt?: true
   updatedAt?: true
+  googleEventId?: true
   _all?: true
 }
 
@@ -202,6 +208,7 @@ export type SchedulerGroupByOutputType = {
   cancellationReason: string | null
   createdAt: Date
   updatedAt: Date
+  googleEventId: string | null
   _count: SchedulerCountAggregateOutputType | null
   _min: SchedulerMinAggregateOutputType | null
   _max: SchedulerMaxAggregateOutputType | null
@@ -238,6 +245,7 @@ export type SchedulerWhereInput = {
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+  googleEventId?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   items?: Prisma.SchedulerItemListRelationFilter
 }
@@ -255,6 +263,7 @@ export type SchedulerOrderByWithRelationInput = {
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  googleEventId?: Prisma.SortOrderInput | Prisma.SortOrder
   customer?: Prisma.CustomerOrderByWithRelationInput
   items?: Prisma.SchedulerItemOrderByRelationAggregateInput
 }
@@ -275,6 +284,7 @@ export type SchedulerWhereUniqueInput = Prisma.AtLeast<{
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+  googleEventId?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   items?: Prisma.SchedulerItemListRelationFilter
 }, "id">
@@ -292,6 +302,7 @@ export type SchedulerOrderByWithAggregationInput = {
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  googleEventId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.SchedulerCountOrderByAggregateInput
   _max?: Prisma.SchedulerMaxOrderByAggregateInput
   _min?: Prisma.SchedulerMinOrderByAggregateInput
@@ -313,6 +324,7 @@ export type SchedulerScalarWhereWithAggregatesInput = {
   cancellationReason?: Prisma.StringNullableWithAggregatesFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Scheduler"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Scheduler"> | Date | string
+  googleEventId?: Prisma.StringNullableWithAggregatesFilter<"Scheduler"> | string | null
 }
 
 export type SchedulerCreateInput = {
@@ -327,6 +339,7 @@ export type SchedulerCreateInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  googleEventId?: string | null
   customer: Prisma.CustomerCreateNestedOneWithoutSchedulersInput
   items?: Prisma.SchedulerItemCreateNestedManyWithoutSchedulerInput
 }
@@ -344,6 +357,7 @@ export type SchedulerUncheckedCreateInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  googleEventId?: string | null
   items?: Prisma.SchedulerItemUncheckedCreateNestedManyWithoutSchedulerInput
 }
 
@@ -359,6 +373,7 @@ export type SchedulerUpdateInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSchedulersNestedInput
   items?: Prisma.SchedulerItemUpdateManyWithoutSchedulerNestedInput
 }
@@ -376,6 +391,7 @@ export type SchedulerUncheckedUpdateInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   items?: Prisma.SchedulerItemUncheckedUpdateManyWithoutSchedulerNestedInput
 }
 
@@ -392,6 +408,7 @@ export type SchedulerCreateManyInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  googleEventId?: string | null
 }
 
 export type SchedulerUpdateManyMutationInput = {
@@ -406,6 +423,7 @@ export type SchedulerUpdateManyMutationInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SchedulerUncheckedUpdateManyInput = {
@@ -421,6 +439,7 @@ export type SchedulerUncheckedUpdateManyInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SchedulerListRelationFilter = {
@@ -451,6 +470,7 @@ export type SchedulerCountOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  googleEventId?: Prisma.SortOrder
 }
 
 export type SchedulerMaxOrderByAggregateInput = {
@@ -466,6 +486,7 @@ export type SchedulerMaxOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  googleEventId?: Prisma.SortOrder
 }
 
 export type SchedulerMinOrderByAggregateInput = {
@@ -481,6 +502,7 @@ export type SchedulerMinOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  googleEventId?: Prisma.SortOrder
 }
 
 export type SchedulerCreateNestedManyWithoutCustomerInput = {
@@ -567,6 +589,7 @@ export type SchedulerCreateWithoutCustomerInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  googleEventId?: string | null
   items?: Prisma.SchedulerItemCreateNestedManyWithoutSchedulerInput
 }
 
@@ -582,6 +605,7 @@ export type SchedulerUncheckedCreateWithoutCustomerInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  googleEventId?: string | null
   items?: Prisma.SchedulerItemUncheckedCreateNestedManyWithoutSchedulerInput
 }
 
@@ -626,6 +650,7 @@ export type SchedulerScalarWhereInput = {
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+  googleEventId?: Prisma.StringNullableFilter<"Scheduler"> | string | null
 }
 
 export type SchedulerCreateWithoutItemsInput = {
@@ -640,6 +665,7 @@ export type SchedulerCreateWithoutItemsInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  googleEventId?: string | null
   customer: Prisma.CustomerCreateNestedOneWithoutSchedulersInput
 }
 
@@ -656,6 +682,7 @@ export type SchedulerUncheckedCreateWithoutItemsInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  googleEventId?: string | null
 }
 
 export type SchedulerCreateOrConnectWithoutItemsInput = {
@@ -686,6 +713,7 @@ export type SchedulerUpdateWithoutItemsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSchedulersNestedInput
 }
 
@@ -702,6 +730,7 @@ export type SchedulerUncheckedUpdateWithoutItemsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type SchedulerCreateManyCustomerInput = {
@@ -716,6 +745,7 @@ export type SchedulerCreateManyCustomerInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  googleEventId?: string | null
 }
 
 export type SchedulerUpdateWithoutCustomerInput = {
@@ -730,6 +760,7 @@ export type SchedulerUpdateWithoutCustomerInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   items?: Prisma.SchedulerItemUpdateManyWithoutSchedulerNestedInput
 }
 
@@ -745,6 +776,7 @@ export type SchedulerUncheckedUpdateWithoutCustomerInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   items?: Prisma.SchedulerItemUncheckedUpdateManyWithoutSchedulerNestedInput
 }
 
@@ -760,6 +792,7 @@ export type SchedulerUncheckedUpdateManyWithoutCustomerInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -806,6 +839,7 @@ export type SchedulerSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   cancellationReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  googleEventId?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Scheduler$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.SchedulerCountOutputTypeDefaultArgs<ExtArgs>
@@ -824,6 +858,7 @@ export type SchedulerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   cancellationReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  googleEventId?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
 
@@ -840,6 +875,7 @@ export type SchedulerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   cancellationReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  googleEventId?: boolean
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
 
@@ -856,9 +892,10 @@ export type SchedulerSelectScalar = {
   cancellationReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  googleEventId?: boolean
 }
 
-export type SchedulerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "scheduledAt" | "scheduledTo" | "estimatedStartAt" | "estimatedEndAt" | "status" | "paymentMethod" | "deliveryType" | "cancellationReason" | "createdAt" | "updatedAt", ExtArgs["result"]["scheduler"]>
+export type SchedulerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "scheduledAt" | "scheduledTo" | "estimatedStartAt" | "estimatedEndAt" | "status" | "paymentMethod" | "deliveryType" | "cancellationReason" | "createdAt" | "updatedAt" | "googleEventId", ExtArgs["result"]["scheduler"]>
 export type SchedulerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Scheduler$itemsArgs<ExtArgs>
@@ -890,6 +927,7 @@ export type $SchedulerPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     cancellationReason: string | null
     createdAt: Date
     updatedAt: Date
+    googleEventId: string | null
   }, ExtArgs["result"]["scheduler"]>
   composites: {}
 }
@@ -1327,6 +1365,7 @@ export interface SchedulerFieldRefs {
   readonly cancellationReason: Prisma.FieldRef<"Scheduler", 'String'>
   readonly createdAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
+  readonly googleEventId: Prisma.FieldRef<"Scheduler", 'String'>
 }
     
 

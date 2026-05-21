@@ -1,6 +1,6 @@
 import { Button, Input, Space, Table, Tag, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, EditOutlined } from '@ant-design/icons';
 import type { PaymentMethod } from '~/@types/payment';
 import type {
   DeliveryType,
@@ -18,6 +18,7 @@ import SchedulerController from '~/controllers/SchedulerController';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import { SchedulerCancel } from './SchedulerCancel';
 import NumberUtil from '~/utils/NumberUtil';
+import { useAuthStore } from '~/hooks/useAuthStore';
 
 const getItemColumnText = (items: SchedulerItem[]) => {
   const itemsCount = items.length;
@@ -34,7 +35,7 @@ export function SchedulerList({
   schedulerQuery: ReturnType<typeof useTableQuery<Scheduler>>;
 }) {
   const [cancelledSchedulerId, setCancelledSchedulerId] = useState<string | null>(null);
-
+  const { isAdmin } = useAuthStore();
   const {
     tableProps,
     forceRefetch,
@@ -74,7 +75,6 @@ export function SchedulerList({
           if (cancelledSchedulerId) {
             await SchedulerController.update({
               id: cancelledSchedulerId,
-              status: 'cancelled',
               cancellationReason: reason,
             });
             forceRefetch();
@@ -210,16 +210,23 @@ export function SchedulerList({
             width: 120,
             render: (_, record) =>
               record.status !== 'cancelled' && record.status !== 'completed' ? (
-                <Button
-                  danger
-                  size="small"
-                  icon={<CloseCircleOutlined />}
-                  onClick={() => {
-                    setCancelledSchedulerId(record.id);
-                  }}
-                >
-                  Cancelar
-                </Button>
+                <Space>
+                  {(isAdmin() || record.status === 'pending') && (
+                    <Button icon={<EditOutlined />} onClick={() => {}}>
+                      Editar
+                    </Button>
+                  )}
+                  <Button
+                    danger
+                    size="small"
+                    icon={<CloseCircleOutlined />}
+                    onClick={() => {
+                      setCancelledSchedulerId(record.id);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </Space>
               ) : record.status === 'cancelled' && record.cancellationReason ? (
                 <Tooltip title={`Motivo: ${record.cancellationReason}`}>
                   <Tag color="red">Cancelado</Tag>

@@ -394,7 +394,9 @@ export const ModelName = {
   SchedulerItem: 'SchedulerItem',
   Scheduler: 'Scheduler',
   GoogleCredentials: 'GoogleCredentials',
-  RecoveryCode: 'RecoveryCode'
+  GoogleIntegration: 'GoogleIntegration',
+  RecoveryCode: 'RecoveryCode',
+  AppSettings: 'AppSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -410,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "customer" | "user" | "category" | "productCategory" | "characteristic" | "productCharacteristic" | "product" | "schedulerItem" | "scheduler" | "googleCredentials" | "recoveryCode"
+    modelProps: "customer" | "user" | "category" | "productCategory" | "characteristic" | "productCharacteristic" | "product" | "schedulerItem" | "scheduler" | "googleCredentials" | "googleIntegration" | "recoveryCode" | "appSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1154,6 +1156,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    GoogleIntegration: {
+      payload: Prisma.$GoogleIntegrationPayload<ExtArgs>
+      fields: Prisma.GoogleIntegrationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.GoogleIntegrationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.GoogleIntegrationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>
+        }
+        findFirst: {
+          args: Prisma.GoogleIntegrationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.GoogleIntegrationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>
+        }
+        findMany: {
+          args: Prisma.GoogleIntegrationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>[]
+        }
+        create: {
+          args: Prisma.GoogleIntegrationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>
+        }
+        createMany: {
+          args: Prisma.GoogleIntegrationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.GoogleIntegrationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>[]
+        }
+        delete: {
+          args: Prisma.GoogleIntegrationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>
+        }
+        update: {
+          args: Prisma.GoogleIntegrationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>
+        }
+        deleteMany: {
+          args: Prisma.GoogleIntegrationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.GoogleIntegrationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.GoogleIntegrationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>[]
+        }
+        upsert: {
+          args: Prisma.GoogleIntegrationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$GoogleIntegrationPayload>
+        }
+        aggregate: {
+          args: Prisma.GoogleIntegrationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateGoogleIntegration>
+        }
+        groupBy: {
+          args: Prisma.GoogleIntegrationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GoogleIntegrationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.GoogleIntegrationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.GoogleIntegrationCountAggregateOutputType> | number
+        }
+      }
+    }
     RecoveryCode: {
       payload: Prisma.$RecoveryCodePayload<ExtArgs>
       fields: Prisma.RecoveryCodeFieldRefs
@@ -1225,6 +1301,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.RecoveryCodeCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.RecoveryCodeCountAggregateOutputType> | number
+        }
+      }
+    }
+    AppSettings: {
+      payload: Prisma.$AppSettingsPayload<ExtArgs>
+      fields: Prisma.AppSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AppSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AppSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.AppSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AppSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.AppSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.AppSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.AppSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.AppSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.AppSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>
+        }
+        update: {
+          args: Prisma.AppSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.AppSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AppSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.AppSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.AppSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AppSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.AppSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAppSettings>
+        }
+        groupBy: {
+          args: Prisma.AppSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AppSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AppSettingsCountAggregateOutputType> | number
         }
       }
     }
@@ -1377,7 +1527,8 @@ export const SchedulerScalarFieldEnum = {
   deliveryType: 'deliveryType',
   cancellationReason: 'cancellationReason',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  googleEventId: 'googleEventId'
 } as const
 
 export type SchedulerScalarFieldEnum = (typeof SchedulerScalarFieldEnum)[keyof typeof SchedulerScalarFieldEnum]
@@ -1395,6 +1546,25 @@ export const GoogleCredentialsScalarFieldEnum = {
 export type GoogleCredentialsScalarFieldEnum = (typeof GoogleCredentialsScalarFieldEnum)[keyof typeof GoogleCredentialsScalarFieldEnum]
 
 
+export const GoogleIntegrationScalarFieldEnum = {
+  id: 'id',
+  googleEmail: 'googleEmail',
+  clientId: 'clientId',
+  encryptedClientSecret: 'encryptedClientSecret',
+  encryptedRefreshToken: 'encryptedRefreshToken',
+  tokenType: 'tokenType',
+  scopes: 'scopes',
+  mailFrom: 'mailFrom',
+  mailSenderName: 'mailSenderName',
+  useForCalendar: 'useForCalendar',
+  useForEmail: 'useForEmail',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GoogleIntegrationScalarFieldEnum = (typeof GoogleIntegrationScalarFieldEnum)[keyof typeof GoogleIntegrationScalarFieldEnum]
+
+
 export const RecoveryCodeScalarFieldEnum = {
   id: 'id',
   codeHash: 'codeHash',
@@ -1405,6 +1575,24 @@ export const RecoveryCodeScalarFieldEnum = {
 } as const
 
 export type RecoveryCodeScalarFieldEnum = (typeof RecoveryCodeScalarFieldEnum)[keyof typeof RecoveryCodeScalarFieldEnum]
+
+
+export const AppSettingsScalarFieldEnum = {
+  id: 'id',
+  siteName: 'siteName',
+  logoUrl: 'logoUrl',
+  whatsapp: 'whatsapp',
+  contactEmail: 'contactEmail',
+  serviceHours: 'serviceHours',
+  address: 'address',
+  instagram: 'instagram',
+  primaryColor: 'primaryColor',
+  secondaryColor: 'secondaryColor',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppSettingsScalarFieldEnum = (typeof AppSettingsScalarFieldEnum)[keyof typeof AppSettingsScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1603,7 +1791,9 @@ export type GlobalOmitConfig = {
   schedulerItem?: Prisma.SchedulerItemOmit
   scheduler?: Prisma.SchedulerOmit
   googleCredentials?: Prisma.GoogleCredentialsOmit
+  googleIntegration?: Prisma.GoogleIntegrationOmit
   recoveryCode?: Prisma.RecoveryCodeOmit
+  appSettings?: Prisma.AppSettingsOmit
 }
 
 /* Types for Logging */

@@ -7,6 +7,12 @@ class Rules {
   email(): Rule {
     return { type: 'email', message: 'E-mail inválido!' };
   }
+  phone(): Rule {
+    return {
+      pattern: /^(\(?\d{2}\)?\s?)?(\d{4,5}-\d{4})$/,
+      message: 'Telefone inválido!',
+    };
+  }
 }
 
 export default new Rules();

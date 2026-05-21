@@ -22,6 +22,23 @@ export type SchedulerCreatePayload = {
   items: ProductItem[];
 };
 
+export type SchedulerItemPayload = {
+  id?: string;
+  productId: string;
+  quantity: number;
+  orderIndex: number;
+  priceAtBooking?: number;
+  durationMinutes?: number;
+};
+
+export type SchedulerUpdatePayload = {
+  customerId?: string;
+  scheduledAt?: Date;
+  status?: SchedulerStatus;
+
+  items: SchedulerItemPayload[];
+};
+
 export type LeadTimeConfig = {
   leadTimeInMinutes?: number | undefined;
   leadTimeInDays?: number | undefined;

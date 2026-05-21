@@ -4,6 +4,7 @@ import AppIcon from '../icon/AppIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { UserRole } from '~/constants/Auth';
+import { ShoppingCartOutlined } from '@ant-design/icons';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -17,6 +18,11 @@ const menu = [
     key: '/scheduler',
     label: 'Pedidos',
     IconComponent: AppIcon.DailyCalendar,
+  },
+  {
+    key: '/cart',
+    label: 'Meu Carrinho',
+    IconComponent: ShoppingCartOutlined,
   },
   {
     key: '/dashboard',

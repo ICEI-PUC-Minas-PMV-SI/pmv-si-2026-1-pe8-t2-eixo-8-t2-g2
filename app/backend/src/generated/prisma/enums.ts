@@ -30,7 +30,8 @@ export type SchedulerStatus = (typeof SchedulerStatus)[keyof typeof SchedulerSta
 
 export const IntegrationType = {
   gmail: 'gmail',
-  calendar: 'calendar'
+  calendar: 'calendar',
+  all: 'all'
 } as const
 
 export type IntegrationType = (typeof IntegrationType)[keyof typeof IntegrationType]

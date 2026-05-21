@@ -1,4 +1,8 @@
-import type { PaginationParams, ProductItem, SchedulerCreatePayload } from '@types';
+import type {
+  PaginationParams,
+  SchedulerCreatePayload,
+  SchedulerUpdatePayload,
+} from '@types';
 import { Prisma } from '../db/Prisma';
 import { ProductService } from './ProductService';
 import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper';
@@ -6,12 +10,10 @@ import { AppError } from '../error/AppError';
 import { HttpCode } from '../utils/HttpCode';
 import type {
   SchedulerOrderByWithRelationInput,
-  SchedulerUpdateInput,
   SchedulerWhereInput,
 } from '../generated/prisma/models';
 import type { SchedulerStatus } from '../generated/prisma/enums';
 import { ResponseUtil } from '../utils/ResponseUtil';
-import type { Scheduler } from '../generated/prisma/client';
 import { CustomerService } from './CustomerService';
 
 const userSelect = {
@@ -270,34 +272,121 @@ class SchedulerService {
     });
   }
 
-  async update(id: string, data: Partial<SchedulerCreatePayload>) {
-    // const prisma = await Prisma.getClient();
-    // const { items: products, ...newData } = data;
-    // if (!products || !products.length) {
-    //   throw new AppError('Invalid products', HttpCode.BAD_REQUEST);
-    // }
-    // const dataToUpdate: Partial<SchedulerUpdateInput> = {
-    //   ...newData,
-    //   // products,
-    // };
-    // if (products) {
-    //   dataToUpdate.items = {
-    //     connectOrCreate: {
-    //       create: {
-    //       }
-    //     }
-    //   };
-    // }
-    // const updatedScheduler = await prisma.scheduler.update({
-    //   where: { id },
-    //   data: dataToUpdate,
-    //   include: {
-    //     customer: {
-    //       select: userSelect,
-    //     },
-    //   },
-    // });
-    // return updatedScheduler;
+  async update(id: string, data: SchedulerUpdatePayload) {
+    const prisma = await Prisma.getClient();
+
+    const { items, ...schedulerData } = data;
+
+    if (!items || !items.length) {
+      throw new AppError('Invalid products', HttpCode.BAD_REQUEST);
+    }
+
+    const existingScheduler = await prisma.scheduler.findUnique({
+      where: { id },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!existingScheduler) {
+      throw new AppError('Scheduler not found', HttpCode.NOT_FOUND);
+    }
+
+    const existingItems = existingScheduler.items;
+
+    // IDs enviados
+    const incomingIds = items.filter((item) => item.id).map((item) => item.id as string);
+
+    // Itens para remover
+    const itemsToDelete = existingItems.filter(
+      (existing) => !incomingIds.includes(existing.id),
+    );
+
+    // Itens novos
+    const itemsToCreate = items.filter((item) => !item.id);
+
+    // Itens para atualizar
+    const itemsToUpdate = items.filter((item) => item.id);
+
+    await prisma.$transaction(async (tx) => {
+      // Atualiza scheduler
+      await tx.scheduler.update({
+        where: { id },
+        data: schedulerData,
+      });
+
+      // Remove itens
+      if (itemsToDelete.length) {
+        await tx.schedulerItem.deleteMany({
+          where: {
+            id: {
+              in: itemsToDelete.map((item) => item.id),
+            },
+          },
+        });
+      }
+
+      // Atualiza itens existentes
+      for (const item of itemsToUpdate) {
+        await tx.schedulerItem.update({
+          where: {
+            id: item.id || '',
+          },
+          data: {
+            productId: item.productId,
+            quantity: item.quantity,
+            orderIndex: item.orderIndex,
+            priceAtBooking: item.priceAtBooking || null,
+            durationMinutes: item.durationMinutes || null,
+          },
+        });
+      }
+
+      // Cria novos itens
+      if (itemsToCreate.length) {
+        await tx.schedulerItem.createMany({
+          data: itemsToCreate.map((item) => ({
+            schedulerId: id,
+            productId: item.productId,
+            quantity: item.quantity,
+            orderIndex: item.orderIndex,
+            priceAtBooking: item.priceAtBooking || null,
+            durationMinutes: item.durationMinutes || null,
+          })),
+        });
+      }
+    });
+
+    return prisma.scheduler.findUnique({
+      where: { id },
+      include: {
+        customer: {
+          select: userSelect,
+        },
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+  }
+
+  async cancel(id: string, cancellationReason: string) {
+    const prisma = await Prisma.getClient();
+    const updatedScheduler = await prisma.scheduler.update({
+      where: { id },
+      data: {
+        status: 'cancelled',
+        cancellationReason,
+      },
+      select: {
+        id: true,
+        scheduledAt: true,
+        status: true,
+      },
+    });
+    return updatedScheduler;
   }
 }
 

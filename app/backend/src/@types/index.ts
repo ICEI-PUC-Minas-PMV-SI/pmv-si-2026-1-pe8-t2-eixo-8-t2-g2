@@ -8,4 +8,5 @@ export * from './google.d.js';
 export * from './category.d.js';
 export * from './characteristic.d.js';
 export * from './pagination.d.js';
-export * from './page-metadata.js';
+export * from './page-metadata.d.js';
+export * from './integrations.d.js';

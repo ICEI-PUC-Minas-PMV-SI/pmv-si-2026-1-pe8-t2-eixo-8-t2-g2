@@ -101,6 +101,9 @@ class SchedulerController {
   async update(id: string, data: Partial<SchedulerCreatePayload>) {
     return SchedulerService.update(id, data);
   }
+  async cancel(id: string, cancellationReason: string) {
+    return SchedulerService.cancel(id, cancellationReason);
+  }
   async delete(id: string) {
     return SchedulerService.delete(id);
   }

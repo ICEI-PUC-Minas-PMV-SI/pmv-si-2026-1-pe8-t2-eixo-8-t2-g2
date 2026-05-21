@@ -33,7 +33,7 @@ export function CartPage() {
   );
 
   return (
-    <Space direction="vertical" size="large" style={{ width: '100%' }}>
+    <Space orientation="vertical" size="large" style={{ width: '100%' }}>
       <Card>
         <Flex justify="space-between" align="center" gap="middle" wrap>
           <div>
@@ -52,7 +52,7 @@ export function CartPage() {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
             {items.length === 0 ? (
               <Card>
                 <Empty description="Seu carrinho está vazio" />
@@ -87,7 +87,7 @@ export function CartPage() {
                       </div>
 
                       <Space
-                        direction="vertical"
+                        orientation="vertical"
                         style={{ flex: 1, minWidth: 0 }}
                         size={4}
                       >
@@ -104,7 +104,7 @@ export function CartPage() {
                         </Text>
                       </Space>
 
-                      <Space direction="vertical" align="end" size={8}>
+                      <Space orientation="vertical" align="end" size={8}>
                         <InputNumber
                           min={1}
                           value={item.quantity}
@@ -143,7 +143,7 @@ export function CartPage() {
           <Card>
             <Title level={4}>Resumo</Title>
             <Divider />
-            <Space direction="vertical" style={{ width: '100%' }} size={8}>
+            <Space orientation="vertical" style={{ width: '100%' }} size={8}>
               <Flex justify="space-between">
                 <Text>Itens</Text>
                 <Text strong>{totalItems}</Text>
@@ -160,7 +160,7 @@ export function CartPage() {
 
             <Divider />
 
-            <Space direction="vertical" style={{ width: '100%' }}>
+            <Space orientation="vertical" style={{ width: '100%' }}>
               <Button type="primary" block disabled={items.length === 0}>
                 Continuar para checkout
               </Button>

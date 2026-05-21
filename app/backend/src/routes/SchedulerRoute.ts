@@ -16,10 +16,6 @@ class SchedulerRoute {
       const url = await SchedulerController.getGoogleAuthUrl();
       res.json({ url });
     });
-    router.get('/scheduler/google-auth-url2', async (_req, res) => {
-      // const url = await SchedulerController.getGoogleAuthUrl();
-      res.json({ url: '' });
-    });
 
     router.get('/google-calendar/oauth2callback', async (req, res) => {
       const code = req.query.code;
@@ -88,6 +84,15 @@ class SchedulerRoute {
       const result = await SchedulerController.update(id, req.body);
       res.json(result);
     });
+
+    router.patch(
+      '/scheduler-cancellation/:id',
+      async (req: SchedulerRequest, res: Response) => {
+        const id = req.params.id as string;
+        const result = await SchedulerController.cancel(id, req.body.cancellationReason);
+        res.json(result);
+      },
+    );
 
     router.delete('/scheduler/:id', async (req: SchedulerRequest, res: Response) => {
       const id = req.params.id as string;
