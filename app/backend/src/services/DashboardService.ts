@@ -1,30 +1,28 @@
-import { addMonths, format, subDays, subMonths } from 'date-fns';
+import { addMonths, format, subDays, subMonths, startOfDay, endOfDay } from 'date-fns';
 import { Prisma } from '../db/Prisma';
 import { ptBR } from 'date-fns/locale';
 import NumberUtil from '../utils/NumberUtil';
+import { fromZonedTime } from 'date-fns-tz';
 
 class DashboardService {
   getStartAndEndDay(date: Date | string) {
-    const d = new Date(date);
+    const timeZone = 'America/Sao_Paulo';
 
-    const startOfDay = new Date(
-      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0),
-    );
+    const localDate = new Date(date);
 
-    const endOfDay = new Date(
-      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999),
-    );
+    const start = startOfDay(localDate);
+    const end = endOfDay(localDate);
 
     return {
-      startOfDay,
-      endOfDay,
+      startOfDay: fromZonedTime(start, timeZone),
+      endOfDay: fromZonedTime(end, timeZone),
     };
   }
   async overviewToday() {
     const prisma = await Prisma.getClient();
     const now = new Date();
     const { startOfDay, endOfDay } = this.getStartAndEndDay(now);
-    const { startOfDay: startOfTomorrow, endOfDay: endOfTomorrow } =
+    const { startOfDay: startOfYesterday, endOfDay: endOfYesterday } =
       this.getStartAndEndDay(subDays(new Date(), 1));
     const schedulers = await prisma.scheduler.findMany({
       where: {
@@ -38,11 +36,11 @@ class DashboardService {
       },
     });
 
-    const schedulersTomorrow = await prisma.scheduler.findMany({
+    const schedulersYesterday = await prisma.scheduler.findMany({
       where: {
         scheduledAt: {
-          gte: startOfTomorrow,
-          lte: endOfTomorrow,
+          gte: startOfYesterday,
+          lte: endOfYesterday,
         },
       },
       include: {
@@ -88,7 +86,7 @@ class DashboardService {
     return {
       ...data,
       schedulers: schedulers.length,
-      schedulersTomorrow: schedulersTomorrow.length,
+      schedulersYesterday: schedulersYesterday.length,
       created: created.length,
       cancelled: cancelled.length,
       delivery: schedulers.filter((scheduler) => scheduler.deliveryType === 'delivery')
@@ -347,5 +345,5 @@ class DashboardService {
     return result;
   }
 }
-
+new DashboardService().overviewToday().then((data) => console.log(data));
 export default new DashboardService();

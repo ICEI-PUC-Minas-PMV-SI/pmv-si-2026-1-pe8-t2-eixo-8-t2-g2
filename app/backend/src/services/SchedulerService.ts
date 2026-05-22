@@ -9,6 +9,8 @@ import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper';
 import { AppError } from '../error/AppError';
 import { HttpCode } from '../utils/HttpCode';
 import type {
+  SchedulerItemCreateInput,
+  SchedulerItemUncheckedCreateWithoutSchedulerInput,
   SchedulerOrderByWithRelationInput,
   SchedulerWhereInput,
 } from '../generated/prisma/models';
@@ -62,7 +64,11 @@ class SchedulerService {
             HttpCode.NOT_FOUND,
           );
         }
-        return { ...result, quantity: product.quantity };
+        return {
+          ...result,
+          quantity: product.quantity,
+          customization: product.customization,
+        };
       }),
     );
   }
@@ -138,12 +144,13 @@ class SchedulerService {
         },
       );
     }
-    const schedulerItems = [
+    const schedulerItems: SchedulerItemUncheckedCreateWithoutSchedulerInput[] = [
       ...productsList.map((product, orderIndex: number) => ({
         productId: product.id,
         quantity: product.quantity,
-        priceAtBooking: product.price || null,
+        priceAtBooking: product.price,
         orderIndex: orderIndex + 1,
+        customization: product.customization || '',
       })),
     ];
     const validCustomerId = customer?.id || customerId;
@@ -205,10 +212,35 @@ class SchedulerService {
     const prisma = await Prisma.getClient();
     const scheduler = await prisma.scheduler.findUnique({
       where: { id },
-      include: {
-        items: true,
+      select: {
+        id: true,
         customer: {
-          select: userSelect,
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+          },
+        },
+        scheduledAt: true,
+        scheduledTo: true,
+        status: true,
+        deliveryType: true,
+        paymentMethod: true,
+        cancellationReason: true,
+        items: {
+          select: {
+            id: true,
+            quantity: true,
+            priceAtBooking: true,
+            durationMinutes: true,
+            customization: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
         },
       },
     });

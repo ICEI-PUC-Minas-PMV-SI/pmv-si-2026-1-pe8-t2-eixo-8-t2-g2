@@ -140,6 +140,7 @@ model SchedulerItem {
 
   priceAtBooking  Float?
   durationMinutes Int?
+  customization   String?
 
   orderIndex Int
 

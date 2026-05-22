@@ -29,6 +29,11 @@ class SchedulerController {
   async list<T>(params: TableParams) {
     return Request.getTableData<T>('/scheduler-list', params);
   }
+
+  async getById(id: string) {
+    const result = await Request.get<Scheduler>(`/scheduler/${id}`);
+    return result;
+  }
 }
 
 export default new SchedulerController();

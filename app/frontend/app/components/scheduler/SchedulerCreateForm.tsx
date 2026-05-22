@@ -109,7 +109,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
     ProductController.list<Product>(params),
   );
   const items = Form.useWatch('items', form) as
-    | { productName: string; quantity: number }[]
+    | { productName: string; quantity: number; customization: string }[]
     | undefined;
   const total =
     items?.reduce((acc, item) => {

@@ -6,6 +6,7 @@ import type { Request } from './server';
 export type ProductItem = {
   id: Product['id'];
   quantity: number;
+  customization?: string;
 };
 
 export type SchedulerRequest = Request<SchedulerFilter, SchedulerSort>;

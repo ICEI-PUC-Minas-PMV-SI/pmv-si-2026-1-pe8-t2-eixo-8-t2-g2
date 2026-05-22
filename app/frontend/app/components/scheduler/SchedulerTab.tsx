@@ -63,7 +63,13 @@ export function SchedulerTab() {
       const items: SchedulerItem[] = (values.items ?? []).map((it: any, idx: number) => ({
         id: it.productId,
         quantity: it.quantity ?? 1,
+        customization: it.customization ?? '',
       }));
+
+      if (!items.length) {
+        message.error('Adicione pelo menos um produto ao pedido.');
+        return;
+      }
 
       const next: CreateScheduler = {
         customerId: values.customerId || undefined,

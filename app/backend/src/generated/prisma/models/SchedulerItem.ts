@@ -47,6 +47,7 @@ export type SchedulerItemMinAggregateOutputType = {
   quantity: number | null
   priceAtBooking: number | null
   durationMinutes: number | null
+  customization: string | null
   orderIndex: number | null
   createdAt: Date | null
 }
@@ -58,6 +59,7 @@ export type SchedulerItemMaxAggregateOutputType = {
   quantity: number | null
   priceAtBooking: number | null
   durationMinutes: number | null
+  customization: string | null
   orderIndex: number | null
   createdAt: Date | null
 }
@@ -69,6 +71,7 @@ export type SchedulerItemCountAggregateOutputType = {
   quantity: number
   priceAtBooking: number
   durationMinutes: number
+  customization: number
   orderIndex: number
   createdAt: number
   _all: number
@@ -96,6 +99,7 @@ export type SchedulerItemMinAggregateInputType = {
   quantity?: true
   priceAtBooking?: true
   durationMinutes?: true
+  customization?: true
   orderIndex?: true
   createdAt?: true
 }
@@ -107,6 +111,7 @@ export type SchedulerItemMaxAggregateInputType = {
   quantity?: true
   priceAtBooking?: true
   durationMinutes?: true
+  customization?: true
   orderIndex?: true
   createdAt?: true
 }
@@ -118,6 +123,7 @@ export type SchedulerItemCountAggregateInputType = {
   quantity?: true
   priceAtBooking?: true
   durationMinutes?: true
+  customization?: true
   orderIndex?: true
   createdAt?: true
   _all?: true
@@ -216,6 +222,7 @@ export type SchedulerItemGroupByOutputType = {
   quantity: number
   priceAtBooking: number | null
   durationMinutes: number | null
+  customization: string | null
   orderIndex: number
   createdAt: Date
   _count: SchedulerItemCountAggregateOutputType | null
@@ -250,6 +257,7 @@ export type SchedulerItemWhereInput = {
   quantity?: Prisma.IntFilter<"SchedulerItem"> | number
   priceAtBooking?: Prisma.FloatNullableFilter<"SchedulerItem"> | number | null
   durationMinutes?: Prisma.IntNullableFilter<"SchedulerItem"> | number | null
+  customization?: Prisma.StringNullableFilter<"SchedulerItem"> | string | null
   orderIndex?: Prisma.IntFilter<"SchedulerItem"> | number
   createdAt?: Prisma.DateTimeFilter<"SchedulerItem"> | Date | string
   scheduler?: Prisma.XOR<Prisma.SchedulerScalarRelationFilter, Prisma.SchedulerWhereInput>
@@ -263,6 +271,7 @@ export type SchedulerItemOrderByWithRelationInput = {
   quantity?: Prisma.SortOrder
   priceAtBooking?: Prisma.SortOrderInput | Prisma.SortOrder
   durationMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  customization?: Prisma.SortOrderInput | Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   scheduler?: Prisma.SchedulerOrderByWithRelationInput
@@ -279,6 +288,7 @@ export type SchedulerItemWhereUniqueInput = Prisma.AtLeast<{
   quantity?: Prisma.IntFilter<"SchedulerItem"> | number
   priceAtBooking?: Prisma.FloatNullableFilter<"SchedulerItem"> | number | null
   durationMinutes?: Prisma.IntNullableFilter<"SchedulerItem"> | number | null
+  customization?: Prisma.StringNullableFilter<"SchedulerItem"> | string | null
   orderIndex?: Prisma.IntFilter<"SchedulerItem"> | number
   createdAt?: Prisma.DateTimeFilter<"SchedulerItem"> | Date | string
   scheduler?: Prisma.XOR<Prisma.SchedulerScalarRelationFilter, Prisma.SchedulerWhereInput>
@@ -292,6 +302,7 @@ export type SchedulerItemOrderByWithAggregationInput = {
   quantity?: Prisma.SortOrder
   priceAtBooking?: Prisma.SortOrderInput | Prisma.SortOrder
   durationMinutes?: Prisma.SortOrderInput | Prisma.SortOrder
+  customization?: Prisma.SortOrderInput | Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.SchedulerItemCountOrderByAggregateInput
@@ -311,6 +322,7 @@ export type SchedulerItemScalarWhereWithAggregatesInput = {
   quantity?: Prisma.IntWithAggregatesFilter<"SchedulerItem"> | number
   priceAtBooking?: Prisma.FloatNullableWithAggregatesFilter<"SchedulerItem"> | number | null
   durationMinutes?: Prisma.IntNullableWithAggregatesFilter<"SchedulerItem"> | number | null
+  customization?: Prisma.StringNullableWithAggregatesFilter<"SchedulerItem"> | string | null
   orderIndex?: Prisma.IntWithAggregatesFilter<"SchedulerItem"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SchedulerItem"> | Date | string
 }
@@ -320,6 +332,7 @@ export type SchedulerItemCreateInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
   scheduler: Prisma.SchedulerCreateNestedOneWithoutItemsInput
@@ -333,6 +346,7 @@ export type SchedulerItemUncheckedCreateInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
 }
@@ -342,6 +356,7 @@ export type SchedulerItemUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduler?: Prisma.SchedulerUpdateOneRequiredWithoutItemsNestedInput
@@ -355,6 +370,7 @@ export type SchedulerItemUncheckedUpdateInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -366,6 +382,7 @@ export type SchedulerItemCreateManyInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
 }
@@ -375,6 +392,7 @@ export type SchedulerItemUpdateManyMutationInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -386,6 +404,7 @@ export type SchedulerItemUncheckedUpdateManyInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -407,6 +426,7 @@ export type SchedulerItemCountOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   priceAtBooking?: Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
+  customization?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -425,6 +445,7 @@ export type SchedulerItemMaxOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   priceAtBooking?: Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
+  customization?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -436,6 +457,7 @@ export type SchedulerItemMinOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
   priceAtBooking?: Prisma.SortOrder
   durationMinutes?: Prisma.SortOrder
+  customization?: Prisma.SortOrder
   orderIndex?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -552,6 +574,7 @@ export type SchedulerItemCreateWithoutProductInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
   scheduler: Prisma.SchedulerCreateNestedOneWithoutItemsInput
@@ -563,6 +586,7 @@ export type SchedulerItemUncheckedCreateWithoutProductInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
 }
@@ -602,6 +626,7 @@ export type SchedulerItemScalarWhereInput = {
   quantity?: Prisma.IntFilter<"SchedulerItem"> | number
   priceAtBooking?: Prisma.FloatNullableFilter<"SchedulerItem"> | number | null
   durationMinutes?: Prisma.IntNullableFilter<"SchedulerItem"> | number | null
+  customization?: Prisma.StringNullableFilter<"SchedulerItem"> | string | null
   orderIndex?: Prisma.IntFilter<"SchedulerItem"> | number
   createdAt?: Prisma.DateTimeFilter<"SchedulerItem"> | Date | string
 }
@@ -611,6 +636,7 @@ export type SchedulerItemCreateWithoutSchedulerInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
   product: Prisma.ProductCreateNestedOneWithoutSchedulerItemsInput
@@ -622,6 +648,7 @@ export type SchedulerItemUncheckedCreateWithoutSchedulerInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
 }
@@ -657,6 +684,7 @@ export type SchedulerItemCreateManyProductInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
 }
@@ -666,6 +694,7 @@ export type SchedulerItemUpdateWithoutProductInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scheduler?: Prisma.SchedulerUpdateOneRequiredWithoutItemsNestedInput
@@ -677,6 +706,7 @@ export type SchedulerItemUncheckedUpdateWithoutProductInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -687,6 +717,7 @@ export type SchedulerItemUncheckedUpdateManyWithoutProductInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -697,6 +728,7 @@ export type SchedulerItemCreateManySchedulerInput = {
   quantity?: number
   priceAtBooking?: number | null
   durationMinutes?: number | null
+  customization?: string | null
   orderIndex: number
   createdAt?: Date | string
 }
@@ -706,6 +738,7 @@ export type SchedulerItemUpdateWithoutSchedulerInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   product?: Prisma.ProductUpdateOneRequiredWithoutSchedulerItemsNestedInput
@@ -717,6 +750,7 @@ export type SchedulerItemUncheckedUpdateWithoutSchedulerInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -727,6 +761,7 @@ export type SchedulerItemUncheckedUpdateManyWithoutSchedulerInput = {
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
   priceAtBooking?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   durationMinutes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  customization?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   orderIndex?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -740,6 +775,7 @@ export type SchedulerItemSelect<ExtArgs extends runtime.Types.Extensions.Interna
   quantity?: boolean
   priceAtBooking?: boolean
   durationMinutes?: boolean
+  customization?: boolean
   orderIndex?: boolean
   createdAt?: boolean
   scheduler?: boolean | Prisma.SchedulerDefaultArgs<ExtArgs>
@@ -753,6 +789,7 @@ export type SchedulerItemSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   quantity?: boolean
   priceAtBooking?: boolean
   durationMinutes?: boolean
+  customization?: boolean
   orderIndex?: boolean
   createdAt?: boolean
   scheduler?: boolean | Prisma.SchedulerDefaultArgs<ExtArgs>
@@ -766,6 +803,7 @@ export type SchedulerItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   quantity?: boolean
   priceAtBooking?: boolean
   durationMinutes?: boolean
+  customization?: boolean
   orderIndex?: boolean
   createdAt?: boolean
   scheduler?: boolean | Prisma.SchedulerDefaultArgs<ExtArgs>
@@ -779,11 +817,12 @@ export type SchedulerItemSelectScalar = {
   quantity?: boolean
   priceAtBooking?: boolean
   durationMinutes?: boolean
+  customization?: boolean
   orderIndex?: boolean
   createdAt?: boolean
 }
 
-export type SchedulerItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "schedulerId" | "productId" | "quantity" | "priceAtBooking" | "durationMinutes" | "orderIndex" | "createdAt", ExtArgs["result"]["schedulerItem"]>
+export type SchedulerItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "schedulerId" | "productId" | "quantity" | "priceAtBooking" | "durationMinutes" | "customization" | "orderIndex" | "createdAt", ExtArgs["result"]["schedulerItem"]>
 export type SchedulerItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   scheduler?: boolean | Prisma.SchedulerDefaultArgs<ExtArgs>
   product?: boolean | Prisma.ProductDefaultArgs<ExtArgs>
@@ -810,6 +849,7 @@ export type $SchedulerItemPayload<ExtArgs extends runtime.Types.Extensions.Inter
     quantity: number
     priceAtBooking: number | null
     durationMinutes: number | null
+    customization: string | null
     orderIndex: number
     createdAt: Date
   }, ExtArgs["result"]["schedulerItem"]>
@@ -1243,6 +1283,7 @@ export interface SchedulerItemFieldRefs {
   readonly quantity: Prisma.FieldRef<"SchedulerItem", 'Int'>
   readonly priceAtBooking: Prisma.FieldRef<"SchedulerItem", 'Float'>
   readonly durationMinutes: Prisma.FieldRef<"SchedulerItem", 'Int'>
+  readonly customization: Prisma.FieldRef<"SchedulerItem", 'String'>
   readonly orderIndex: Prisma.FieldRef<"SchedulerItem", 'Int'>
   readonly createdAt: Prisma.FieldRef<"SchedulerItem", 'DateTime'>
 }

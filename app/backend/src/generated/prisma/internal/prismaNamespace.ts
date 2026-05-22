@@ -1508,6 +1508,7 @@ export const SchedulerItemScalarFieldEnum = {
   quantity: 'quantity',
   priceAtBooking: 'priceAtBooking',
   durationMinutes: 'durationMinutes',
+  customization: 'customization',
   orderIndex: 'orderIndex',
   createdAt: 'createdAt'
 } as const

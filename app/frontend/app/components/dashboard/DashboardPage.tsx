@@ -63,6 +63,8 @@ import DashboardController, {
   type TopProducts,
 } from '~/controllers/DashboardController';
 import type { DeliveryType, Scheduler } from '~/@types/scheduler';
+import SchedulerController from '~/controllers/SchedulerController';
+import { SchedulerPreviewModal } from '../scheduler/SchedulerPreviewModal';
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -100,6 +102,7 @@ interface AgendaItem {
 }
 
 type DeliveryToday = {
+  id: string;
   time: string;
   customerName: string;
   productLabel: string;
@@ -124,42 +127,11 @@ interface FlowStep {
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-const revenueData = [
-  { label: 'Nov', value: 8200 },
-  { label: 'Dez', value: 14800 },
-  { label: 'Jan', value: 7400 },
-  { label: 'Fev', value: 9600 },
-  { label: 'Mar', value: 11200 },
-  { label: 'Abr', value: 13500 },
-];
-
-const statusData = [
-  { name: 'Pendente', value: 22, color: C.pending },
-  { name: 'Confirmado', value: 38, color: C.confirmed },
-  { name: 'Em produção', value: 18, color: C.progress },
-  { name: 'Concluído', value: 17, color: C.completed },
-  { name: 'Cancelado', value: 5, color: C.cancelled },
-];
-
-const deliveryData = [
-  { name: 'Entrega', value: 61, color: C.primary },
-  { name: 'Retirada', value: 39, color: C.pickup },
-];
-
 const paymentData = [
   { name: 'Pix', value: 48, color: C.confirmed },
   { name: 'Cartão', value: 31, color: C.card },
   { name: 'Dinheiro', value: 13, color: C.cash },
   { name: 'Transferência', value: 8, color: C.transfer },
-];
-
-const topProducts: ProductRow[] = [
-  { key: 1, name: 'Bolo de Chocolate Decorado', orders: 34, revenue: 5780, percent: 100 },
-  { key: 2, name: 'Brigadeiro Gourmet (cx 30)', orders: 28, revenue: 2240, percent: 82 },
-  { key: 3, name: 'Torta de Morango', orders: 19, revenue: 3610, percent: 56 },
-  { key: 4, name: 'Cupcake Personalizado', orders: 17, revenue: 1020, percent: 50 },
-  { key: 5, name: 'Bolo no Pote (6un)', orders: 14, revenue: 840, percent: 41 },
-  { key: 6, name: 'Naked Cake', orders: 9, revenue: 2700, percent: 26 },
 ];
 
 const prodTimes = [
@@ -171,13 +143,6 @@ const prodTimes = [
   { name: 'Bolo no pote', min: 45, pct: 19 },
 ];
 
-const capacidades = [
-  { name: 'Horas de produção', pct: 72, warning: false },
-  { name: 'Capacidade de forno', pct: 58, warning: false },
-  { name: 'Espaço em geladeira', pct: 84, warning: true },
-  { name: 'Pedidos vs máximo', pct: 65, warning: false },
-];
-
 const leadTimes = [
   { name: 'Bolo decorado', horas: 72 },
   { name: 'Torta', horas: 72 },
@@ -185,51 +150,6 @@ const leadTimes = [
   { name: 'Cupcake personalizado', horas: 48 },
   { name: 'Bolo no pote', horas: 24 },
   { name: 'Pronta entrega', horas: 0 },
-];
-
-const agenda: AgendaItem[] = [
-  {
-    time: '08:30',
-    name: 'Maria Silva',
-    product: 'Bolo de Chocolate',
-    status: 'confirmed',
-    type: 'pickup',
-  },
-  {
-    time: '10:00',
-    name: 'João Santos',
-    product: 'Torta de Morango + Brigadeiros',
-    status: 'in_progress',
-    type: 'delivery',
-  },
-  {
-    time: '11:30',
-    name: 'Ana Oliveira',
-    product: 'Cupcakes (12 un)',
-    status: 'confirmed',
-    type: 'pickup',
-  },
-  {
-    time: '13:00',
-    name: 'Pedro Costa',
-    product: 'Bolo Naked Cake',
-    status: 'pending',
-    type: 'delivery',
-  },
-  {
-    time: '15:00',
-    name: 'Carla Mendes',
-    product: 'Brigadeiros Gourmet (cx 30)',
-    status: 'confirmed',
-    type: 'delivery',
-  },
-  {
-    time: '16:30',
-    name: 'Lucas Ferreira',
-    product: 'Bolo de Aniversário Decorado',
-    status: 'in_progress',
-    type: 'pickup',
-  },
 ];
 
 const flowSteps: FlowStep[] = [
@@ -502,6 +422,10 @@ export function DashboardPage() {
   const [agendaFilter, setAgendaFilter] = useState<'Todos' | 'Entrega' | 'Retirada'>(
     'Todos',
   );
+  const [schedulerPreviewState, setSchedulerPreviewState] = useState<{
+    isOpened: boolean;
+    order: Scheduler | null;
+  }>({ isOpened: false, order: null });
   const staleTime = 0; // 60*60*1000;
   const todaySummary = useQuery({
     queryKey: ['today-summary'],
@@ -543,6 +467,11 @@ export function DashboardPage() {
     staleTime,
   });
 
+  const handleOpenOrder = async (item: DeliveryToday) => {
+    const order = await SchedulerController.getById(item.id);
+    setSchedulerPreviewState({ isOpened: true, order });
+  };
+
   const getDeliveriesToday = (schedulers: Scheduler[]) => {
     return schedulers.map((scheduler) => {
       const scheduledAt = new Date(scheduler.scheduledAt);
@@ -551,6 +480,7 @@ export function DashboardPage() {
         productLabel += ` (+${scheduler.items.length - 1} produtos)`;
       }
       return {
+        id: scheduler.id,
         time:
           scheduledAt.getHours().toString().padStart(2, '0') +
           ':' +
@@ -613,7 +543,7 @@ export function DashboardPage() {
   const getTodayOrdersLabel = (todaySummary?: TodaySummary) => {
     if (!todaySummary) return '';
     const todayOrders = todaySummary.schedulers;
-    const tomorrowOrders = todaySummary.schedulersTomorrow;
+    const tomorrowOrders = todaySummary.schedulersYesterday;
     if (todayOrders === tomorrowOrders) return '';
     if (todayOrders > tomorrowOrders) {
       return `↑ ${todayOrders - tomorrowOrders} vs ontem`;
@@ -623,6 +553,11 @@ export function DashboardPage() {
 
   return (
     <Layout style={{ background: '#f8f8f7', minHeight: '100vh' }}>
+      <SchedulerPreviewModal
+        open={schedulerPreviewState.isOpened}
+        onClose={() => setSchedulerPreviewState({ isOpened: false, order: null })}
+        order={schedulerPreviewState.order}
+      />
       <Content
         style={{
           /*padding: "24px 28px", maxWidth: 1280,*/ margin: '0 auto',
@@ -712,9 +647,11 @@ export function DashboardPage() {
               value={
                 (todaySummary.data?.created || 0) === 0
                   ? 0
-                  : ((Math.round((todaySummary.data?.cancelled || 0) * 100) /
-                      (todaySummary.data?.created || 0) +
-                      Number.EPSILON) *
+                  : (Math.round(
+                      ((todaySummary.data?.cancelled || 0) * 100) /
+                        (todaySummary.data?.created || 0) +
+                        Number.EPSILON,
+                    ) *
                       100) /
                     100
               }
@@ -1242,7 +1179,15 @@ export function DashboardPage() {
               <List<DeliveryToday>
                 dataSource={filteredAgenda}
                 renderItem={(item) => (
-                  <List.Item style={{ padding: '10px 0' }}>
+                  <List.Item
+                    className="delivery-today-item"
+                    style={{
+                      padding: '10px 12px',
+                      borderRadius: 12,
+                      marginBottom: 4,
+                    }}
+                    onClick={() => handleOpenOrder(item)}
+                  >
                     <div
                       style={{
                         display: 'flex',
@@ -1261,6 +1206,7 @@ export function DashboardPage() {
                       >
                         {item.time}
                       </Text>
+
                       <Avatar
                         size={32}
                         style={{
@@ -1275,14 +1221,28 @@ export function DashboardPage() {
                       >
                         {item.deliveryType === 'delivery' ? '🚗' : '🏪'}
                       </Avatar>
+
                       <div style={{ flex: 1 }}>
-                        <Text strong style={{ fontSize: 13, display: 'block' }}>
+                        <Text
+                          strong
+                          style={{
+                            fontSize: 13,
+                            display: 'block',
+                          }}
+                        >
                           {item.customerName}
                         </Text>
-                        <Text style={{ fontSize: 12, color: '#888' }}>
+
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            color: '#888',
+                          }}
+                        >
                           {item.productLabel}
                         </Text>
                       </div>
+
                       <StatusTag status={item.status} />
                     </div>
                   </List.Item>

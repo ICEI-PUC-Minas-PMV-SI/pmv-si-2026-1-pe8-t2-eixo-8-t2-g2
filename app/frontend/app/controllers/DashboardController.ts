@@ -6,7 +6,7 @@ export type TodaySummary = {
   avgPrice: number;
   inProgress: number;
   schedulers: number;
-  schedulersTomorrow: number;
+  schedulersYesterday: number;
   created: number;
   cancelled: number;
   delivery: number;
