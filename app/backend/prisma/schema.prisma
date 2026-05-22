@@ -225,8 +225,8 @@ model AboutInfo {
 model AboutItem {
   id      String @id @default(uuid())
 
-  icon    String
-  text    String
+  text        String
+  orderIndex  Int     @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime        @updatedAt @default(now())

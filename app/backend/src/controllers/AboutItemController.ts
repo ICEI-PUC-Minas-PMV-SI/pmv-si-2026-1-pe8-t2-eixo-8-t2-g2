@@ -18,8 +18,17 @@ class AboutItemController {
   async update(id: string, data: Partial<AboutItemCreatePayload>) {
     return AboutItemService.update(id, data);
   }
+
+  async delete(id: string) {
+    return AboutItemService.delete(id);
+  }
+
   async deleteMany(ids: string[]) {
     return AboutItemService.deleteMany(ids);
+  }
+
+  async reorder(items: { id: string; orderIndex: number }[]) {
+    return AboutItemService.reorder(items);
   }
 }
 

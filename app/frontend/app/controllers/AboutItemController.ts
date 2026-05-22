@@ -28,6 +28,13 @@ class AboutItemController {
     return result;
   }
 
+  async list<T>(params: TableParams) {
+    return Request.getTableData<T>('/aboutItems', params);
+  }
+
+  async reorder(items: { id: string; orderIndex: number }[]) {
+    return Request.post('/aboutItems/reorder', { items });
+  }
 }
 
 export default new AboutItemController();

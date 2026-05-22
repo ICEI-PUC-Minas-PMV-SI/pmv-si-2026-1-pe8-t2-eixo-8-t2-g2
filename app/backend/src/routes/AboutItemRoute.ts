@@ -13,7 +13,7 @@ class AboutItemRoute {
       res.json(result);
     });
 
-    router.get('/aboutItems', async (req: AboutItemRequest, res: Response) => {
+    router.post('/aboutItems', async (req: AboutItemRequest, res: Response) => {
       const result = await AboutItemController.list();
       res.json(result);
     });
@@ -30,12 +30,18 @@ class AboutItemRoute {
       res.json(result);
     });
 
-    // router.delete('/aboutItem/:id', async (req: AboutItemRequest, res: Response) => {
-    //   const id = req.params.id as string;
-    //   await AboutItemController.delete(id);
-    //   res.status(204).send();
-    // });
+    router.delete('/aboutItem/:id', async (req: AboutItemRequest, res: Response) => {
+      const id = req.params.id as string;
+      await AboutItemController.delete(id);
+      res.status(204).send();
+    });
 
+    router.post('/aboutItems/reorder', async (req, res) => {
+      const { items } = req.body;
+      const result = await AboutItemController.reorder(items);
+      res.json(result);
+    });
+    
     app.use(router);
   }
 }

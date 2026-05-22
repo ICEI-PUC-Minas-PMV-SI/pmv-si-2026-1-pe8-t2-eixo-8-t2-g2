@@ -11,8 +11,9 @@ export type CreateAbout = Omit<About, 'id'>;
 
 export type AboutItem = {
   id:   string;
-  icon: string;
+  icon?: string;
   text: string;
+  orderIndex: number;
 };
 
 export type CreateAboutItem = Omit<AboutItem, 'id'>;

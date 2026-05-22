@@ -23,8 +23,16 @@ class AboutItemService {
 
   async list() {
     const prisma = await Prisma.getClient();
-    const aboutItem = await prisma.aboutItem.findMany();
-    return aboutItem;
+    const [items, total] = await Promise.all([
+      prisma.aboutItem.findMany({  orderBy: {
+        orderIndex: "asc",
+      },}),
+      prisma.aboutItem.count(),
+    ]);
+    return {
+      data: items,
+      total
+    };
   }
 
   async deleteMany(ids: string[]) {
@@ -44,6 +52,24 @@ class AboutItemService {
     });
     return updatedAboutItem;
   }
+
+  async delete(id: string) {
+    const prisma = await Prisma.getClient();
+    await prisma.aboutItem.delete({
+      where: { id },
+    });
+  }
+
+  async reorder(items: { id: string; orderIndex: number }[]) {
+    const prisma = await Prisma.getClient();
+    await Promise.all(
+      items.map(({ id, orderIndex }) =>
+        prisma.aboutItem.update({ where: { id }, data: { orderIndex } })
+      )
+    );
+  return { success: true };
+}
+
 }
 
 const instance = new AboutItemService();
