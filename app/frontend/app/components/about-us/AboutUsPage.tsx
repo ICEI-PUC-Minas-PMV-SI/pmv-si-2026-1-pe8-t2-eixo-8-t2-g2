@@ -22,6 +22,7 @@ import { useAuthStore } from '~/hooks/useAuthStore'; //para o tipo da página
 import AuthController from '~/controllers/AuthController';
 import AboutController from '~/controllers/AboutController';
 import { AboutItemList } from './AboutItemList';
+import { AboutUsView } from './AboutUsView';
 import { ModalAddAboutItem } from '../about-us/ModalAddAboutItem';
 
 
@@ -29,6 +30,7 @@ export function AboutUsPage() {
   const [aboutForm] = Form.useForm<About>();
   const [aboutImage, setAboutImage] = useState<UploadFile[]>([]);
   const [itemModalOpen, setItemModalOpen] = useState(false);
+  const isAdmin = useAuthStore((state) => state.isAdmin());
 
   const [refetchItems, setRefetchItems] = useState<() => void>(() => () => {});
 
@@ -74,82 +76,86 @@ export function AboutUsPage() {
 
     }
   }, [aboutForm, aboutInfo]);
-
-  return (
-    <Row gutter={[16, 16]}>
-      <Col xs={24} lg={24}>
-        <Card title="Conteúdo da Página">
-          <Form
-            layout="vertical"
-            form={aboutForm}
-          >
-            <Row gutter={24}>
-              <Col span={24}>
-                <Form.Item label="Título da Página" name="title">
-                  <Input minLength={5} 
-                  maxLength={20}
-                        showCount
-                  />
-                </Form.Item>
-                <Form.Item label="Imagem de destaque">
-                    <Upload
-                        listType="picture-card"
-                        fileList={aboutImage}
-                        onChange={({ fileList }) => setAboutImage(fileList)}
-                        beforeUpload={() => false}
-                        maxCount={1}
+  if (!isAdmin) {
+    return <AboutUsView />;
+  }
+  else{
+    return (
+      <Row gutter={[16, 16]}>
+        <Col xs={24} lg={24}>
+          <Card title="Conteúdo da Página">
+            <Form
+              layout="vertical"
+              form={aboutForm}
+            >
+              <Row gutter={24}>
+                <Col span={24}>
+                  <Form.Item label="Título da Página" name="title">
+                    <Input minLength={5} 
+                    maxLength={20}
+                          showCount
+                    />
+                  </Form.Item>
+                  <Form.Item label="Imagem de destaque">
+                      <Upload
+                          listType="picture-card"
+                          fileList={aboutImage}
+                          onChange={({ fileList }) => setAboutImage(fileList)}
+                          beforeUpload={() => false}
+                          maxCount={1}
+                      >
+                          {aboutImage.length >= 1 ? null : (
+                          <div>
+                              <PlusOutlined />
+                              <div style={{ marginTop: 8 }}>Upload</div>
+                          </div>
+                          )}
+                      </Upload>
+                  </Form.Item>
+                  <Form.Item label="Título da Seção" name="subtitle">
+                    <Input minLength={5} maxLength={80}
+                          showCount
+                      />
+                  </Form.Item>
+                  <Form.Item label="Texto Principal" name="main">
+                      <Input.TextArea
+                          rows={4}
+                          minLength={5} 
+                          maxLength={500}
+                          showCount
+                      />
+                  </Form.Item>
+                  <Form.Item label="Texto Complementar" name="complementary">
+                      <Input.TextArea
+                          rows={4}
+                          minLength={5}
+                          maxLength={500}
+                          showCount
+                      />
+                  </Form.Item>
+                  <AboutItemList setItemModalOpen={setItemModalOpen} />
+                  <Button type="primary" icon={<CheckCircleOutlined />}
+                    onClick={() => {
+                        saveAboutInfo();
+                      }}
                     >
-                        {aboutImage.length >= 1 ? null : (
-                        <div>
-                            <PlusOutlined />
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                        </div>
-                        )}
-                    </Upload>
-                </Form.Item>
-                <Form.Item label="Título da Seção" name="subtitle">
-                  <Input minLength={5} maxLength={80}
-                        showCount
-                    />
-                </Form.Item>
-                <Form.Item label="Texto Principal" name="main">
-                    <Input.TextArea
-                        rows={4}
-                        minLength={5} 
-                        maxLength={500}
-                        showCount
-                    />
-                </Form.Item>
-                <Form.Item label="Texto Complementar" name="complementary">
-                    <Input.TextArea
-                        rows={4}
-                        minLength={5}
-                        maxLength={500}
-                        showCount
-                    />
-                </Form.Item>
-                <AboutItemList setItemModalOpen={setItemModalOpen} />
-                <Button type="primary" icon={<CheckCircleOutlined />}
-                  onClick={() => {
-                      saveAboutInfo();
+                    Salvar alterações
+                  </Button>
+                  <ModalAddAboutItem
+                    isOpened={itemModalOpen}
+                    onClose={(reason) => {setItemModalOpen(false);
+                      if(reason == 'save'){
+                        message.success('Alterações salvas com sucesso.');
+                      }
                     }}
-                  >
-                  Salvar alterações
-                </Button>
-                <ModalAddAboutItem
-                  isOpened={itemModalOpen}
-                  onClose={(reason) => {setItemModalOpen(false);
-                    if(reason == 'save'){
-                      message.success('Alterações salvas com sucesso.');
-                    }
-                  }}
-                />
-              </Col>
-            </Row>
-          </Form>
-        </Card>
-      </Col>
+                  />
+                </Col>
+              </Row>
+            </Form>
+          </Card>
+        </Col>
 
-    </Row>
-  );
+      </Row>
+    );
+  }
 }

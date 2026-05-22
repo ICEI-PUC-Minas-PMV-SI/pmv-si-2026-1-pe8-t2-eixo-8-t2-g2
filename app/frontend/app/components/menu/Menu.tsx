@@ -36,7 +36,7 @@ const menu = [
   {
     key: '/about',
     label: 'Quem Somos',
-    IconComponent: AppIcon.Settings,
+    IconComponent: AppIcon.Interrogation,
   },
 ];
 
