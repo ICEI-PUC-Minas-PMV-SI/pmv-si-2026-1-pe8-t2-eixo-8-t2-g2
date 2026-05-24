@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useMemo, useContext, useState, useEffect } from 'react';
 import { Card, Space, Button, Table, message, Input } from 'antd';
 import { HolderOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -8,6 +8,7 @@ import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
+  arrayMove,
 } from '@dnd-kit/sortable';
 
 import { CSS } from '@dnd-kit/utilities';
@@ -86,21 +87,33 @@ export function ProductCategoryList({ setCategoryModalOpen }: Props) {
     (params) => ProductCategoryController.list<ProductCategory>(params),
   );
 
+  const [localData, setLocalData] = useState<ProductCategory[]>([]);
+
+    useEffect(() => {
+        if (tableProps.dataSource) {
+        setLocalData([...tableProps.dataSource]);
+        }
+    }, [tableProps.dataSource]);
+
   // 🔥 Drag end
-  const onDragEnd = ({ active, over }: DragEndEvent) => {
+  const onDragEnd = async ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
 
-    // setCategories((prev) => {
-    //   const oldIndex = prev.findIndex((c) => c.id === active.id);
-    //   const newIndex = prev.findIndex((c) => c.id === over.id);
+    const activeIndex = localData.findIndex((i) => i.id === active.id);
+    const overIndex = localData.findIndex((i) => i.id === over?.id);
 
-    //   const newArray = arrayMove(prev, oldIndex, newIndex);
+    const reordered = arrayMove([...localData], activeIndex, overIndex).map(
+        (category, index) => ({ ...category, orderIndex: index + 1 })
+    );
 
-    //   return newArray.map((item, index) => ({
-    //     ...item,
-    //     ordem: index + 1,
-    //   }));
-    // });
+    setLocalData(reordered);
+
+    await ProductCategoryController.reorder(reordered.map((category) => ({
+        id: category.id,
+        orderIndex: category.orderIndex,
+    })));
+
+    forceRefetch();
   };
 
   // 🔥 Colunas
@@ -182,7 +195,7 @@ export function ProductCategoryList({ setCategoryModalOpen }: Props) {
     >
       <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
         <SortableContext
-          items={tableProps.dataSource?.map((c) => c.id) || []}
+          items={localData.map((c) => c.id)} 
           strategy={verticalListSortingStrategy}
         >
           <Table
@@ -191,7 +204,7 @@ export function ProductCategoryList({ setCategoryModalOpen }: Props) {
                 row: SortableRow,
               },
             }}
-            dataSource={tableProps.dataSource}
+            dataSource={localData}
             columns={columns}
             {...tableProps}
           />

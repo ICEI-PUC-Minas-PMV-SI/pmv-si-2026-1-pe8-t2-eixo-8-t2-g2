@@ -67,8 +67,8 @@ class AboutItemService {
         prisma.aboutItem.update({ where: { id }, data: { orderIndex } })
       )
     );
-  return { success: true };
-}
+    return { success: true };
+  }
 
 }
 
