@@ -45,8 +45,8 @@ const findCustomerByPhone = async (phone: string) => {
   return customer;
 };
 
-export function SchedulerCreateForm({ form }: ComponentProps) {
-  const { isAdmin } = useAuthStore();
+export function SchedulerForm({ form }: ComponentProps) {
+  const { isAdmin, getUserShortname } = useAuthStore();
   const [isSearchingCustomer, setIsSearchingCustomer] = useState(false);
   const [isCustomerNameDisabled, setIsCustomerNameDisabled] = useState(true);
   const [phoneSearchTimeout, setPhoneSearchTimeout] = useState<ReturnType<
@@ -149,6 +149,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
         scheduledAt: dayjs(),
         paymentMethod: 'cash',
         deliveryType: 'pickup',
+        clientName: isAdmin() ? '' : getUserShortname(),
       }}
     >
       {isAdmin() && (
@@ -159,6 +160,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
             rules={[{ required: true, message: 'Informe o telefone do cliente' }]}
           >
             <Input
+              disabled={form.getFieldValue('isEdit')}
               placeholder="Ex.: (31) 92222-2222"
               onInput={handleCustomerPhoneChange}
               maxLength={16}
@@ -174,7 +176,7 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
               placeholder={
                 isSearchingCustomer ? 'Buscando cliente...' : 'Ex.: Maria Silva'
               }
-              disabled={isCustomerNameDisabled}
+              disabled={isCustomerNameDisabled || form.getFieldValue('isEdit')}
               suffix={isSearchingCustomer ? <Spin size="small" /> : null}
             />
           </Form.Item>
@@ -185,7 +187,12 @@ export function SchedulerCreateForm({ form }: ComponentProps) {
       )}
 
       <Row gutter={16}>
-        <Col span={12}>
+        <Col span={12} hidden={isAdmin()}>
+          <Form.Item label="Nome" name="clientName">
+            <Input disabled value={getUserShortname()} />
+          </Form.Item>
+        </Col>
+        <Col span={12} hidden={!isAdmin()}>
           <Form.Item
             label="Data e hora do pedido"
             name="scheduledAt"

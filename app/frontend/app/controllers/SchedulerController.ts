@@ -8,6 +8,14 @@ class SchedulerController {
     return result;
   }
 
+  async cancellation(scheduler: Partial<Scheduler> & { id: string }) {
+    const result = await Request.patch<Scheduler>(
+      `/scheduler-cancellation/${scheduler.id}`,
+      scheduler,
+    );
+    return result;
+  }
+
   async update(scheduler: Partial<Scheduler> & { id: string }) {
     const result = await Request.patch<Scheduler>(
       `/scheduler-cancellation/${scheduler.id}`,
@@ -32,6 +40,18 @@ class SchedulerController {
 
   async getById(id: string) {
     const result = await Request.get<Scheduler>(`/scheduler/${id}`);
+    return result;
+  }
+
+  async getCountUnsyncedSchedulers() {
+    const result = await Request.get<{ count: number }>(
+      `/scheduler/count-unsynced-schedulers`,
+    );
+    return result;
+  }
+
+  async syncUnsyncedSchedulers() {
+    const result = await Request.post(`/scheduler/sync-unsynced-schedulers`);
     return result;
   }
 }

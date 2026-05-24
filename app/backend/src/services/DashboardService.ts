@@ -1,8 +1,13 @@
-import { addMonths, format, subDays, subMonths, startOfDay, endOfDay } from 'date-fns';
-import { Prisma } from '../db/Prisma';
-import { ptBR } from 'date-fns/locale';
-import NumberUtil from '../utils/NumberUtil';
+import { addMonths } from 'date-fns/addMonths';
+
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
+import { startOfDay } from 'date-fns/startOfDay';
+import { endOfDay } from 'date-fns/endOfDay';
+
 import { fromZonedTime } from 'date-fns-tz';
+import { Prisma } from '../db/Prisma';
+import NumberUtil from '../utils/NumberUtil';
 
 class DashboardService {
   getStartAndEndDay(date: Date | string) {
@@ -124,11 +129,25 @@ class DashboardService {
     return result;
   }
 
+  formatDate(date: Date) {
+    return new Intl.DateTimeFormat('pt-BR', {
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date);
+  }
+
+  formatMonthYear(date: Date) {
+    return new Intl.DateTimeFormat('pt-BR', {
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+  }
+
   getMonthRevenue(currentDate: Date) {
     return {
       timestamp: currentDate.getTime(),
-      dateStr: format(currentDate, 'MM/yyyy'),
-      monthYear: format(currentDate, 'MMM/yyyy', { locale: ptBR }),
+      dateStr: this.formatDate(currentDate),
+      monthYear: this.formatMonthYear(currentDate),
       revenue: 0,
     };
   }
@@ -136,8 +155,8 @@ class DashboardService {
   getMonthSummary(currentDate: Date) {
     return {
       timestamp: currentDate.getTime(),
-      dateStr: format(currentDate, 'MM/yyyy'),
-      monthYear: format(currentDate, 'MMM/yyyy', { locale: ptBR }),
+      dateStr: this.formatDate(currentDate),
+      monthYear: this.formatMonthYear(currentDate),
       status: {
         pending: 0,
         confirmed: 0,
@@ -336,7 +355,7 @@ class DashboardService {
         },
       },
       where: {
-        scheduledAt: {
+        scheduledTo: {
           gte: startOfDay,
           lte: endOfDay,
         },
@@ -345,5 +364,5 @@ class DashboardService {
     return result;
   }
 }
-new DashboardService().overviewToday().then((data) => console.log(data));
+
 export default new DashboardService();

@@ -147,10 +147,10 @@ export function ProfileTab() {
                 }}
               />
             </Space>
-            <Progress
+            {/* <Progress
               percent={twoFactorEnabled ? 100 : 35}
               status={twoFactorEnabled ? 'success' : 'normal'}
-            />
+            /> */}
             {twoFactorEnabled && (
               <Button
                 type="primary"

@@ -55,6 +55,7 @@ export function ProductList() {
     {
       title: 'Produto',
       dataIndex: 'name',
+      fixed: 'left',
       render: (_, record) => (
         <Space>
           <div
@@ -221,6 +222,7 @@ export function ProductList() {
         }
       >
         <Table
+          style={{ overflowX: 'auto' }}
           rowSelection={{
             type: 'checkbox',
             onChange: (selectedRowKeys) => {

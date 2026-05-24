@@ -30,23 +30,27 @@ class IntegrationsService {
       integration = 'calendar';
     }
     await prisma.$transaction(async (tx) => {
+      const current = await tx.googleIntegration.findFirst();
       await this.deleteIntegration(tx, integration);
-
+      const clientSecret = data.google?.clientSecret || '';
+      const useCurrentSecret = clientSecret.replace(/\*/g, '').length === 0;
+      const secret = useCurrentSecret
+        ? current?.encryptedClientSecret || ''
+        : clientSecret;
       if (data.google) {
         return tx.googleIntegration.create({
           data: {
             clientId: data.google.clientId,
-            encryptedClientSecret: Crypt.encrypt(data.google.clientSecret),
+            encryptedClientSecret: useCurrentSecret
+              ? secret
+              : Crypt.encrypt(clientSecret),
             mailFrom: data.google.mailFrom,
             mailSenderName: data.google.mailSenderName,
 
             useForCalendar: true,
             useForEmail: true,
 
-            scopes: [
-              ...GoogleApi.config.calendar.options.scope,
-              ...GoogleApi.config.gmail.options.scope,
-            ].join(','),
+            scopes: GoogleApi.config.all.options.scope.join(','),
           },
         });
       }

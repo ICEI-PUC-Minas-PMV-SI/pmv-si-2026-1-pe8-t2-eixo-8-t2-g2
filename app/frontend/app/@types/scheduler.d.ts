@@ -27,6 +27,7 @@ export type Scheduler = {
   paymentMethod?: PaymentMethod;
   deliveryType: DeliveryType;
   cancellationReason?: string;
+  integrationStatus?: 'success' | 'failure';
 };
 
 export type CreateScheduler = Omit<Scheduler, 'id' | 'status' | 'customer'> & {

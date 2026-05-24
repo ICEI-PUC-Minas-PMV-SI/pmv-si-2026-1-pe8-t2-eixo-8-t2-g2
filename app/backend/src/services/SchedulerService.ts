@@ -9,7 +9,6 @@ import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper';
 import { AppError } from '../error/AppError';
 import { HttpCode } from '../utils/HttpCode';
 import type {
-  SchedulerItemCreateInput,
   SchedulerItemUncheckedCreateWithoutSchedulerInput,
   SchedulerOrderByWithRelationInput,
   SchedulerWhereInput,
@@ -47,6 +46,7 @@ export type CreatedScheduler = {
 } & {
   id: string;
   scheduledAt: Date;
+  scheduledTo: Date | null;
   estimatedStartAt: Date | null;
   estimatedEndAt: Date | null;
   status: SchedulerStatus;
@@ -265,6 +265,7 @@ class SchedulerService {
               priceAtBooking: true,
               durationMinutes: true,
               quantity: true,
+              customization: true,
               product: {
                 select: {
                   id: true,
@@ -278,7 +279,11 @@ class SchedulerService {
             },
           },
           customer: {
-            select: userSelect,
+            select: {
+              id: true,
+              name: true,
+              phone: true,
+            },
           },
         },
         omit: {
@@ -301,6 +306,16 @@ class SchedulerService {
     const prisma = await Prisma.getClient();
     await prisma.scheduler.delete({
       where: { id },
+    });
+  }
+
+  async updateExternalId(id: string, externalId: string) {
+    const prisma = await Prisma.getClient();
+    return prisma.scheduler.update({
+      where: { id },
+      data: {
+        googleEventId: externalId,
+      },
     });
   }
 
@@ -419,6 +434,41 @@ class SchedulerService {
       },
     });
     return updatedScheduler;
+  }
+
+  async getCountUnsyncedSchedulers() {
+    const prisma = await Prisma.getClient();
+    const count = await prisma.scheduler.count({
+      where: {
+        googleEventId: null,
+        status: {
+          in: ['pending', 'in_progress', 'confirmed'],
+        },
+      },
+    });
+    return count;
+  }
+
+  async findUnsyncedSchedulers() {
+    const prisma = await Prisma.getClient();
+    return prisma.scheduler.findMany({
+      where: {
+        googleEventId: null,
+        status: {
+          in: ['pending', 'in_progress', 'confirmed'],
+        },
+      },
+      include: {
+        customer: {
+          select: userSelect,
+        },
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
   }
 }
 

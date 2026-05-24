@@ -18,12 +18,18 @@ import type {
 } from '../generated/prisma/enums';
 import { CustomerService } from '../services/CustomerService';
 import { GoogleCalendarApi } from 'integration/GoogleCalendarApi';
+import { Logger } from '../logger/Logger';
 
 class SchedulerController {
+  private logger = new Logger('SchedulerController');
   async create(scheduler: SchedulerCreatePayload) {
     const result = await SchedulerService.create(scheduler);
-    await this.addEventExternalScheduler(result);
-    return result;
+    const externalEvent = await this.addEventExternalScheduler(result);
+    if (externalEvent) {
+      await SchedulerService.updateExternalId(result.id, externalEvent.id);
+      return { integrationStatus: 'success', ...result };
+    }
+    return { integrationStatus: 'failure', ...result };
   }
   async list(req: SchedulerRequest) {
     const userId = req.user?.id || '';
@@ -68,6 +74,9 @@ class SchedulerController {
           case 'customer_date':
             orderBy.push({ scheduledAt: order === 'ascend' ? 'asc' : 'desc' });
             break;
+          case 'scheduledAt':
+            orderBy.push({ scheduledAt: order === 'ascend' ? 'asc' : 'desc' });
+            break;
         }
       });
 
@@ -99,6 +108,36 @@ class SchedulerController {
   async find(id: string) {
     return SchedulerService.find(id);
   }
+  async getCountUnsyncedSchedulers() {
+    return SchedulerService.getCountUnsyncedSchedulers();
+  }
+  async findUnsyncedSchedulers() {
+    return SchedulerService.findUnsyncedSchedulers();
+  }
+  async syncUnsyncedSchedulers() {
+    const unsyncedSchedulers = await this.findUnsyncedSchedulers();
+    const results = [];
+    for (const scheduler of unsyncedSchedulers) {
+      try {
+        const result = await this.addEventExternalScheduler(scheduler);
+        if (result) {
+          await SchedulerService.updateExternalId(scheduler.id, result.id);
+        }
+        results.push({
+          schedulerId: scheduler.id,
+          status: 'success',
+          googleEventId: result ? result.id : null,
+        });
+      } catch (error) {
+        results.push({
+          schedulerId: scheduler.id,
+          status: 'failure',
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+    return results;
+  }
   async update(id: string, data: SchedulerUpdatePayload) {
     return SchedulerService.update(id, data);
   }
@@ -112,27 +151,41 @@ class SchedulerController {
     return GoogleApi.getAuthUrl(INTEGRATION.CALENDAR);
   }
   async addEventExternalScheduler(scheduler: CreatedScheduler) {
-    const {
-      customer: { name },
-      scheduledAt,
-      items,
-    } = scheduler;
-    const title = `Pedido para ${name} - Produtos: ${items.length}`;
-    const description = items
-      .map((item) => {
-        return `${item.quantity}x - ${item.product?.name.substring(0, 20)}`;
-      })
-      .join('\n');
-    await GoogleCalendarApi.createEvent({
-      summary: title,
-      description,
-      start: {
-        dateTime: scheduledAt.toISOString(),
-      },
-      end: {
-        dateTime: scheduledAt.toISOString(),
-      },
-    });
+    try {
+      const {
+        customer: { name },
+        scheduledTo,
+        items,
+      } = scheduler;
+      if (!scheduledTo) {
+        return null;
+      }
+      const title = `Pedido para ${name} - Produtos: ${items.length}`;
+      const description = items
+        .map((item) => {
+          return `${item.quantity}x - ${item.product?.name.substring(0, 20)}`;
+        })
+        .join('\n');
+      const event = await GoogleCalendarApi.createEvent({
+        summary: title,
+        description,
+        start: {
+          dateTime: scheduledTo.toISOString(),
+          timeZone: 'America/Sao_Paulo',
+        },
+        end: {
+          dateTime: scheduledTo.toISOString(),
+          timeZone: 'America/Sao_Paulo',
+        },
+      });
+      return event;
+    } catch (err) {
+      this.logger.error('Error adding event to Google Calendar', {
+        error: err,
+        schedulerId: scheduler.id,
+      });
+      return null;
+    }
   }
 }
 

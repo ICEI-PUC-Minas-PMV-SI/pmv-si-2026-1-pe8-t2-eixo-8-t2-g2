@@ -4,7 +4,8 @@ import { Env } from '../utils/Env';
 import type { IntegrationType } from '../generated/prisma/enums';
 import { IntegrationsService } from 'services/IntegrationsService';
 import { Logger } from '../logger/Logger';
-import { OAuth2Client, type Credentials } from 'google-auth-library';
+import type { Credentials } from 'google-auth-library/build/src/auth/credentials';
+import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
 
 export const INTEGRATION = {
   CALENDAR: 'calendar',
@@ -34,6 +35,9 @@ class GoogleApi {
         access_type: 'offline',
         prompt: 'consent',
         scope: [
+          'openid',
+          'email',
+          'profile',
           'https://www.googleapis.com/auth/calendar.events.owned',
           'https://www.googleapis.com/auth/gmail.send',
         ],

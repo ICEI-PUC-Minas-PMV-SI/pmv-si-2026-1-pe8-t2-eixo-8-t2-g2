@@ -8,6 +8,7 @@ import { useAuthStore } from '~/hooks/useAuthStore';
 import { useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { CartPreview } from '../cart/CartPreview';
+import { useCartStore } from '~/hooks/useCartStore';
 
 type Props = {
   onMenuClick?: () => void; // 👈 botão mobile
@@ -19,6 +20,7 @@ export default function AppHeader({ onMenuClick }: Props) {
   const { pathname } = useLocation();
   const isMobile = !Grid.useBreakpoint().lg;
   const queryClient = useQueryClient();
+  const { clearCart } = useCartStore();
   const logoutConfirm = () => {
     Modal.confirm({
       icon: <ExclamationCircleOutlined />,
@@ -30,6 +32,7 @@ export default function AppHeader({ onMenuClick }: Props) {
       okText: 'Sair',
       onOk() {
         queryClient.clear();
+        clearCart();
         logout();
       },
     });

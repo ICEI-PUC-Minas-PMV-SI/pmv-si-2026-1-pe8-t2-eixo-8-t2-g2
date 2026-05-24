@@ -65,6 +65,8 @@ import DashboardController, {
 import type { DeliveryType, Scheduler } from '~/@types/scheduler';
 import SchedulerController from '~/controllers/SchedulerController';
 import { SchedulerPreviewModal } from '../scheduler/SchedulerPreviewModal';
+import type { PaymentMethod } from '~/@types/payment';
+import { PaymentMethodMap } from '~/constants/PaymentMethod';
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -126,22 +128,6 @@ interface FlowStep {
 }
 
 // ─── Data ────────────────────────────────────────────────────────────────────
-
-const paymentData = [
-  { name: 'Pix', value: 48, color: C.confirmed },
-  { name: 'Cartão', value: 31, color: C.card },
-  { name: 'Dinheiro', value: 13, color: C.cash },
-  { name: 'Transferência', value: 8, color: C.transfer },
-];
-
-const prodTimes = [
-  { name: 'Bolo decorado', min: 180, pct: 75 },
-  { name: 'Naked cake', min: 150, pct: 63 },
-  { name: 'Torta', min: 120, pct: 50 },
-  { name: 'Cupcake personalizado', min: 90, pct: 38 },
-  { name: 'Brigadeiro gourmet', min: 60, pct: 25 },
-  { name: 'Bolo no pote', min: 45, pct: 19 },
-];
 
 const leadTimes = [
   { name: 'Bolo decorado', horas: 72 },
@@ -240,6 +226,24 @@ const getMonthSummaryDelivery = (months: MonthSummary[]) => {
   ];
 };
 
+const PAYMENT_METHOD_COLORS: Record<PaymentMethod, string> = {
+  pix: '#32BCAD', // verde PIX
+  credit_card: '#1677FF', // azul
+  debit_card: '#13C2C2', // ciano
+  cash: '#52C41A', // verde dinheiro
+  bank_transfer: '#722ED1', // roxo
+};
+
+const getMonthsSummaryPayment = (data?: Record<PaymentMethod, number> | null) => {
+  if (!data) return [];
+  const total = Object.values(data).reduce((sum, v) => sum + v, 0);
+  return Object.entries(data).map(([key, value]) => ({
+    name: PaymentMethodMap[key as PaymentMethod],
+    value: Math.round((value / total) * 100),
+    color: PAYMENT_METHOD_COLORS[key as PaymentMethod],
+  }));
+};
+
 // ─── Status config ────────────────────────────────────────────────────────────
 const statusConfig: Record<
   SchedulerStatus,
@@ -334,7 +338,7 @@ function KpiCard({
             value={value}
             prefix={prefix}
             suffix={suffix}
-            valueStyle={{ fontSize: 26, fontWeight: 600, color: '#1a1a1a' }}
+            styles={{ content: { fontSize: 26, fontWeight: 600, color: '#1a1a1a' } }}
           />
           {trend !== undefined && trendLabel && (
             <Text
@@ -946,13 +950,17 @@ export function DashboardPage() {
                 <ResponsiveContainer width="100%" height={100}>
                   <PieChart>
                     <Pie
-                      data={paymentData}
+                      data={getMonthsSummaryPayment(
+                        latestMonthsSummary.data?.summary.paymentMethod,
+                      )}
                       dataKey="value"
                       nameKey="name"
                       outerRadius={44}
                       paddingAngle={2}
                     >
-                      {paymentData.map((d, i) => (
+                      {getMonthsSummaryPayment(
+                        latestMonthsSummary.data?.summary.paymentMethod,
+                      ).map((d, i) => (
                         <Cell key={i} fill={d.color} />
                       ))}
                     </Pie>
@@ -972,7 +980,9 @@ export function DashboardPage() {
                   justifyContent: 'center',
                 }}
               >
-                {paymentData.map((d, i) => (
+                {getMonthsSummaryPayment(
+                  latestMonthsSummary.data?.summary.paymentMethod,
+                ).map((d, i) => (
                   <Space key={i} size={4}>
                     <div
                       style={{
@@ -995,6 +1005,31 @@ export function DashboardPage() {
         {/* ── Produtos & Produção ── */}
         <SectionTitle icon={<ToolOutlined />}>Produtos & Produção</SectionTitle>
         <Row gutter={[12, 12]}>
+          {/* Alertas */}
+          <Col xs={24} lg={12}>
+            <Card
+              style={cardStyle}
+              styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
+              title={
+                <Text strong style={{ fontSize: 13 }}>
+                  🔔 Pedidos que precisam de atenção
+                </Text>
+              }
+            >
+              <Space orientation="vertical" style={{ width: '100%' }}>
+                <Alert
+                  type="warning"
+                  showIcon
+                  description="Bolo de Pedro Costa — prazo de confirmação pendente há 2 dias"
+                />
+                <Alert
+                  type="info"
+                  showIcon
+                  description="3 pedidos para o fim de semana sem confirmação de pagamento"
+                />
+              </Space>
+            </Card>
+          </Col>
           {/* Top products */}
           <Col xs={24} lg={12}>
             <Card
@@ -1016,77 +1051,6 @@ export function DashboardPage() {
               />
             </Card>
           </Col>
-
-          {/* Tempo de produção */}
-          <Col xs={24} sm={24} lg={12}>
-            <Card
-              style={cardStyle}
-              styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
-              title={
-                <Text strong style={{ fontSize: 13 }}>
-                  ⏱ Tempo médio de produção
-                </Text>
-              }
-            >
-              {prodTimes.map((p, i) => (
-                <div key={i} style={{ marginBottom: 10 }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      marginBottom: 3,
-                    }}
-                  >
-                    <Text style={{ fontSize: 12, color: '#666' }}>{p.name}</Text>
-                    <Text strong style={{ fontSize: 12 }}>
-                      {p.min} min
-                    </Text>
-                  </div>
-                  <Progress
-                    percent={p.pct}
-                    size="small"
-                    strokeColor={C.primary}
-                    showInfo={false}
-                    trailColor="#f5ece9"
-                  />
-                </div>
-              ))}
-            </Card>
-          </Col>
-
-          {/* Capacidade produtiva
-          <Col xs={24} sm={12} lg={6}>
-            <Card
-              style={cardStyle}
-              styles={{ ...cardHeaderStyles, body: { padding: "12px 16px" } }}
-              title={<Text strong style={{ fontSize: 13 }}>🏭 Capacidade produtiva</Text>}
-            >
-              {capacidades.map((c, i) => (
-                <div key={i} style={{ marginBottom: 12 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                    <Text style={{ fontSize: 12, color: "#666" }}>{c.name}</Text>
-                    <Text strong style={{ fontSize: 12, color: c.warning ? C.cancelled : "#1a1a1a" }}>
-                      {c.warning && <WarningOutlined style={{ marginRight: 4 }} />}
-                      {c.pct}%
-                    </Text>
-                  </div>
-                  <Progress
-                    percent={c.pct}
-                    size="small"
-                    strokeColor={c.warning ? C.cancelled : C.primary}
-                    showInfo={false}
-                    trailColor="#f5ece9"
-                  />
-                </div>
-              ))}
-              <Alert
-                type="warning"
-                showIcon
-                description="Geladeira em 84% — evite novos pedidos para esta semana"
-                style={{ fontSize: 11, padding: "6px 10px", marginTop: 8 }}
-              />
-            </Card>
-          </Col> */}
         </Row>
 
         {/* Faturamento mensal */}

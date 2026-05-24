@@ -4,7 +4,7 @@ import AppIcon from '../icon/AppIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { UserRole } from '~/constants/Auth';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+// import { ShoppingCartOutlined } from '@ant-design/icons';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -19,11 +19,11 @@ const menu = [
     label: 'Pedidos',
     IconComponent: AppIcon.DailyCalendar,
   },
-  {
-    key: '/cart',
-    label: 'Meu Carrinho',
-    IconComponent: ShoppingCartOutlined,
-  },
+  // {
+  //   key: '/cart',
+  //   label: 'Meu Carrinho',
+  //   IconComponent: ShoppingCartOutlined,
+  // },
   {
     key: '/dashboard',
     label: 'Dashboard',
@@ -35,6 +35,12 @@ const menu = [
     label: 'Produtos',
     role: UserRole.ADMIN,
     IconComponent: AppIcon.ApplePie,
+  },
+  {
+    key: '/users',
+    label: 'Usuários',
+    role: UserRole.ADMIN,
+    IconComponent: AppIcon.UserShield,
   },
   {
     key: '/settings',

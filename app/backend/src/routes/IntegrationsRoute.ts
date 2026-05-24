@@ -4,43 +4,51 @@ import { AppError } from '../error/AppError';
 import { ResponseUtil } from '../utils/ResponseUtil';
 import { HttpCode } from '../utils/HttpCode';
 import { Logger } from 'logger/Logger';
+import { UserScopeMiddleware } from 'middlewares/UserScopeMiddleware';
 
 class IntegrationsRoute {
   private logger = new Logger('IntegrationsRoute');
   register(app: Application) {
     const router = Router();
 
-    router.get('/integrations', async (_req, res) => {
+    router.get('/integrations', UserScopeMiddleware.adminOnly(), async (_req, res) => {
       const data = await IntegrationsController.list();
       res.json(data);
     });
-    router.post('/integrations', async (req, res) => {
+    router.post('/integrations', UserScopeMiddleware.adminOnly(), async (req, res) => {
       const url = await IntegrationsController.save(req.body);
       res.json({ url });
     });
-    router.post('/integrations/test', async (req, res) => {
-      try {
-        await IntegrationsController.test(req.body.integration || 'all');
-        res.json({ success: true });
-      } catch (err) {
-        this.logger.error('Error testing integration', { error: err });
-        ResponseUtil.handleError(
-          res,
-          new AppError(
-            'Error occurred while testing the integration',
-            HttpCode.INTERNAL_SERVER_ERROR,
-            null,
-            err,
-          ),
-        );
-      }
-    });
+    router.post(
+      '/integrations/test',
+      UserScopeMiddleware.adminOnly(),
+      async (req, res) => {
+        try {
+          await IntegrationsController.test(req.body.integration || 'all');
+          res.json({ success: true });
+        } catch (err) {
+          this.logger.error('Error testing integration', { error: err });
+          ResponseUtil.handleError(
+            res,
+            new AppError(
+              'Error occurred while testing the integration',
+              HttpCode.INTERNAL_SERVER_ERROR,
+              null,
+              err,
+            ),
+          );
+        }
+      },
+    );
 
-    router.get('/google-calendar/webhook', async (req, res) => {
-      const code = req.query.code;
-      try {
-        await IntegrationsController.handleWebhookToken(code, 'calendar');
-        res.send(`
+    router.get(
+      '/google-calendar/webhook',
+      UserScopeMiddleware.adminOnly(),
+      async (req, res) => {
+        const code = req.query.code;
+        try {
+          await IntegrationsController.handleWebhookToken(code, 'calendar');
+          res.send(`
           <script>
             window.opener.postMessage(
               { type: 'GOOGLE_AUTH_SUCCESS', integration: 'calendar' },
@@ -49,18 +57,19 @@ class IntegrationsRoute {
             window.close();
           </script>
         `);
-      } catch (err) {
-        ResponseUtil.handleError(
-          res,
-          new AppError(
-            'Error occurred while authenticating with Google',
-            HttpCode.INTERNAL_SERVER_ERROR,
-          ),
-        );
-      }
-    });
+        } catch (err) {
+          ResponseUtil.handleError(
+            res,
+            new AppError(
+              'Error occurred while authenticating with Google',
+              HttpCode.INTERNAL_SERVER_ERROR,
+            ),
+          );
+        }
+      },
+    );
 
-    router.get('/gmail/webhook', async (req, res) => {
+    router.get('/gmail/webhook', UserScopeMiddleware.adminOnly(), async (req, res) => {
       const code = req.query.code;
       try {
         await IntegrationsController.handleWebhookToken(code, 'gmail');
@@ -84,7 +93,7 @@ class IntegrationsRoute {
       }
     });
 
-    router.get('/google/webhook', async (req, res) => {
+    router.get('/google/webhook', UserScopeMiddleware.adminOnly(), async (req, res) => {
       const code = req.query.code;
       try {
         await IntegrationsController.handleWebhookToken(code, 'all');
@@ -98,6 +107,7 @@ class IntegrationsRoute {
           </script>
         `);
       } catch (err) {
+        this.logger.error('Error handling Google webhook', { error: err });
         ResponseUtil.handleError(
           res,
           new AppError(

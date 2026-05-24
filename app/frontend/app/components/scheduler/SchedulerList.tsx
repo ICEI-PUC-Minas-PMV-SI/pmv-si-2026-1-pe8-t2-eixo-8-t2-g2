@@ -23,7 +23,7 @@ import { useAuthStore } from '~/hooks/useAuthStore';
 const getItemColumnText = (items: SchedulerItem[]) => {
   const itemsCount = items.length;
   const price = items.reduce((acc, cv) => {
-    acc += cv.quantity * cv.product.price;
+    acc += cv.quantity * cv.priceAtBooking;
     return acc;
   }, 0);
   return `${itemsCount} ${itemsCount > 1 ? 'itens' : 'item'} - Preço (estimado): ${NumberUtil.currency(price)}`;
@@ -31,8 +31,10 @@ const getItemColumnText = (items: SchedulerItem[]) => {
 
 export function SchedulerList({
   schedulerQuery,
+  onEdit,
 }: {
   schedulerQuery: ReturnType<typeof useTableQuery<Scheduler>>;
+  onEdit: (scheduler: Scheduler) => void;
 }) {
   const [cancelledSchedulerId, setCancelledSchedulerId] = useState<string | null>(null);
   const { isAdmin } = useAuthStore();
@@ -73,7 +75,7 @@ export function SchedulerList({
         onCancel={() => setCancelledSchedulerId(null)}
         onConfirm={async (reason) => {
           if (cancelledSchedulerId) {
-            await SchedulerController.update({
+            await SchedulerController.cancellation({
               id: cancelledSchedulerId,
               cancellationReason: reason,
             });
@@ -124,7 +126,7 @@ export function SchedulerList({
                 {
                   title: 'Preço (estimado)',
                   render: (_, item) =>
-                    NumberUtil.currency(item.quantity * item.product.price),
+                    NumberUtil.currency(item.quantity * item.priceAtBooking),
                 },
               ]}
             />
@@ -132,6 +134,7 @@ export function SchedulerList({
         }}
         columns={[
           {
+            hidden: !isAdmin(),
             title: (
               <Space>
                 Cliente
@@ -157,6 +160,26 @@ export function SchedulerList({
                 </Typography.Text>
               </Space>
             ),
+          },
+          {
+            hidden: isAdmin(),
+            title: (
+              <Space>
+                Criado em
+                <SortDropdown
+                  options={[{ key: 'scheduledAt', label: 'Data' }]}
+                  activeSorters={params.sorters}
+                  onSelect={updateSorter}
+                  onClear={() => {
+                    clearSorters(['scheduledAt']);
+                  }}
+                />
+              </Space>
+            ),
+            render: (value: Scheduler) => {
+              return new Date(value.scheduledAt).toLocaleString().replace(', ', ' às ');
+            },
+            key: 'scheduledAt',
           },
           Table.EXPAND_COLUMN,
           {
@@ -213,7 +236,7 @@ export function SchedulerList({
               record.status !== 'cancelled' && record.status !== 'completed' ? (
                 <Space>
                   {(isAdmin() || record.status === 'pending') && (
-                    <Button icon={<EditOutlined />} onClick={() => {}}>
+                    <Button icon={<EditOutlined />} onClick={() => onEdit(record)}>
                       Editar
                     </Button>
                   )}

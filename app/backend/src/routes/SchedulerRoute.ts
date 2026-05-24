@@ -13,19 +13,31 @@ class SchedulerRoute {
       res.json({ url });
     });
 
+    router.get('/scheduler/count-unsynced-schedulers', async (_req, res) => {
+      const count = await SchedulerController.getCountUnsyncedSchedulers();
+      res.json({ count });
+    });
+
+    router.post('/scheduler/sync-unsynced-schedulers', async (_req, res) => {
+      const result = await SchedulerController.syncUnsyncedSchedulers();
+      res.json(result);
+    });
+
     router.post(
       '/scheduler',
       SchedulerValidation.create,
       async (req: SchedulerRequest, res) => {
+        const isCustomer = req.user?.role === UserRole.CUSTOMER;
         const customerId =
-          !req.body.customerId && req.user?.role === UserRole.CUSTOMER
-            ? req.user.id
-            : req.body.customerId;
+          !req.body.customerId && isCustomer ? req.user?.id : req.body.customerId;
         const data = {
           ...req.body,
           customerId,
           userId: req.user?.id,
         };
+        if (isCustomer) {
+          data.scheduledAt = new Date().toISOString();
+        }
         const result = await SchedulerController.create(data);
         res.json(result);
       },

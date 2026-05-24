@@ -1,4 +1,6 @@
 import type { UserRole } from '../validations/UserValidation';
+import type { UserFilter, UserSort } from './page-metadata';
+import type { Request } from './server';
 
 export type UserCreatePayload = {
   email: string;
@@ -15,3 +17,5 @@ export type UserTokenInfo = {
   role: UserRole;
   enabledTwoFactor: boolean;
 };
+
+export type UserRequest = Request<UserFilter, UserSort>;
