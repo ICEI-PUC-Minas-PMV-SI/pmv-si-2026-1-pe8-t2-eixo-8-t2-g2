@@ -1,6 +1,7 @@
 import type { Application } from 'express';
 // import * as routes from '@routes/index';
 import { AuthRoute } from './routes/AuthRoute';
+import { CatalogRoute } from './routes/CatalogRoute';
 import { ProductCategoryRoute } from './routes/ProductCategoryRoute';
 import { ProductCharacteristicRoute } from './routes/ProductCharacteristicRoute';
 import { DebugRoute } from './routes/DebugRoute';
@@ -12,6 +13,7 @@ import { DashboardRoute } from 'routes/DashboardRoute';
 class Router {
   register(app: Application) {
     AuthRoute.register(app);
+    CatalogRoute.register(app);
     ProductCategoryRoute.register(app);
     ProductCharacteristicRoute.register(app);
     DebugRoute.register(app);

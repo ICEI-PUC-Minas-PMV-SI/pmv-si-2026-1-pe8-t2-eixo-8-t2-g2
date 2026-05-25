@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from './components/login/LoginPage';
 import { AppLayout } from './layouts/AppLayout';
-import { Welcome } from './components/welcome/welcome';
 import { ProtectedLayout } from './layouts/ProtectedLayout';
+import { PublicCatalogLayout } from './layouts/PublicCatalogLayout';
 import { DashboardPage } from './components/dashboard/DashboardPage';
 import { SchedulerPage } from './components/scheduler/SchedulerPage';
 import { ProductPage } from './components/product/ProductPage';
@@ -12,6 +12,7 @@ import { SignUp } from './components/login/SignUp';
 import { ForgotPassword } from './components/login/ForgotPassword';
 import { ResetPassword } from './components/login/ResetPassword';
 import { Validate2FA } from './components/login/Validate2FA';
+import { CatalogPage } from './components/catalog/CatalogPage';
 
 export default function App() {
   return (
@@ -25,9 +26,15 @@ export default function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/cost-calculator" element={<CostCalculator />} />
         </Route>
+
+        {/* Catálogo público com layout próprio (sidebar + header com logo/login) */}
+        <Route element={<PublicCatalogLayout />}>
+          <Route path="/" element={<Navigate to="/catalogo" replace />} />
+          <Route path="/home" element={<Navigate to="/catalogo" replace />} />
+          <Route path="/catalogo" element={<CatalogPage />} />
+        </Route>
+
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/home" element={<Welcome />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
