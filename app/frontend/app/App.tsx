@@ -18,7 +18,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<ProtectedLayout />}>
-          <Route index element={<Navigate to="/dashboard" />} />
+          <Route index element={<Navigate to="/scheduler" />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/scheduler" element={<SchedulerPage />} />
           <Route path="/product" element={<ProductPage />} />
