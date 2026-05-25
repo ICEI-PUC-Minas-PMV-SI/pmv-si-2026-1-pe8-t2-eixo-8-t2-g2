@@ -76,7 +76,7 @@ export function ProductDetailModal({ product, open, onClose }: Props) {
       width={520}
       centered
       styles={{
-        content: { padding: 0, borderRadius: 12, overflow: 'hidden' },
+        body: { padding: 0, borderRadius: 12, overflow: 'hidden' },
       }}
     >
       <Flex>

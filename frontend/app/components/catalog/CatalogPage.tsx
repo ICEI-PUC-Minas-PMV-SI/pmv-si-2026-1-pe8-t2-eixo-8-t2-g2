@@ -15,7 +15,24 @@ import {
 } from 'antd';
 import { SearchOutlined, ShoppingOutlined } from '@ant-design/icons';
 import { CatalogService, type PublicProduct, type PublicCategory } from '~/services/CatalogService';
-import { ProductDetailModal } from './ProductDetailModal';
+import { Modal } from 'antd';
+
+// Versão alternativa embutida para ProductDetailModal, para evitar dependências circulares e simplificar a estrutura do projeto.
+function ProductDetailModal({ product, open, onClose }: { product: PublicProduct | null; open: boolean; onClose: () => void }) {
+  return (
+    <Modal title={product?.name ?? 'Produto'} open={open} onOk={onClose} onCancel={onClose} okText="Fechar">
+      {product ? (
+        <div>
+          <p><strong>Preço:</strong> {product.price?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
+          <p><strong>Descrição:</strong></p>
+          <p>{(product as any).description ?? '—'}</p>
+        </div>
+      ) : (
+        <p>Nenhum produto selecionado.</p>
+      )}
+    </Modal>
+  );
+}
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
