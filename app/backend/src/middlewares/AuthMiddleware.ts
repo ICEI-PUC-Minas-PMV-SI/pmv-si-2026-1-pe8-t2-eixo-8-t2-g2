@@ -16,11 +16,12 @@ class AuthMiddleware {
       '/product',
       '/product/:id',
       '/debug/gmail/oauth2callback',
-      '/gmail/oauth2callback',
       '/debug/generate-auth-url',
       '/user/forgot-password',
       '/user/forgot-password/validate-otp',
-      '/google-calendar/oauth2callback',
+      '/google-calendar/webhook',
+      '/gmail/webhook',
+      '/google/webhook',
       '/dashboard',
     ];
     const cleanedPath = req.path.replace(/\/$/, '');

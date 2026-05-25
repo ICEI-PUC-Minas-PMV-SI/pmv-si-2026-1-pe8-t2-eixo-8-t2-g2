@@ -1,10 +1,11 @@
-import { GoogleService } from '../services/GoogleService';
 import type { GoogleCredentials } from '@types';
 import { Crypt } from '../utils/Crypt';
 import { Env } from '../utils/Env';
 import type { IntegrationType } from '../generated/prisma/enums';
-import type { Credentials } from 'google-auth-library';
-// import { google } from 'googleapis';
+import { IntegrationsService } from 'services/IntegrationsService';
+import { Logger } from '../logger/Logger';
+import type { Credentials } from 'google-auth-library/build/src/auth/credentials';
+import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
 
 export const INTEGRATION = {
   CALENDAR: 'calendar',
@@ -14,73 +15,60 @@ export const INTEGRATION = {
 class GoogleApi {
   config = {
     calendar: {
-      redirectUri: '/google-calendar/oauth2callback',
-      clientId: Env.get('GOOGLE_CALENDAR_ID') || '',
-      clientSecret: Env.get('GOOGLE_CALENDAR_SECRET') || '',
+      redirectUri: '/google-calendar/webhook',
       options: {
         access_type: 'offline',
-        scope: ['https://www.googleapis.com/auth/calendar'],
+        scope: ['https://www.googleapis.com/auth/calendar.events.owned'],
       },
     },
     gmail: {
-      redirectUri: '/gmail/oauth2callback',
-      clientId: Env.get('MAIL_ID') || '',
-      clientSecret: Env.get('MAIL_SECRET') || '',
+      redirectUri: '/gmail/webhook',
       options: {
         access_type: 'offline',
         prompt: 'consent',
-        scope: ['https://mail.google.com/'],
+        scope: ['https://www.googleapis.com/auth/gmail.send'],
       },
     },
-    // all: {
-    //   redirectUri: '/google/oauth2callback',
-    //   clientId: Env.get('GOOGLE_ALL_ID') || '',
-    //   clientSecret: Env.get('GOOGLE_ALL_SECRET') || '',
-    //   options: {
-    //     access_type: 'offline',
-    //     prompt: 'consent',
-    //     scope: ['https://www.googleapis.com/auth/calendar', 'https://mail.google.com/'],
-    //   },
-    // },
+    all: {
+      redirectUri: '/google/webhook',
+      options: {
+        access_type: 'offline',
+        prompt: 'consent',
+        scope: [
+          'openid',
+          'email',
+          'profile',
+          'https://www.googleapis.com/auth/calendar.events.owned',
+          'https://www.googleapis.com/auth/gmail.send',
+        ],
+      },
+    },
   };
 
-  getCredentials(integrationType: IntegrationType) {
-    const { redirectUri, clientId, clientSecret } = this.config[integrationType];
-    return {
-      clientId,
-      clientSecret,
-      redirectUri: `${Env.getServerUrl()}${redirectUri}`,
-    };
-  }
-
   async getClient(integration: IntegrationType) {
-    const { clientId, clientSecret, redirectUri } = this.getCredentials(integration);
-    const { google } = await import('googleapis');
-    const client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
-    const result = await GoogleService.getCredentials(integration);
-    let oldAccessToken = null;
-    let credentialId = null;
+    const redirectUri = `${Env.getServerUrl()}${this.config[integration].redirectUri}`;
+    const result = await IntegrationsService.find(integration);
     if (result) {
-      const { id, encryptedAccessToken, encryptedRefreshToken } = result;
-      const accessToken = Crypt.decrypt(encryptedAccessToken);
-      const refreshToken = Crypt.decrypt(encryptedRefreshToken);
-      oldAccessToken = accessToken;
-      credentialId = id;
-      client.setCredentials({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
+      const clientSecret = Crypt.decrypt(result.encryptedClientSecret);
+      const refreshToken = result.encryptedRefreshToken
+        ? Crypt.decrypt(result.encryptedRefreshToken)
+        : '';
+
+      const client = new OAuth2Client(result.clientId, clientSecret, redirectUri);
+      let accessToken = '';
+      if (refreshToken) {
+        client.setCredentials({
+          refresh_token: refreshToken,
+        });
+        const { token } = await client.getAccessToken().catch((err) => {
+          Logger.error(`Failed to get access token: ${err.message}`);
+          return { token: null };
+        });
+        accessToken = token || '';
+      }
+      return { client, accessToken };
     }
-    const { token: accessToken } = await client.getAccessToken().catch((err) => {
-      console.error(err);
-      return { token: null };
-    });
-    if (credentialId && accessToken && accessToken !== oldAccessToken) {
-      await GoogleService.updateCredential(credentialId, {
-        encryptedAccessToken: Crypt.encrypt(accessToken),
-      });
-    }
-    return { client, accessToken: accessToken || '' };
+    throw new Error('Google integration not configured');
   }
 
   async getAuthUrl(integrationType: IntegrationType) {

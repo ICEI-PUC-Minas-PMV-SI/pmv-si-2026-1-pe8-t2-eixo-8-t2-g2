@@ -1,6 +1,5 @@
 export * from './auth.d.js';
 export * from './debug.d.js';
-export * from './logger.d.js';
 export * from './product.d.js';
 export * from './scheduler.d.js';
 export * from './server.d.js';
@@ -9,4 +8,5 @@ export * from './google.d.js';
 export * from './category.d.js';
 export * from './characteristic.d.js';
 export * from './pagination.d.js';
-export * from './page-metadata.js';
+export * from './page-metadata.d.js';
+export * from './integrations.d.js';

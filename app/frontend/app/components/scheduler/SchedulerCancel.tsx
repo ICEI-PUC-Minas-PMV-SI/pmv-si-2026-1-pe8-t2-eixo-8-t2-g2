@@ -32,10 +32,12 @@ export function SchedulerCancel({ open, onCancel, onConfirm }: ComponentProps) {
       okButtonProps={{ danger: true }}
       cancelText="Voltar"
     >
-      <Space orientation="vertical" style={{ width: '100%' }}>
+      <Space
+        orientation="vertical"
+        style={{ width: '100%', paddingTop: 12, paddingBottom: 12 }}
+      >
         <Typography.Text type="secondary">
-          Informe o motivo do cancelamento. Esta informação será registrada no
-          pedido.
+          Informe o motivo do cancelamento. Esta informação será registrada no pedido.
         </Typography.Text>
         <Input.TextArea
           rows={4}

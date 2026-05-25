@@ -12,6 +12,8 @@ import { SignUp } from './components/login/SignUp';
 import { ForgotPassword } from './components/login/ForgotPassword';
 import { ResetPassword } from './components/login/ResetPassword';
 import { Validate2FA } from './components/login/Validate2FA';
+import { CartPage } from './components/cart/CartPage';
+import { UserPage } from './components/user/UserPage';
 
 export default function App() {
   return (
@@ -24,6 +26,8 @@ export default function App() {
           <Route path="/product" element={<ProductPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/cost-calculator" element={<CostCalculator />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/users" element={<UserPage />} />
         </Route>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Welcome />} />

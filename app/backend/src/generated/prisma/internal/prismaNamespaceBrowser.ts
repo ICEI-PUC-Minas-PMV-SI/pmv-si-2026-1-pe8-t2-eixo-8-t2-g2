@@ -61,7 +61,13 @@ export const ModelName = {
   SchedulerItem: 'SchedulerItem',
   Scheduler: 'Scheduler',
   GoogleCredentials: 'GoogleCredentials',
+<<<<<<< HEAD
   RecoveryCode: 'RecoveryCode'
+=======
+  GoogleIntegration: 'GoogleIntegration',
+  RecoveryCode: 'RecoveryCode',
+  AppSettings: 'AppSettings'
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -94,6 +100,7 @@ export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
+  phone: 'phone',
   googleId: 'googleId',
   role: 'role',
   password: 'password',
@@ -170,6 +177,7 @@ export const SchedulerItemScalarFieldEnum = {
   quantity: 'quantity',
   priceAtBooking: 'priceAtBooking',
   durationMinutes: 'durationMinutes',
+  customization: 'customization',
   orderIndex: 'orderIndex',
   createdAt: 'createdAt'
 } as const
@@ -181,6 +189,7 @@ export const SchedulerScalarFieldEnum = {
   id: 'id',
   customerId: 'customerId',
   scheduledAt: 'scheduledAt',
+  scheduledTo: 'scheduledTo',
   estimatedStartAt: 'estimatedStartAt',
   estimatedEndAt: 'estimatedEndAt',
   status: 'status',
@@ -188,7 +197,12 @@ export const SchedulerScalarFieldEnum = {
   deliveryType: 'deliveryType',
   cancellationReason: 'cancellationReason',
   createdAt: 'createdAt',
+<<<<<<< HEAD
   updatedAt: 'updatedAt'
+=======
+  updatedAt: 'updatedAt',
+  googleEventId: 'googleEventId'
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 } as const
 
 export type SchedulerScalarFieldEnum = (typeof SchedulerScalarFieldEnum)[keyof typeof SchedulerScalarFieldEnum]
@@ -204,6 +218,28 @@ export const GoogleCredentialsScalarFieldEnum = {
 } as const
 
 export type GoogleCredentialsScalarFieldEnum = (typeof GoogleCredentialsScalarFieldEnum)[keyof typeof GoogleCredentialsScalarFieldEnum]
+<<<<<<< HEAD
+=======
+
+
+export const GoogleIntegrationScalarFieldEnum = {
+  id: 'id',
+  googleEmail: 'googleEmail',
+  clientId: 'clientId',
+  encryptedClientSecret: 'encryptedClientSecret',
+  encryptedRefreshToken: 'encryptedRefreshToken',
+  tokenType: 'tokenType',
+  scopes: 'scopes',
+  mailFrom: 'mailFrom',
+  mailSenderName: 'mailSenderName',
+  useForCalendar: 'useForCalendar',
+  useForEmail: 'useForEmail',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type GoogleIntegrationScalarFieldEnum = (typeof GoogleIntegrationScalarFieldEnum)[keyof typeof GoogleIntegrationScalarFieldEnum]
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 
 
 export const RecoveryCodeScalarFieldEnum = {
@@ -216,6 +252,27 @@ export const RecoveryCodeScalarFieldEnum = {
 } as const
 
 export type RecoveryCodeScalarFieldEnum = (typeof RecoveryCodeScalarFieldEnum)[keyof typeof RecoveryCodeScalarFieldEnum]
+<<<<<<< HEAD
+=======
+
+
+export const AppSettingsScalarFieldEnum = {
+  id: 'id',
+  siteName: 'siteName',
+  logoUrl: 'logoUrl',
+  whatsapp: 'whatsapp',
+  contactEmail: 'contactEmail',
+  serviceHours: 'serviceHours',
+  address: 'address',
+  instagram: 'instagram',
+  primaryColor: 'primaryColor',
+  secondaryColor: 'secondaryColor',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppSettingsScalarFieldEnum = (typeof AppSettingsScalarFieldEnum)[keyof typeof AppSettingsScalarFieldEnum]
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 
 
 export const SortOrder = {

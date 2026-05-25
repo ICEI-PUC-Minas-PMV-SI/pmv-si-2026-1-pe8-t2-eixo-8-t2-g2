@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import AuthController from '~/controllers/AuthController';
 import { useNavigation } from '~/hooks/useNavigation';
@@ -5,13 +6,14 @@ import { useNavigation } from '~/hooks/useNavigation';
 export function GoogleButton() {
   const divRef = useRef<HTMLDivElement>(null);
   const { goToHome } = useNavigation();
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!window.google || !divRef.current) return;
-
     window.google.accounts.id.initialize({
       client_id:
-        '389422613020-vvv3g8sob8loefqovjg5vcb0kpnp0r2o.apps.googleusercontent.com',
+        '389422613020-8edt94go4c0lpnv44ejk8p8d6sagjk9u.apps.googleusercontent.com',
       callback: (response: any) => {
+        queryClient.clear();
         AuthController.authGoogle({ token: response.credential }).then(goToHome);
       },
       autoselect: true,

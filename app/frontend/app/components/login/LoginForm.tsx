@@ -4,6 +4,7 @@ import { useNavigation } from '~/hooks/useNavigation';
 import Rules from '~/utils/Rules';
 import { GoogleButton } from './GoogleButton';
 import Text from 'antd/es/typography/Text';
+import { useQueryClient } from '@tanstack/react-query';
 
 type FieldType = {
   email?: string;
@@ -13,6 +14,7 @@ type FieldType = {
 
 export default function LoginForm() {
   const navigation = useNavigation();
+  const queryClient = useQueryClient();
   return (
     <>
       <Form
@@ -30,6 +32,7 @@ export default function LoginForm() {
             formData.email,
             formData.password,
           );
+          queryClient.clear();
           if (token) {
             navigation.goToHome();
           } else if (required2FACode) {

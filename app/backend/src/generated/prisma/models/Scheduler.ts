@@ -28,6 +28,10 @@ export type SchedulerMinAggregateOutputType = {
   id: string | null
   customerId: string | null
   scheduledAt: Date | null
+<<<<<<< HEAD
+=======
+  scheduledTo: Date | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt: Date | null
   estimatedEndAt: Date | null
   status: $Enums.SchedulerStatus | null
@@ -36,12 +40,20 @@ export type SchedulerMinAggregateOutputType = {
   cancellationReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
+<<<<<<< HEAD
+=======
+  googleEventId: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerMaxAggregateOutputType = {
   id: string | null
   customerId: string | null
   scheduledAt: Date | null
+<<<<<<< HEAD
+=======
+  scheduledTo: Date | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt: Date | null
   estimatedEndAt: Date | null
   status: $Enums.SchedulerStatus | null
@@ -50,12 +62,20 @@ export type SchedulerMaxAggregateOutputType = {
   cancellationReason: string | null
   createdAt: Date | null
   updatedAt: Date | null
+<<<<<<< HEAD
+=======
+  googleEventId: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerCountAggregateOutputType = {
   id: number
   customerId: number
   scheduledAt: number
+<<<<<<< HEAD
+=======
+  scheduledTo: number
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt: number
   estimatedEndAt: number
   status: number
@@ -64,6 +84,10 @@ export type SchedulerCountAggregateOutputType = {
   cancellationReason: number
   createdAt: number
   updatedAt: number
+<<<<<<< HEAD
+=======
+  googleEventId: number
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   _all: number
 }
 
@@ -72,6 +96,10 @@ export type SchedulerMinAggregateInputType = {
   id?: true
   customerId?: true
   scheduledAt?: true
+<<<<<<< HEAD
+=======
+  scheduledTo?: true
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: true
   estimatedEndAt?: true
   status?: true
@@ -80,12 +108,20 @@ export type SchedulerMinAggregateInputType = {
   cancellationReason?: true
   createdAt?: true
   updatedAt?: true
+<<<<<<< HEAD
+=======
+  googleEventId?: true
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerMaxAggregateInputType = {
   id?: true
   customerId?: true
   scheduledAt?: true
+<<<<<<< HEAD
+=======
+  scheduledTo?: true
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: true
   estimatedEndAt?: true
   status?: true
@@ -94,12 +130,20 @@ export type SchedulerMaxAggregateInputType = {
   cancellationReason?: true
   createdAt?: true
   updatedAt?: true
+<<<<<<< HEAD
+=======
+  googleEventId?: true
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerCountAggregateInputType = {
   id?: true
   customerId?: true
   scheduledAt?: true
+<<<<<<< HEAD
+=======
+  scheduledTo?: true
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: true
   estimatedEndAt?: true
   status?: true
@@ -108,6 +152,10 @@ export type SchedulerCountAggregateInputType = {
   cancellationReason?: true
   createdAt?: true
   updatedAt?: true
+<<<<<<< HEAD
+=======
+  googleEventId?: true
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   _all?: true
 }
 
@@ -187,6 +235,10 @@ export type SchedulerGroupByOutputType = {
   id: string
   customerId: string
   scheduledAt: Date
+<<<<<<< HEAD
+=======
+  scheduledTo: Date | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt: Date | null
   estimatedEndAt: Date | null
   status: $Enums.SchedulerStatus
@@ -195,6 +247,10 @@ export type SchedulerGroupByOutputType = {
   cancellationReason: string | null
   createdAt: Date
   updatedAt: Date
+<<<<<<< HEAD
+=======
+  googleEventId: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   _count: SchedulerCountAggregateOutputType | null
   _min: SchedulerMinAggregateOutputType | null
   _max: SchedulerMaxAggregateOutputType | null
@@ -222,6 +278,10 @@ export type SchedulerWhereInput = {
   id?: Prisma.StringFilter<"Scheduler"> | string
   customerId?: Prisma.StringFilter<"Scheduler"> | string
   scheduledAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
   estimatedEndAt?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
   status?: Prisma.EnumSchedulerStatusFilter<"Scheduler"> | $Enums.SchedulerStatus
@@ -230,6 +290,10 @@ export type SchedulerWhereInput = {
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.StringNullableFilter<"Scheduler"> | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   items?: Prisma.SchedulerItemListRelationFilter
 }
@@ -238,6 +302,10 @@ export type SchedulerOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.SortOrderInput | Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.SortOrderInput | Prisma.SortOrder
   estimatedEndAt?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -246,6 +314,10 @@ export type SchedulerOrderByWithRelationInput = {
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.SortOrderInput | Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer?: Prisma.CustomerOrderByWithRelationInput
   items?: Prisma.SchedulerItemOrderByRelationAggregateInput
 }
@@ -257,6 +329,10 @@ export type SchedulerWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SchedulerWhereInput | Prisma.SchedulerWhereInput[]
   customerId?: Prisma.StringFilter<"Scheduler"> | string
   scheduledAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
   estimatedEndAt?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
   status?: Prisma.EnumSchedulerStatusFilter<"Scheduler"> | $Enums.SchedulerStatus
@@ -265,6 +341,10 @@ export type SchedulerWhereUniqueInput = Prisma.AtLeast<{
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.StringNullableFilter<"Scheduler"> | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer?: Prisma.XOR<Prisma.CustomerScalarRelationFilter, Prisma.CustomerWhereInput>
   items?: Prisma.SchedulerItemListRelationFilter
 }, "id">
@@ -273,6 +353,10 @@ export type SchedulerOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.SortOrderInput | Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.SortOrderInput | Prisma.SortOrder
   estimatedEndAt?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -281,6 +365,10 @@ export type SchedulerOrderByWithAggregationInput = {
   cancellationReason?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.SortOrderInput | Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   _count?: Prisma.SchedulerCountOrderByAggregateInput
   _max?: Prisma.SchedulerMaxOrderByAggregateInput
   _min?: Prisma.SchedulerMinOrderByAggregateInput
@@ -293,6 +381,10 @@ export type SchedulerScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Scheduler"> | string
   customerId?: Prisma.StringWithAggregatesFilter<"Scheduler"> | string
   scheduledAt?: Prisma.DateTimeWithAggregatesFilter<"Scheduler"> | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.DateTimeNullableWithAggregatesFilter<"Scheduler"> | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Scheduler"> | Date | string | null
   estimatedEndAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Scheduler"> | Date | string | null
   status?: Prisma.EnumSchedulerStatusWithAggregatesFilter<"Scheduler"> | $Enums.SchedulerStatus
@@ -301,11 +393,19 @@ export type SchedulerScalarWhereWithAggregatesInput = {
   cancellationReason?: Prisma.StringNullableWithAggregatesFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Scheduler"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Scheduler"> | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.StringNullableWithAggregatesFilter<"Scheduler"> | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerCreateInput = {
   id?: string
   scheduledAt: Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Date | string | null
   estimatedEndAt?: Date | string | null
   status?: $Enums.SchedulerStatus
@@ -314,6 +414,10 @@ export type SchedulerCreateInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer: Prisma.CustomerCreateNestedOneWithoutSchedulersInput
   items?: Prisma.SchedulerItemCreateNestedManyWithoutSchedulerInput
 }
@@ -322,6 +426,10 @@ export type SchedulerUncheckedCreateInput = {
   id?: string
   customerId: string
   scheduledAt: Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Date | string | null
   estimatedEndAt?: Date | string | null
   status?: $Enums.SchedulerStatus
@@ -330,12 +438,20 @@ export type SchedulerUncheckedCreateInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   items?: Prisma.SchedulerItemUncheckedCreateNestedManyWithoutSchedulerInput
 }
 
 export type SchedulerUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -344,6 +460,10 @@ export type SchedulerUpdateInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSchedulersNestedInput
   items?: Prisma.SchedulerItemUpdateManyWithoutSchedulerNestedInput
 }
@@ -352,6 +472,10 @@ export type SchedulerUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -360,6 +484,10 @@ export type SchedulerUncheckedUpdateInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   items?: Prisma.SchedulerItemUncheckedUpdateManyWithoutSchedulerNestedInput
 }
 
@@ -367,6 +495,10 @@ export type SchedulerCreateManyInput = {
   id?: string
   customerId: string
   scheduledAt: Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Date | string | null
   estimatedEndAt?: Date | string | null
   status?: $Enums.SchedulerStatus
@@ -375,11 +507,19 @@ export type SchedulerCreateManyInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -388,12 +528,20 @@ export type SchedulerUpdateManyMutationInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -402,6 +550,10 @@ export type SchedulerUncheckedUpdateManyInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerListRelationFilter = {
@@ -423,6 +575,10 @@ export type SchedulerCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.SortOrder
   estimatedEndAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -431,12 +587,20 @@ export type SchedulerCountOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.SortOrder
   estimatedEndAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -445,12 +609,20 @@ export type SchedulerMaxOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   customerId?: Prisma.SortOrder
   scheduledAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.SortOrder
   estimatedEndAt?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -459,6 +631,10 @@ export type SchedulerMinOrderByAggregateInput = {
   cancellationReason?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.SortOrder
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerCreateNestedManyWithoutCustomerInput = {
@@ -536,6 +712,10 @@ export type EnumDeliveryTypeFieldUpdateOperationsInput = {
 export type SchedulerCreateWithoutCustomerInput = {
   id?: string
   scheduledAt: Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Date | string | null
   estimatedEndAt?: Date | string | null
   status?: $Enums.SchedulerStatus
@@ -544,12 +724,20 @@ export type SchedulerCreateWithoutCustomerInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   items?: Prisma.SchedulerItemCreateNestedManyWithoutSchedulerInput
 }
 
 export type SchedulerUncheckedCreateWithoutCustomerInput = {
   id?: string
   scheduledAt: Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Date | string | null
   estimatedEndAt?: Date | string | null
   status?: $Enums.SchedulerStatus
@@ -558,6 +746,10 @@ export type SchedulerUncheckedCreateWithoutCustomerInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   items?: Prisma.SchedulerItemUncheckedCreateNestedManyWithoutSchedulerInput
 }
 
@@ -593,6 +785,10 @@ export type SchedulerScalarWhereInput = {
   id?: Prisma.StringFilter<"Scheduler"> | string
   customerId?: Prisma.StringFilter<"Scheduler"> | string
   scheduledAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
   estimatedEndAt?: Prisma.DateTimeNullableFilter<"Scheduler"> | Date | string | null
   status?: Prisma.EnumSchedulerStatusFilter<"Scheduler"> | $Enums.SchedulerStatus
@@ -601,11 +797,19 @@ export type SchedulerScalarWhereInput = {
   cancellationReason?: Prisma.StringNullableFilter<"Scheduler"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Scheduler"> | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.StringNullableFilter<"Scheduler"> | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerCreateWithoutItemsInput = {
   id?: string
   scheduledAt: Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Date | string | null
   estimatedEndAt?: Date | string | null
   status?: $Enums.SchedulerStatus
@@ -614,6 +818,10 @@ export type SchedulerCreateWithoutItemsInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer: Prisma.CustomerCreateNestedOneWithoutSchedulersInput
 }
 
@@ -621,6 +829,10 @@ export type SchedulerUncheckedCreateWithoutItemsInput = {
   id?: string
   customerId: string
   scheduledAt: Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Date | string | null
   estimatedEndAt?: Date | string | null
   status?: $Enums.SchedulerStatus
@@ -629,6 +841,10 @@ export type SchedulerUncheckedCreateWithoutItemsInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerCreateOrConnectWithoutItemsInput = {
@@ -650,6 +866,10 @@ export type SchedulerUpdateToOneWithWhereWithoutItemsInput = {
 export type SchedulerUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -658,6 +878,10 @@ export type SchedulerUpdateWithoutItemsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer?: Prisma.CustomerUpdateOneRequiredWithoutSchedulersNestedInput
 }
 
@@ -665,6 +889,10 @@ export type SchedulerUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   customerId?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -673,11 +901,19 @@ export type SchedulerUncheckedUpdateWithoutItemsInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerCreateManyCustomerInput = {
   id?: string
   scheduledAt: Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Date | string | null
   estimatedEndAt?: Date | string | null
   status?: $Enums.SchedulerStatus
@@ -686,11 +922,19 @@ export type SchedulerCreateManyCustomerInput = {
   cancellationReason?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 export type SchedulerUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -699,12 +943,20 @@ export type SchedulerUpdateWithoutCustomerInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   items?: Prisma.SchedulerItemUpdateManyWithoutSchedulerNestedInput
 }
 
 export type SchedulerUncheckedUpdateWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -713,12 +965,20 @@ export type SchedulerUncheckedUpdateWithoutCustomerInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   items?: Prisma.SchedulerItemUncheckedUpdateManyWithoutSchedulerNestedInput
 }
 
 export type SchedulerUncheckedUpdateManyWithoutCustomerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   scheduledAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  scheduledTo?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimatedEndAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumSchedulerStatusFieldUpdateOperationsInput | $Enums.SchedulerStatus
@@ -727,6 +987,10 @@ export type SchedulerUncheckedUpdateManyWithoutCustomerInput = {
   cancellationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+<<<<<<< HEAD
+=======
+  googleEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
 
 
@@ -764,6 +1028,10 @@ export type SchedulerSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   customerId?: boolean
   scheduledAt?: boolean
+<<<<<<< HEAD
+=======
+  scheduledTo?: boolean
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: boolean
   estimatedEndAt?: boolean
   status?: boolean
@@ -772,6 +1040,10 @@ export type SchedulerSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   cancellationReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+<<<<<<< HEAD
+=======
+  googleEventId?: boolean
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Scheduler$itemsArgs<ExtArgs>
   _count?: boolean | Prisma.SchedulerCountOutputTypeDefaultArgs<ExtArgs>
@@ -781,6 +1053,10 @@ export type SchedulerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   customerId?: boolean
   scheduledAt?: boolean
+<<<<<<< HEAD
+=======
+  scheduledTo?: boolean
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: boolean
   estimatedEndAt?: boolean
   status?: boolean
@@ -789,6 +1065,10 @@ export type SchedulerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   cancellationReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+<<<<<<< HEAD
+=======
+  googleEventId?: boolean
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
 
@@ -796,6 +1076,10 @@ export type SchedulerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   id?: boolean
   customerId?: boolean
   scheduledAt?: boolean
+<<<<<<< HEAD
+=======
+  scheduledTo?: boolean
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: boolean
   estimatedEndAt?: boolean
   status?: boolean
@@ -804,6 +1088,10 @@ export type SchedulerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   cancellationReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+<<<<<<< HEAD
+=======
+  googleEventId?: boolean
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["scheduler"]>
 
@@ -811,6 +1099,10 @@ export type SchedulerSelectScalar = {
   id?: boolean
   customerId?: boolean
   scheduledAt?: boolean
+<<<<<<< HEAD
+=======
+  scheduledTo?: boolean
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   estimatedStartAt?: boolean
   estimatedEndAt?: boolean
   status?: boolean
@@ -819,9 +1111,16 @@ export type SchedulerSelectScalar = {
   cancellationReason?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+<<<<<<< HEAD
 }
 
 export type SchedulerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "scheduledAt" | "estimatedStartAt" | "estimatedEndAt" | "status" | "paymentMethod" | "deliveryType" | "cancellationReason" | "createdAt" | "updatedAt", ExtArgs["result"]["scheduler"]>
+=======
+  googleEventId?: boolean
+}
+
+export type SchedulerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "customerId" | "scheduledAt" | "scheduledTo" | "estimatedStartAt" | "estimatedEndAt" | "status" | "paymentMethod" | "deliveryType" | "cancellationReason" | "createdAt" | "updatedAt" | "googleEventId", ExtArgs["result"]["scheduler"]>
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 export type SchedulerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   customer?: boolean | Prisma.CustomerDefaultArgs<ExtArgs>
   items?: boolean | Prisma.Scheduler$itemsArgs<ExtArgs>
@@ -844,6 +1143,10 @@ export type $SchedulerPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     id: string
     customerId: string
     scheduledAt: Date
+<<<<<<< HEAD
+=======
+    scheduledTo: Date | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
     estimatedStartAt: Date | null
     estimatedEndAt: Date | null
     status: $Enums.SchedulerStatus
@@ -852,6 +1155,10 @@ export type $SchedulerPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     cancellationReason: string | null
     createdAt: Date
     updatedAt: Date
+<<<<<<< HEAD
+=======
+    googleEventId: string | null
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   }, ExtArgs["result"]["scheduler"]>
   composites: {}
 }
@@ -1280,6 +1587,10 @@ export interface SchedulerFieldRefs {
   readonly id: Prisma.FieldRef<"Scheduler", 'String'>
   readonly customerId: Prisma.FieldRef<"Scheduler", 'String'>
   readonly scheduledAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
+<<<<<<< HEAD
+=======
+  readonly scheduledTo: Prisma.FieldRef<"Scheduler", 'DateTime'>
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
   readonly estimatedStartAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
   readonly estimatedEndAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
   readonly status: Prisma.FieldRef<"Scheduler", 'SchedulerStatus'>
@@ -1288,6 +1599,10 @@ export interface SchedulerFieldRefs {
   readonly cancellationReason: Prisma.FieldRef<"Scheduler", 'String'>
   readonly createdAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Scheduler", 'DateTime'>
+<<<<<<< HEAD
+=======
+  readonly googleEventId: Prisma.FieldRef<"Scheduler", 'String'>
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 }
     
 

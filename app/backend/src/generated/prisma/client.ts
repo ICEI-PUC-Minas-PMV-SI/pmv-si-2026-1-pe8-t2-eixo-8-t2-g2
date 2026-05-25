@@ -91,8 +91,24 @@ export type Scheduler = Prisma.SchedulerModel
  * 
  */
 export type GoogleCredentials = Prisma.GoogleCredentialsModel
+<<<<<<< HEAD
+=======
+/**
+ * Model GoogleIntegration
+ * 
+ */
+export type GoogleIntegration = Prisma.GoogleIntegrationModel
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 /**
  * Model RecoveryCode
  * 
  */
 export type RecoveryCode = Prisma.RecoveryCodeModel
+<<<<<<< HEAD
+=======
+/**
+ * Model AppSettings
+ * 
+ */
+export type AppSettings = Prisma.AppSettingsModel
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6

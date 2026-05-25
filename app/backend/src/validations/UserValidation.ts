@@ -73,6 +73,19 @@ class UserValidation {
       }
     };
   };
+  changeRole = () => {
+    return (req: GenericRequest, res: Response, next: NextFunction) => {
+      try {
+        const schema = {
+          role: z.enum(UserRole),
+        };
+        z.object(schema).parse(req.body);
+        next();
+      } catch (err) {
+        ErrorValidation.handleZodError(err, res);
+      }
+    };
+  };
 }
 
 const instance = new UserValidation();

@@ -18,5 +18,11 @@ export type * from './models/Product'
 export type * from './models/SchedulerItem'
 export type * from './models/Scheduler'
 export type * from './models/GoogleCredentials'
+<<<<<<< HEAD
 export type * from './models/RecoveryCode'
+=======
+export type * from './models/GoogleIntegration'
+export type * from './models/RecoveryCode'
+export type * from './models/AppSettings'
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 export type * from './commonInputTypes'

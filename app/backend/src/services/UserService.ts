@@ -3,13 +3,18 @@ import { Crypt } from '../utils/Crypt';
 import { HttpCode } from '../utils/HttpCode';
 import { OTPUtil } from '../utils/OTPUtil';
 import { SMTP } from '../utils/SMTP';
-import type { UserCreatePayload } from '@types';
+import type { PaginationParams, UserCreatePayload } from '@types';
 import { Prisma } from '../db/Prisma';
 import type { User } from '../generated/prisma/client';
 import { AppError } from '../error/AppError';
 import { OTPTemplate } from '../templates/email/OTPTemplate';
-import type { UserSelect } from '../generated/prisma/models';
+import type {
+  UserOrderByWithRelationInput,
+  UserSelect,
+  UserWhereInput,
+} from '../generated/prisma/models';
 import { PasswordResetTemplate } from 'templates/email/PasswordResetTemplate';
+import { ResponseUtil } from 'utils/ResponseUtil';
 
 const userSelect = {
   id: true,
@@ -70,12 +75,30 @@ class UserService {
     return userInfo;
   }
 
-  async list() {
+  async list(
+    filter?: UserWhereInput,
+    orderBy?: UserOrderByWithRelationInput[],
+    pagination?: PaginationParams,
+  ) {
     const prisma = await Prisma.getClient();
-    const users = await prisma.user.findMany({
-      select: userSelect,
-    });
-    return users;
+    const where = filter ? filter : {};
+    const pageParams = pagination || {};
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        ...pageParams,
+        select: {
+          id: true,
+          email: true,
+          createdAt: true,
+          role: true,
+          name: true,
+        },
+        orderBy: orderBy && orderBy.length > 0 ? orderBy : { createdAt: 'desc' },
+      }),
+      prisma.user.count({ where }),
+    ]);
+    return { data: users, total, ...ResponseUtil.handlePageParams(pageParams, total) };
   }
 
   async delete(id: string) {
@@ -137,7 +160,6 @@ class UserService {
     });
   }
   async sendResetPasswordMail(email: string, resetUrl: string) {
-    console.log(resetUrl);
     const { template, attachments } = PasswordResetTemplate.buildResetEmail(resetUrl);
     await SMTP.sendMail({
       body: template,
@@ -184,6 +206,23 @@ class UserService {
       where: {
         userId,
       },
+    });
+  }
+  async changeRole(id: string, role: 'admin' | 'customer') {
+    const prisma = await Prisma.getClient();
+    if (role === 'customer') {
+      const count = await prisma.user.count({
+        where: {
+          role: 'admin',
+        },
+      });
+      if (count === 1) {
+        throw new AppError('Cannot remove the last admin user', HttpCode.BAD_REQUEST);
+      }
+    }
+    await prisma.user.update({
+      where: { id },
+      data: { role },
     });
   }
 }

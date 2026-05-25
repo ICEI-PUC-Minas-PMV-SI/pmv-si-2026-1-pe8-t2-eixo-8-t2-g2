@@ -30,7 +30,12 @@ export type SchedulerStatus = (typeof SchedulerStatus)[keyof typeof SchedulerSta
 
 export const IntegrationType = {
   gmail: 'gmail',
+<<<<<<< HEAD
   calendar: 'calendar'
+=======
+  calendar: 'calendar',
+  all: 'all'
+>>>>>>> 9f0e9d9ba727d5bd9137ce50f6ac1effd2cab5b6
 } as const
 
 export type IntegrationType = (typeof IntegrationType)[keyof typeof IntegrationType]
@@ -38,6 +43,7 @@ export type IntegrationType = (typeof IntegrationType)[keyof typeof IntegrationT
 
 export const PaymentMethod = {
   credit_card: 'credit_card',
+  debit_card: 'debit_card',
   pix: 'pix',
   bank_transfer: 'bank_transfer',
   cash: 'cash'
