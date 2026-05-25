@@ -1,4 +1,4 @@
-export type AuthData = {
+cdexport type AuthData = {
   email: string;
   password: string;
 };
