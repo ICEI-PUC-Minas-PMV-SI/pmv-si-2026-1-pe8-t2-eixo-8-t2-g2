@@ -1,10 +1,5 @@
-import { Layout } from 'antd';
-import { Content } from 'antd/es/layout/layout';
+import { Navigate } from 'react-router-dom';
 
 export function Welcome() {
-  return (
-    <Layout>
-      <Content>home</Content>
-    </Layout>
-  );
+  return <Navigate to="/catalogo" replace />;
 }
