@@ -261,6 +261,7 @@ class SchedulerService {
         include: {
           items: {
             select: {
+              id: true,
               orderIndex: true,
               priceAtBooking: true,
               durationMinutes: true,
@@ -383,6 +384,7 @@ class SchedulerService {
             productId: item.productId,
             quantity: item.quantity,
             orderIndex: item.orderIndex,
+            customization: item.customization || null,
             priceAtBooking: item.priceAtBooking || null,
             durationMinutes: item.durationMinutes || null,
           },
@@ -396,6 +398,7 @@ class SchedulerService {
             schedulerId: id,
             productId: item.productId,
             quantity: item.quantity,
+            customization: item.customization || null,
             orderIndex: item.orderIndex,
             priceAtBooking: item.priceAtBooking || null,
             durationMinutes: item.durationMinutes || null,

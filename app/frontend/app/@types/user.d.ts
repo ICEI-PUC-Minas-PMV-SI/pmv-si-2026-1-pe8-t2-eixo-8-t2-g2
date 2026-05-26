@@ -15,3 +15,18 @@ export type UserList = {
   role: AuthPermission;
   createdAt: Date;
 };
+
+export type UserCreatePayload = {
+  name: string;
+  phone: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  postalCode: string;
+  street: string;
+  number: string;
+  complement: string;
+  state: string;
+  city: string;
+  neighborhood: string;
+};

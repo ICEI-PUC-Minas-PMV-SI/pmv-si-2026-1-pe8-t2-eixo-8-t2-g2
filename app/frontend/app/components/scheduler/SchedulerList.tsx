@@ -106,7 +106,9 @@ export function SchedulerList({
       <Table<Scheduler>
         {...tableProps}
         style={{ overflowX: 'auto' }}
+        styles={{ content: { cursor: 'pointer' } }}
         expandable={{
+          expandRowByClick: true,
           expandedRowRender: (record) => (
             <Table
               dataSource={record.items}

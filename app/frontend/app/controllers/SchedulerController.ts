@@ -18,7 +18,7 @@ class SchedulerController {
 
   async update(scheduler: Partial<Scheduler> & { id: string }) {
     const result = await Request.patch<Scheduler>(
-      `/scheduler-cancellation/${scheduler.id}`,
+      `/scheduler/${scheduler.id}`,
       scheduler,
     );
     return result;

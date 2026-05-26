@@ -25,24 +25,67 @@ const userSelect = {
 };
 
 class UserService {
-  async create(user: UserCreatePayload) {
+  async create(
+    user: UserCreatePayload,
+    { createCustomer }: { createCustomer?: boolean } = {},
+  ) {
     const prisma = await Prisma.getClient();
-    const { email, name, role, password, googleId = null } = user;
+    const alreadyExists = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: user.email }, { phone: user.phone }],
+      },
+    });
+    if (alreadyExists) {
+      throw new AppError(
+        'User with this email or phone already exists',
+        HttpCode.BAD_REQUEST,
+      );
+    }
+    const { email, name, phone, address, password, googleId = null } = user;
     let pass = null;
     if (password) {
       pass = await Crypt.hash(password);
     }
-    const createdUser = await prisma.user.create({
-      data: {
-        email,
-        name,
-        role,
-        password: pass,
-        googleId,
-      },
-      select: userSelect,
+    const createdUser = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          email,
+          name,
+          role: 'customer',
+          password: pass,
+          googleId,
+        },
+        select: userSelect,
+      });
+      if (createCustomer) {
+        await tx.customer.create({
+          data: {
+            name,
+            addresses: {
+              create: {
+                postalCode: address.postalCode,
+                street: address.street,
+                number: address.number,
+                complement: address.complement || null,
+                state: address.state,
+                city: address.city,
+                neighborhood: address.neighborhood,
+                country: 'BR',
+                isPrimary: address.isPrimary ?? false,
+              },
+            },
+            phone,
+            user: {
+              connect: {
+                id: newUser.id,
+              },
+            },
+          },
+        });
+      }
+      return newUser;
     });
-
+    console.log('Created user:', createdUser);
     return createdUser;
   }
 

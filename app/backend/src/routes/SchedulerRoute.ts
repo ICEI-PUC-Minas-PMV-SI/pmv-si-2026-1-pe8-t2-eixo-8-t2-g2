@@ -61,7 +61,11 @@ class SchedulerRoute {
 
     router.patch('/scheduler/:id', async (req: SchedulerRequest, res: Response) => {
       const id = req.params.id as string;
-      const result = await SchedulerController.update(id, req.body);
+      const data = req.body;
+      delete data.customerId;
+      delete data.customerPhone;
+      delete data.customerName;
+      const result = await SchedulerController.update(id, data);
       res.json(result);
     });
 

@@ -4,9 +4,19 @@ import type { Request } from './server';
 
 export type UserCreatePayload = {
   email: string;
+  phone: string;
   name: string;
-  role: UserRole;
-  password?: string;
+  password: string;
+  address: {
+    postalCode: string;
+    street: string;
+    number: string;
+    complement?: string;
+    state: string;
+    city: string;
+    neighborhood: string;
+    isPrimary?: boolean;
+  };
   googleId?: string;
 };
 

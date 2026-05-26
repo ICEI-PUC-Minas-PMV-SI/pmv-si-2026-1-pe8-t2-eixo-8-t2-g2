@@ -21,9 +21,18 @@ class UserValidation {
       try {
         const schema = {
           email: z.email(),
+          phone: z.string().regex(/^\d{10,11}$/),
           name: z.string().min(5).max(255),
-          role: z.enum(UserRole),
           password: passwordValidation,
+          address: z.object({
+            postalCode: z.string().regex(/^\d{5}-\d{3}$/),
+            street: z.string().max(255),
+            number: z.string().max(10),
+            complement: z.string().max(255).optional(),
+            state: z.string().length(2),
+            city: z.string().max(255),
+            neighborhood: z.string().max(255),
+          }),
         };
         z.object(schema).parse(req.body);
         next();

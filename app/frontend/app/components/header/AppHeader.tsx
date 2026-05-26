@@ -34,6 +34,7 @@ export default function AppHeader({ onMenuClick }: Props) {
         queryClient.clear();
         clearCart();
         logout();
+        localStorage.clear();
       },
     });
   };

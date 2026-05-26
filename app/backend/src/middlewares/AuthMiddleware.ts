@@ -24,6 +24,10 @@ class AuthMiddleware {
       '/google/webhook',
       '/dashboard',
     ];
+    const publicRoutesByMethod: Record<string, string[]> = {
+      POST: ['/user'],
+    };
+    const methodPublicRoutes = publicRoutesByMethod[req.method] || [];
     const cleanedPath = req.path.replace(/\/$/, '');
     const [basePath, uuid = ''] = cleanedPath.split('/').slice(1);
     const { success: hasUUID } = z.safeParse(
@@ -32,6 +36,10 @@ class AuthMiddleware {
       }),
       { uuid },
     );
+    if (methodPublicRoutes.includes(cleanedPath)) {
+      console.log('Public route matched by method:', cleanedPath);
+      return true;
+    }
     return publicRoutes.some((publicRoute) => {
       const isEqualSimpleRoute = publicRoute === cleanedPath;
       const isEqualDynamicRoute =

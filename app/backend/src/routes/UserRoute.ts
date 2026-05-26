@@ -10,10 +10,9 @@ class UserRoute {
     const router = Router();
     router.post(
       '/user',
-      UserScopeMiddleware.adminOnly(),
       UserValidation.create(),
       async (req: GenericRequest, res: Response) => {
-        const result = await UserController.create(req.body);
+        const result = await UserController.create(req.body, { createCustomer: true });
         res.status(201).json(result);
       },
     );
@@ -92,7 +91,7 @@ class UserRoute {
       },
     );
 
-    app.post(
+    router.post(
       '/user/reset-password',
       UserValidation.resetPassword(),
       async (req: GenericRequest, res: Response) => {

@@ -91,6 +91,9 @@ export function SchedulerTab() {
       scheduledAt: dayjs(scheduler.scheduledAt),
       scheduledTo: scheduler.scheduledTo ? dayjs(scheduler.scheduledTo) : null,
       items: scheduler.items.map((item) => ({
+        id: item.id,
+        orderIndex: item.orderIndex,
+        priceAtBooking: item.priceAtBooking,
         productId: item.product.id,
         quantity: item.quantity,
         customization: item.customization,
@@ -113,7 +116,7 @@ export function SchedulerTab() {
         quantity: it.quantity ?? 1,
         customization: it.customization ?? '',
       }));
-
+      const isEdit = !!form.getFieldValue('isEdit');
       if (!items.length) {
         message.error('Adicione pelo menos um produto ao pedido.');
         return;
@@ -129,9 +132,19 @@ export function SchedulerTab() {
         scheduledTo: values.scheduledTo ? DateUtil.toISO(values.scheduledTo) : undefined,
         paymentMethod: values.paymentMethod,
         deliveryType: values.deliveryType,
-        items,
+        items: form
+          .getFieldValue('items')
+          .map((item: any, idx: number) => ({ ...item, orderIndex: idx })),
       };
-      const result = await SchedulerController.create(next);
+      let result = {} as any;
+      if (isEdit) {
+        result = await SchedulerController.update({
+          ...next,
+          id: form.getFieldValue('id'),
+        });
+      } else {
+        result = await SchedulerController.create(next);
+      }
       if (result.integrationStatus === 'failure') {
         message.warning('Pedido criado, mas falha na integração com o Google Calendar.');
       } else {

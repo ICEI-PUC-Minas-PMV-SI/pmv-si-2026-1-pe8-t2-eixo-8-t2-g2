@@ -17,6 +17,27 @@ enum UserRole {
   customer
 }
 
+model Address {
+  id String @id @default(uuid())
+
+  street       String
+  city         String
+  state        String
+  neighborhood String
+  postalCode   String
+  country      String
+  number       String
+  complement   String?
+
+  isPrimary Boolean @default(false)
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Customer {
   id String @id @default(uuid())
 
@@ -26,8 +47,9 @@ model Customer {
 
   notes String?
 
-  userId String? @unique
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId    String?   @unique
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  addresses Address[]
 
   schedulers Scheduler[]
 
@@ -188,7 +210,7 @@ model Scheduler {
   deliveryType       DeliveryType
   cancellationReason String?
   createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt @default(now())
+  updatedAt          DateTime        @default(now()) @updatedAt
 
   googleEventId String?
 }
@@ -207,7 +229,7 @@ model GoogleIntegration {
 
   googleEmail String?
 
-  clientId String
+  clientId              String
   encryptedClientSecret String
   encryptedRefreshToken String?
 
@@ -215,7 +237,7 @@ model GoogleIntegration {
 
   scopes String
 
-  mailFrom String?
+  mailFrom       String?
   mailSenderName String?
 
   useForCalendar Boolean @default(false)
@@ -246,14 +268,14 @@ model AppSettings {
 
   logoUrl String?
 
-  whatsapp String?
+  whatsapp     String?
   contactEmail String?
   serviceHours String?
-  address String?
+  address      String?
 
   instagram String?
 
-  primaryColor String?
+  primaryColor   String?
   secondaryColor String?
 
   createdAt DateTime @default(now())

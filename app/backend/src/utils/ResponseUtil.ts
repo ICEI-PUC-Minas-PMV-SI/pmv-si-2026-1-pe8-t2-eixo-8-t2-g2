@@ -2,6 +2,7 @@ import type { Response } from '@types';
 import { AppError } from '../error/AppError';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaError } from './PrismaError';
+import { Logger } from '../logger/Logger';
 
 type SuccessResponse = {
   statusCode?: number;
@@ -10,12 +11,14 @@ type SuccessResponse = {
 };
 
 class ResponseUtil {
+  private logger = new Logger('ResponseUtil');
   handleSuccess(res: Response, responseData: SuccessResponse = {}) {
     const { statusCode = 200, message = 'Success', data = {} } = responseData;
     res.status(statusCode).send({ message, data });
   }
 
   handleError(res: Response, err: unknown) {
+    this.logger.error('Handling error', { error: err });
     if (err instanceof AppError) {
       if (err.originalError instanceof Prisma.PrismaClientKnownRequestError) {
         const customError = PrismaError.get(err.originalError.code, {

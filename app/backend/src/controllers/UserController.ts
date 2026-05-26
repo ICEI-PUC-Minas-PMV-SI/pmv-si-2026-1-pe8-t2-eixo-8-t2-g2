@@ -11,8 +11,13 @@ import type {
 } from '../generated/prisma/models';
 
 class UserController {
-  async create(user: UserCreatePayload) {
-    const result = await UserService.create(user);
+  async create(
+    user: UserCreatePayload,
+    { createCustomer }: { createCustomer?: boolean } = {},
+  ) {
+    const result = await UserService.create(user, {
+      createCustomer: createCustomer || false,
+    });
     return result;
   }
   list(req: UserRequest) {

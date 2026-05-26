@@ -28,15 +28,17 @@ export type SchedulerItemPayload = {
   productId: string;
   quantity: number;
   orderIndex: number;
+  customization?: string;
   priceAtBooking?: number;
   durationMinutes?: number;
 };
 
 export type SchedulerUpdatePayload = {
-  customerId?: string;
-  scheduledAt?: Date;
+  scheduledAt?: string;
+  scheduledTo?: string;
   status?: SchedulerStatus;
-
+  deliveryType?: DeliveryType;
+  paymentMethod?: PaymentMethod;
   items: SchedulerItemPayload[];
 };
 

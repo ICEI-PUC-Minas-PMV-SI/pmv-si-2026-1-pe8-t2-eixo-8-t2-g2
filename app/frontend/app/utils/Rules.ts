@@ -1,4 +1,5 @@
 import type { Rule } from 'antd/es/form';
+import PasswordUtil from './PasswordUtil';
 
 class Rules {
   required(): Rule {
@@ -11,6 +12,17 @@ class Rules {
     return {
       pattern: /^(\(?\d{2}\)?\s?)?(\d{4,5}-\d{4})$/,
       message: 'Telefone inválido!',
+    };
+  }
+  password() {
+    return {
+      validator(_: any, value: string) {
+        if (!value || PasswordUtil.isValid(value)) {
+          return Promise.resolve();
+        }
+
+        return Promise.reject(new Error('Senha inválida'));
+      },
     };
   }
 }
