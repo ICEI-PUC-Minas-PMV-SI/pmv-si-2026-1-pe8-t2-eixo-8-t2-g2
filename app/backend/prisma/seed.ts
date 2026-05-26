@@ -283,6 +283,12 @@ const STATUSES = [
   'cancelled',
 ] satisfies SchedulerStatus[];
 
+const ABOUT_TEXT = [{title: 'Título Sobre', subtitle: 'Subtítulo', main: 'Texto principal da tela', complementary: 'Texto Adicional'}]
+
+const ABOUT_ITEMS = [{text: 'Lorem Ipsum', orderIndex: 1},
+  {text: 'Dolor Sit', orderIndex: 2}
+]
+
 // ─────────────────────────────────────────────
 // Reset
 // ─────────────────────────────────────────────
@@ -301,6 +307,8 @@ async function resetDatabase() {
   await prisma.customer.deleteMany();
   await prisma.user.deleteMany();
   await prisma.googleCredentials.deleteMany();
+  await prisma.aboutInfo.deleteMany();
+  await prisma.aboutItem.deleteMany();
 
   console.log('✅ Base de dados limpa.');
 }
@@ -568,6 +576,33 @@ async function seedSchedulers(allCustomers: Customer[], products: Product[]) {
 }
 
 // ─────────────────────────────────────────────
+// Seed: About + items
+// ─────────────────────────────────────────────
+async function seedAbout() {
+  for (const about of ABOUT_TEXT) {
+    await prisma.aboutInfo.create({
+      data: {
+        title: about.title,
+        subtitle: about.subtitle,
+        main: about.main,
+        complementary: about.complementary,
+      },
+    });
+  }
+  
+  for (const aboutItem of ABOUT_ITEMS) {
+    await prisma.aboutItem.create({
+      data: {
+        text: aboutItem.text,
+        orderIndex: aboutItem.orderIndex,
+      },
+    });
+  }
+  
+  console.log(`Textos Sobre e itens criados`);
+}
+
+// ─────────────────────────────────────────────
 // Main
 // ─────────────────────────────────────────────
 async function main() {
@@ -578,6 +613,7 @@ async function main() {
   const characteristics = await seedCharacteristics();
   const categories = await seedCategories();
   const products = await seedProducts(characteristics, categories);
+  const about = await seedAbout();
 
   const { linkedCustomers } = await seedUsers();
   const standaloneCustomers = await seedStandaloneCustomers();

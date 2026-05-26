@@ -281,3 +281,45 @@ model AppSettings {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model AppSettings {
+  id String @id @default("default")
+
+  siteName String?
+
+  logoUrl String?
+
+  whatsapp     String?
+  contactEmail String?
+  serviceHours String?
+  address      String?
+
+  instagram String?
+
+  primaryColor   String?
+  secondaryColor String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AboutInfo {
+  id              String    @id @default(cuid())
+  title           String   
+  subtitle        String
+  main            String
+  complementary   String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime        @updatedAt @default(now())
+}
+
+model AboutItem {
+  id      String @id @default(uuid())
+
+  text        String
+  orderIndex  Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime        @updatedAt @default(now())
+}

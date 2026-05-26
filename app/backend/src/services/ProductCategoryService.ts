@@ -28,7 +28,9 @@ class ProductCategoryService {
     const prisma = await Prisma.getClient();
     const pageParams = pagination || {};
     const [categories, total] = await Promise.all([
-      prisma.category.findMany({ ...pageParams }),
+      prisma.category.findMany({ ...pageParams,  orderBy: {
+        orderIndex: "asc",
+      }, }),
       prisma.category.count(),
     ]);
     return {
@@ -53,6 +55,16 @@ class ProductCategoryService {
       data: dataToUpdate,
     });
     return updatedCategory;
+  }
+
+  async reorder(items: { id: string; orderIndex: number }[]) {
+    const prisma = await Prisma.getClient();
+    await Promise.all(
+      items.map(({ id, orderIndex }) =>
+        prisma.category.update({ where: { id }, data: { orderIndex } })
+      )
+    );
+  return { success: true };
   }
 }
 

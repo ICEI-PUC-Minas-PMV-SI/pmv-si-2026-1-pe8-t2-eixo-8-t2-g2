@@ -33,7 +33,7 @@ export function ProductPage() {
           {
             key: 'categories',
             label: 'Categorias',
-            children: <ProductCategoryList setCategoryModalOpen={setCategoryModalOpen} />,
+            children: <ProductCategoryList />,
           },
         ]}
       />

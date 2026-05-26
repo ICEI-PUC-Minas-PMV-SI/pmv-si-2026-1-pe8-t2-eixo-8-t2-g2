@@ -55,6 +55,12 @@ class ProductCategoryRoute {
       },
     );
 
+    router.post('/product-category/reorder', async (req, res) => {
+      const { categories } = req.body; // ← era 'category'
+      const result = await ProductCategoryController.reorder(categories);
+      res.json(result);
+    });
+
     app.use(router);
   }
 }

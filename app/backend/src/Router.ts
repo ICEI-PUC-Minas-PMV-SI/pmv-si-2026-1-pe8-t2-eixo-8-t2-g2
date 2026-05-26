@@ -10,6 +10,8 @@ import { DashboardRoute } from './routes/DashboardRoute';
 import { CustomerRoute } from './routes/CustomerRoute';
 import { AppSettingsRoute } from './routes/AppSettingsRoute';
 import { IntegrationsRoute } from './routes/IntegrationsRoute';
+import { AboutRoute } from 'routes/AboutRoute';
+import { AboutItemRoute } from 'routes/AboutItemRoute';
 class Router {
   register(app: Application) {
     AuthRoute.register(app);
@@ -22,6 +24,8 @@ class Router {
     CustomerRoute.register(app);
     AppSettingsRoute.register(app);
     IntegrationsRoute.register(app);
+    AboutRoute.register(app);
+    AboutItemRoute.register(app);
     // const { ...allRoutes } = routes;
     // Object.values(allRoutes).forEach((route) => {
     //   if ('register' in route) {
