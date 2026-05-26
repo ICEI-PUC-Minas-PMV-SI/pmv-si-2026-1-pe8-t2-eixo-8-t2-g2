@@ -17,6 +17,27 @@ enum UserRole {
   customer
 }
 
+model Address {
+  id String @id @default(uuid())
+
+  street       String
+  city         String
+  state        String
+  neighborhood String
+  postalCode   String
+  country      String
+  number       String
+  complement   String?
+
+  isPrimary Boolean @default(false)
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Customer {
   id String @id @default(uuid())
 
@@ -26,8 +47,9 @@ model Customer {
 
   notes String?
 
-  userId String? @unique
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId    String?   @unique
+  user      User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  addresses Address[]
 
   schedulers Scheduler[]
 
@@ -41,6 +63,7 @@ model User {
   id               String         @id @default(uuid())
   name             String
   email            String         @unique
+  phone            String?        @unique
   googleId         String?        @unique
   role             UserRole       @default(customer)
   password         String?
@@ -139,6 +162,7 @@ model SchedulerItem {
 
   priceAtBooking  Float?
   durationMinutes Int?
+  customization   String?
 
   orderIndex Int
 
@@ -156,10 +180,12 @@ enum SchedulerStatus {
 enum IntegrationType {
   gmail
   calendar
+  all
 }
 
 enum PaymentMethod {
   credit_card
+  debit_card
   pix
   bank_transfer
   cash
@@ -175,6 +201,7 @@ model Scheduler {
   customerId         String
   customer           Customer        @relation(fields: [customerId], references: [id])
   scheduledAt        DateTime
+  scheduledTo        DateTime?
   estimatedStartAt   DateTime?
   estimatedEndAt     DateTime?
   items              SchedulerItem[] @relation("SchedulerItems")
@@ -183,7 +210,9 @@ model Scheduler {
   deliveryType       DeliveryType
   cancellationReason String?
   createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt @default(now())
+  updatedAt          DateTime        @default(now()) @updatedAt
+
+  googleEventId String?
 }
 
 model GoogleCredentials {
@@ -193,6 +222,29 @@ model GoogleCredentials {
   tokenType             String
   tokenId               String
   integration           IntegrationType
+}
+
+model GoogleIntegration {
+  id String @id @default(uuid())
+
+  googleEmail String?
+
+  clientId              String
+  encryptedClientSecret String
+  encryptedRefreshToken String?
+
+  tokenType String?
+
+  scopes String
+
+  mailFrom       String?
+  mailSenderName String?
+
+  useForCalendar Boolean @default(false)
+  useForEmail    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model RecoveryCode {
@@ -207,4 +259,25 @@ model RecoveryCode {
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model AppSettings {
+  id String @id @default("default")
+
+  siteName String?
+
+  logoUrl String?
+
+  whatsapp     String?
+  contactEmail String?
+  serviceHours String?
+  address      String?
+
+  instagram String?
+
+  primaryColor   String?
+  secondaryColor String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

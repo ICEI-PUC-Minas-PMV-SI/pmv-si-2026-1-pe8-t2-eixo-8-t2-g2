@@ -30,9 +30,12 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "tsBuildInfoFile": ".tsbuildinfo",
+    "incremental": true,
+    "assumeChangesOnlyAffectDirectDependencies": true,
 
     "typeRoots": ["./node_modules/@types", "./src/@types"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "src/generated/prisma"]
 }

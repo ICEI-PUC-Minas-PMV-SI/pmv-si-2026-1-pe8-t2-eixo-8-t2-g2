@@ -43,7 +43,7 @@ MiddlewareManager.register(app);
 Router.register(app);
 
 const notFoundHandler = (req: GenericRequest, res: Response) => {
-  // logger.warn(`Route not found: ${req.method} ${req.originalUrl}`);
+  console.warn(`Route not found: ${req.method} ${req.originalUrl}`);
   return ResponseUtil.handleError(
     res,
     new AppError('Rota não encontrada', HttpCode.NOT_FOUND, {
@@ -59,6 +59,7 @@ const errorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
+  console.error('Unhandled error:', err);
   const errorMessage = err.message || 'Erro interno do servidor';
   const statusCode =
     err instanceof AppError ? err.statusCode : HttpCode.INTERNAL_SERVER_ERROR;

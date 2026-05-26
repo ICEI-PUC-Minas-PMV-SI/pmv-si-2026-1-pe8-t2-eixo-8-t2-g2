@@ -6,7 +6,7 @@ export type TodaySummary = {
   avgPrice: number;
   inProgress: number;
   schedulers: number;
-  schedulersTomorrow: number;
+  schedulersYesterday: number;
   created: number;
   cancelled: number;
   delivery: number;
@@ -45,6 +45,26 @@ type LatestMonthsSummary = {
     in_progress: number;
     completed: number;
     cancelled: number;
+  };
+  summary: {
+    status: {
+      pending: number;
+      confirmed: number;
+      in_progress: number;
+      completed: number;
+      cancelled: number;
+    };
+    paymentMethod: {
+      credit_card: number;
+      debit_card: number;
+      pix: number;
+      bank_transfer: number;
+      cash: number;
+    };
+    deliveryType: {
+      delivery: number;
+      pickup: number;
+    };
   };
 };
 

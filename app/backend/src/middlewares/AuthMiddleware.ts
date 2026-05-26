@@ -16,13 +16,18 @@ class AuthMiddleware {
       '/product',
       '/product/:id',
       '/debug/gmail/oauth2callback',
-      '/gmail/oauth2callback',
       '/debug/generate-auth-url',
       '/user/forgot-password',
       '/user/forgot-password/validate-otp',
-      '/google-calendar/oauth2callback',
+      '/google-calendar/webhook',
+      '/gmail/webhook',
+      '/google/webhook',
       '/dashboard',
     ];
+    const publicRoutesByMethod: Record<string, string[]> = {
+      POST: ['/user'],
+    };
+    const methodPublicRoutes = publicRoutesByMethod[req.method] || [];
     const cleanedPath = req.path.replace(/\/$/, '');
     const [basePath, uuid = ''] = cleanedPath.split('/').slice(1);
     const { success: hasUUID } = z.safeParse(
@@ -31,6 +36,10 @@ class AuthMiddleware {
       }),
       { uuid },
     );
+    if (methodPublicRoutes.includes(cleanedPath)) {
+      console.log('Public route matched by method:', cleanedPath);
+      return true;
+    }
     return publicRoutes.some((publicRoute) => {
       const isEqualSimpleRoute = publicRoute === cleanedPath;
       const isEqualDynamicRoute =

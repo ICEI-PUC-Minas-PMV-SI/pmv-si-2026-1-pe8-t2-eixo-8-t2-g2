@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { errorService } from '~/services/ErrorService';
 import type { TableParams } from '~/hooks/useTableQuery';
+import { useCartStore } from '~/hooks/useCartStore';
 
 // Interface para parâmetros de query
 export interface QueryParams {
@@ -99,6 +100,7 @@ class Request {
           // Logout on unauthorized
           if ([401, 403].includes(response?.status || 0)) {
             useAuthStore.getState().logout();
+            useCartStore.getState().clearCart();
           }
 
           // Try to extract friendly message from backend

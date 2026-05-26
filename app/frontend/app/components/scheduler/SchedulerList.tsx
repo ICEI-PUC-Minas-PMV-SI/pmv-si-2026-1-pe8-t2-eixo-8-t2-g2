@@ -1,6 +1,6 @@
 import { Button, Input, Space, Table, Tag, Tooltip, Typography } from 'antd';
 import { useState } from 'react';
-import { CloseCircleOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, EditOutlined } from '@ant-design/icons';
 import type { PaymentMethod } from '~/@types/payment';
 import type {
   DeliveryType,
@@ -18,11 +18,12 @@ import SchedulerController from '~/controllers/SchedulerController';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import { SchedulerCancel } from './SchedulerCancel';
 import NumberUtil from '~/utils/NumberUtil';
+import { useAuthStore } from '~/hooks/useAuthStore';
 
 const getItemColumnText = (items: SchedulerItem[]) => {
   const itemsCount = items.length;
   const price = items.reduce((acc, cv) => {
-    acc += cv.quantity * cv.product.price;
+    acc += cv.quantity * cv.priceAtBooking;
     return acc;
   }, 0);
   return `${itemsCount} ${itemsCount > 1 ? 'itens' : 'item'} - Preço (estimado): ${NumberUtil.currency(price)}`;
@@ -30,11 +31,13 @@ const getItemColumnText = (items: SchedulerItem[]) => {
 
 export function SchedulerList({
   schedulerQuery,
+  onEdit,
 }: {
   schedulerQuery: ReturnType<typeof useTableQuery<Scheduler>>;
+  onEdit: (scheduler: Scheduler) => void;
 }) {
   const [cancelledSchedulerId, setCancelledSchedulerId] = useState<string | null>(null);
-
+  const { isAdmin } = useAuthStore();
   const {
     tableProps,
     forceRefetch,
@@ -72,9 +75,8 @@ export function SchedulerList({
         onCancel={() => setCancelledSchedulerId(null)}
         onConfirm={async (reason) => {
           if (cancelledSchedulerId) {
-            await SchedulerController.update({
+            await SchedulerController.cancellation({
               id: cancelledSchedulerId,
-              status: 'cancelled',
               cancellationReason: reason,
             });
             forceRefetch();
@@ -104,7 +106,9 @@ export function SchedulerList({
       <Table<Scheduler>
         {...tableProps}
         style={{ overflowX: 'auto' }}
+        styles={{ content: { cursor: 'pointer' } }}
         expandable={{
+          expandRowByClick: true,
           expandedRowRender: (record) => (
             <Table
               dataSource={record.items}
@@ -124,7 +128,7 @@ export function SchedulerList({
                 {
                   title: 'Preço (estimado)',
                   render: (_, item) =>
-                    NumberUtil.currency(item.quantity * item.product.price),
+                    NumberUtil.currency(item.quantity * item.priceAtBooking),
                 },
               ]}
             />
@@ -132,6 +136,7 @@ export function SchedulerList({
         }}
         columns={[
           {
+            hidden: !isAdmin(),
             title: (
               <Space>
                 Cliente
@@ -158,10 +163,31 @@ export function SchedulerList({
               </Space>
             ),
           },
+          {
+            hidden: isAdmin(),
+            title: (
+              <Space>
+                Criado em
+                <SortDropdown
+                  options={[{ key: 'scheduledAt', label: 'Data' }]}
+                  activeSorters={params.sorters}
+                  onSelect={updateSorter}
+                  onClear={() => {
+                    clearSorters(['scheduledAt']);
+                  }}
+                />
+              </Space>
+            ),
+            render: (value: Scheduler) => {
+              return new Date(value.scheduledAt).toLocaleString().replace(', ', ' às ');
+            },
+            key: 'scheduledAt',
+          },
           Table.EXPAND_COLUMN,
           {
             title: 'Itens',
             key: 'items',
+            minWidth: 130,
             responsive: ['xl', 'xxl', 'xxxl'],
             render: (_, record) => (
               <Typography.Text type="secondary">
@@ -210,16 +236,23 @@ export function SchedulerList({
             width: 120,
             render: (_, record) =>
               record.status !== 'cancelled' && record.status !== 'completed' ? (
-                <Button
-                  danger
-                  size="small"
-                  icon={<CloseCircleOutlined />}
-                  onClick={() => {
-                    setCancelledSchedulerId(record.id);
-                  }}
-                >
-                  Cancelar
-                </Button>
+                <Space>
+                  {(isAdmin() || record.status === 'pending') && (
+                    <Button icon={<EditOutlined />} onClick={() => onEdit(record)}>
+                      Editar
+                    </Button>
+                  )}
+                  <Button
+                    danger
+                    size="small"
+                    icon={<CloseCircleOutlined />}
+                    onClick={() => {
+                      setCancelledSchedulerId(record.id);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                </Space>
               ) : record.status === 'cancelled' && record.cancellationReason ? (
                 <Tooltip title={`Motivo: ${record.cancellationReason}`}>
                   <Tag color="red">Cancelado</Tag>

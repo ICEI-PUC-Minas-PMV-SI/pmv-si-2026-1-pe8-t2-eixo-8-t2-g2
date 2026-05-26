@@ -1,6 +1,6 @@
 import path from 'node:path';
 import dotenv from 'dotenv';
-import { addDays } from 'date-fns';
+import { addDays } from 'date-fns/addDays';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { faker } from '@faker-js/faker';
@@ -28,6 +28,11 @@ const args = process.argv.slice(2);
 function getFlag(name: string) {
   const flag = args.find((a) => a.startsWith(`--${name}=`));
   return flag ? parseInt(flag.split('=')[1], 10) : null;
+}
+
+function getPhone() {
+  // return `(${faker.string.numeric(2)}) 9${faker.string.numeric(4)}-${faker.string.numeric(4)}`;
+  return `${faker.string.numeric(2)}9${faker.string.numeric(8)}`;
 }
 
 const hasFlag = (name: string) => args.includes(`--${name}`);
@@ -468,7 +473,7 @@ async function seedUsers() {
       data: {
         name: user.name,
         email: user.email,
-        phone: faker.phone.number(),
+        phone: getPhone(),
         notes: faker.datatype.boolean() ? faker.lorem.sentence() : null,
         userId: user.id,
       },
@@ -497,7 +502,7 @@ async function seedStandaloneCustomers() {
       data: {
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        phone: faker.phone.number(),
+        phone: getPhone(),
         notes: faker.datatype.boolean() ? faker.lorem.sentence() : null,
         // userId intentionally omitted → standalone customer
       },

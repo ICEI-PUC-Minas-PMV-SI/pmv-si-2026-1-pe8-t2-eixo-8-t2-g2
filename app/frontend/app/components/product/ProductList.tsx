@@ -8,14 +8,17 @@ import {
 } from '@ant-design/icons';
 import { useState } from 'react';
 import { useTableQuery } from '~/hooks/useTableQuery';
-import type { Product, ProductCharacteristic } from '~/@types/product';
+import type {
+  Product,
+  ProductCharacteristic,
+  ProductCharacteristicType,
+} from '~/@types/product';
 import ProductController from '~/controllers/ProductController';
 import type { ColumnsType } from 'antd/es/table';
 import NumberUtil from '~/utils/NumberUtil';
 import Text from 'antd/es/typography/Text';
 import ProductCharacteristicController from '~/controllers/ProductCharacteristicController';
 import { CharacteristicBadge } from './CharacteristicBadge';
-import { ModalAddProductCategory } from '../product-category/ModalAddProductCategory';
 import { ProductDrawer } from './ProductDrawer';
 import { useCartStore } from '~/hooks/useCartStore';
 
@@ -40,9 +43,11 @@ export function ProductList() {
   );
 
   const openProductForm = (product?: Product) => {
+    const characteristics = (product?.characteristics ||
+      []) as ProductCharacteristicType[];
     setProductFormState({
       isOpened: true,
-      product: product || null,
+      product: product ? { ...product, characteristics } : null,
     });
   };
 
@@ -50,6 +55,7 @@ export function ProductList() {
     {
       title: 'Produto',
       dataIndex: 'name',
+      fixed: 'left',
       render: (_, record) => (
         <Space>
           <div
@@ -97,11 +103,15 @@ export function ProductList() {
     {
       title: 'Características',
       dataIndex: 'characteristics',
-      render: (ids: string[]) => (
+      render: (charCollection: ProductCharacteristicType[]) => (
         <Space wrap>
-          {ids.map((id) => {
-            const char = characteristics.find((c) => c.id === id);
-            return char ? <CharacteristicBadge key={id} characteristic={char} /> : null;
+          {charCollection?.map((currentChar) => {
+            const char = characteristics.find(
+              (c) => c.id === currentChar.characteristic.id,
+            );
+            return char ? (
+              <CharacteristicBadge key={char.id} characteristic={char} />
+            ) : null;
           })}
         </Space>
       ),
@@ -212,6 +222,7 @@ export function ProductList() {
         }
       >
         <Table
+          style={{ overflowX: 'auto' }}
           rowSelection={{
             type: 'checkbox',
             onChange: (selectedRowKeys) => {
