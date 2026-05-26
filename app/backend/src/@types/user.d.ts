@@ -1,10 +1,22 @@
 import type { UserRole } from '../validations/UserValidation';
+import type { UserFilter, UserSort } from './page-metadata';
+import type { Request } from './server';
 
 export type UserCreatePayload = {
   email: string;
+  phone: string;
   name: string;
-  role: UserRole;
-  password?: string;
+  password: string;
+  address: {
+    postalCode: string;
+    street: string;
+    number: string;
+    complement?: string;
+    state: string;
+    city: string;
+    neighborhood: string;
+    isPrimary?: boolean;
+  };
   googleId?: string;
 };
 
@@ -15,3 +27,5 @@ export type UserTokenInfo = {
   role: UserRole;
   enabledTwoFactor: boolean;
 };
+
+export type UserRequest = Request<UserFilter, UserSort>;

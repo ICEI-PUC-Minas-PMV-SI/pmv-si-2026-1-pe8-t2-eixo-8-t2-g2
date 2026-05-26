@@ -2,8 +2,30 @@ import rateLimit from 'express-rate-limit';
 import ms from 'ms';
 import type { GenericRequest } from '@types';
 import { JWT } from '../utils/JWT';
+import type { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 
 class RequestUtil {
+  async send<T>(url: string, options?: AxiosRequestConfig): Promise<T> {
+    try {
+      const response = await axios({
+        url,
+        ...options,
+      });
+
+      return response.data;
+    } catch (error: any) {
+      if (error.response) {
+        throw new Error(
+          `Request Error (${error.response.status}): ${JSON.stringify(
+            error.response.data,
+          )}`,
+        );
+      }
+
+      throw error;
+    }
+  }
   getToken(req: GenericRequest): string | null {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {

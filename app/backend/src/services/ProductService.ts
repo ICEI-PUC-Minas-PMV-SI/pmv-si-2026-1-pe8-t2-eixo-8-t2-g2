@@ -53,8 +53,26 @@ class ProductService {
       prisma.product.findMany({
         ...pageParams,
         include: {
-          categories: true,
-          characteristics: true,
+          categories: {
+            select: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          characteristics: {
+            select: {
+              characteristic: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
         },
         where,
         orderBy: orderBy && orderBy.length > 0 ? orderBy : { createdAt: 'desc' },

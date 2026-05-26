@@ -23,7 +23,7 @@ export function SchedulerSummary({ stats }: ComponentProps) {
       {/* Cards de status */}
       <Row gutter={[12, 12]}>
         {/* Card total */}
-        <Col xs={12} sm={12} md={4}>
+        <Col xs={12} sm={12} md={4} style={{ maxWidth: 180 }}>
           <Card
             size="small"
             style={{ borderRadius: 12 }}
@@ -46,9 +46,9 @@ export function SchedulerSummary({ stats }: ComponentProps) {
 
         {/* Cards por status */}
         {stats.status.map(({ label, value, color }) => {
-          const pct = Math.round((value / stats.total) * 100);
+          const pct = stats.total === 0 ? 0 : Math.round((value / stats.total) * 100);
           return (
-            <Col xs={12} sm={12} md={5} key={label}>
+            <Col xs={12} sm={12} md={5} key={label} style={{ maxWidth: 180 }}>
               <Card
                 size="small"
                 style={{ borderRadius: 12, borderTop: `3px solid ${color}` }}

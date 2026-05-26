@@ -1,7 +1,7 @@
 import { UserController } from '../controllers/UserController';
 import { Router, type Application } from 'express';
 import { UserValidation } from '../validations/UserValidation';
-import type { GenericRequest, Response } from '@types';
+import type { GenericRequest, Response, UserRequest } from '@types';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
 import { JWT } from '../utils/JWT';
 
@@ -10,19 +10,18 @@ class UserRoute {
     const router = Router();
     router.post(
       '/user',
-      UserScopeMiddleware.adminOnly(),
       UserValidation.create(),
       async (req: GenericRequest, res: Response) => {
-        const result = await UserController.create(req.body);
+        const result = await UserController.create(req.body, { createCustomer: true });
         res.status(201).json(result);
       },
     );
 
-    router.get(
-      '/user',
+    router.post(
+      '/user-list',
       UserScopeMiddleware.adminOnly(),
-      async (__req: GenericRequest, res: Response) => {
-        const result = await UserController.list();
+      async (req: UserRequest, res: Response) => {
+        const result = await UserController.list(req);
         res.json(result);
       },
     );
@@ -92,7 +91,7 @@ class UserRoute {
       },
     );
 
-    app.post(
+    router.post(
       '/user/reset-password',
       UserValidation.resetPassword(),
       async (req: GenericRequest, res: Response) => {
@@ -116,6 +115,18 @@ class UserRoute {
             },
           });
         }
+      },
+    );
+
+    router.patch(
+      '/user-role/:id',
+      UserScopeMiddleware.adminOnly(),
+      UserValidation.changeRole(),
+      async (req: GenericRequest, res: Response) => {
+        const id = req.params.id as string;
+        const { role } = req.body as { role: 'admin' | 'customer' };
+        const result = await UserController.changeRole(id, role);
+        res.json(result);
       },
     );
 
