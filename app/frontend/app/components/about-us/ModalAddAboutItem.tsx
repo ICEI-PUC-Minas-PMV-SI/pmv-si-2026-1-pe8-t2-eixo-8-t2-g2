@@ -1,6 +1,6 @@
 import { Col, Form, Input, InputNumber, message, Modal, Row, Switch, Upload, type UploadFile } from 'antd';
 import type { CreateAboutItem, AboutItem } from '~/@types/about';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import AboutItemController from '~/controllers/AboutItemController';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
@@ -8,11 +8,13 @@ import TextUtil from '~/utils/TextUtil';
 
 type ComponentProps = {
   isOpened: boolean;
+  editingItem?: AboutItem | null; // ← adiciona
   onClose: (reason?: 'cancel' | 'save', aboutItem?: AboutItem) => void;
 };
 
 export function ModalAddAboutItem(props: ComponentProps) {
-  const { isOpened, onClose } = props;
+  const { isOpened, onClose, editingItem } = props;
+  const isEditing = !!editingItem;
   const [iconList, setIconList] = useState<UploadFile[]>([]);
   const queryClient = useQueryClient();
   const [itemForm] = Form.useForm();
@@ -27,11 +29,19 @@ export function ModalAddAboutItem(props: ComponentProps) {
     }),
   });
 
+  useEffect(() => {
+    if (editingItem) {
+      itemForm.setFieldsValue(editingItem);
+    } else {
+      itemForm.resetFields();
+    }
+  }, [editingItem, isOpened]);
+
   const items = data?.data ?? [];
 
   return (
     <Modal
-      title="Novo item"
+      title={isEditing ? 'Editar item' : 'Novo item'}
       getContainer={document.body}
       open={isOpened}
       onCancel={() => onClose('cancel')}
@@ -42,13 +52,20 @@ export function ModalAddAboutItem(props: ComponentProps) {
             text: values.text,
             orderIndex: values.orderIndex ?? items.length + 1,
           };
-          const result = await AboutItemController.create(next);
-          queryClient.invalidateQueries({ queryKey: ['about-item'] }); // ← invalida a query do AboutItemList
+
+          let result;
+          if (isEditing) {
+            result = await AboutItemController.update({ id: editingItem.id, ...next });
+          } else {
+            result = await AboutItemController.create(next);
+          }
+
+          queryClient.invalidateQueries({ queryKey: ['about-item'] });
           onClose('save', result);
           itemForm.resetFields();
         });
       }}
-      okText="Criar"
+      okText={isEditing ? 'Salvar' : 'Criar'}
       cancelText="Cancelar"
     >
       <Form

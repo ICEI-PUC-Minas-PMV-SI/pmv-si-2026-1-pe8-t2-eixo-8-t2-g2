@@ -1,5 +1,5 @@
 import React, { useMemo, useContext, useState, useEffect } from 'react';
-import { Card, Space, Button, Table, message, Input } from 'antd';
+import { Card, Space, Button, Table, message, Typography } from 'antd';
 import { HolderOutlined, PlusOutlined, PictureOutlined } from '@ant-design/icons';
 
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
@@ -15,6 +15,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import type { AboutItem } from '~/@types/about';
 import AboutItemController from '~/controllers/AboutItemController';
+import { ModalAddAboutItem } from './ModalAddAboutItem';
 import { useTableQuery } from '~/hooks/useTableQuery';
 // import { ref } from 'process';
 
@@ -81,7 +82,10 @@ const SortableRow = (props: any) => {
   );
 };
 
-export function AboutItemList({ setItemModalOpen }: Props) {
+export function AboutItemList() {
+  const [itemModalOpen, setItemModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<AboutItem | null>(null);
+
   const { tableProps, forceRefetch, setSearch, params } = useTableQuery<AboutItem>(
     'about-item',
     (params) => AboutItemController.list<AboutItem>(params),
@@ -175,8 +179,8 @@ export function AboutItemList({ setItemModalOpen }: Props) {
           <Button
             size="small"
             onClick={() => {
-              // exemplo de edição
-              message.info(`Editar ${record.text}`);
+              setEditingItem(record);
+              setItemModalOpen(true);
             }}
           >
             Editar
@@ -199,35 +203,50 @@ export function AboutItemList({ setItemModalOpen }: Props) {
   ];
 
   return (
-    <Card
-      title="Diferenciais"
-      extra={
-        <Space>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setItemModalOpen(true)}
+    <>
+      <Card
+        title="Diferenciais"
+        extra={
+          <Space>
+            <Typography.Text type="secondary">
+              {localData.length}/5
+            </Typography.Text>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setItemModalOpen(true)}
+              disabled={localData.length >= 5}
+            >
+              Adicionar Item
+            </Button>
+          </Space>
+        }
+      >
+        <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
+          <SortableContext
+            items={localData.map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
           >
-            Adicionar Item
-          </Button>
-        </Space>
-      }
-    >
-      <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
-        <SortableContext
-          items={localData.map((c) => c.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <Table
-            components={{ body: { row: SortableRow } }}
-            rowKey="id"
-            dataSource={localData}
-            columns={columns}
-            {...tableProps}
-            pagination={false}
-          />
-        </SortableContext>
-      </DndContext>
-    </Card>
+            <Table
+              components={{ body: { row: SortableRow } }}
+              rowKey="id"
+              dataSource={localData.slice(0,5)}
+              columns={columns}
+              {...tableProps}
+              pagination={false}
+            />
+          </SortableContext>
+        </DndContext>
+      </Card>
+      <ModalAddAboutItem
+        isOpened={itemModalOpen}
+        editingItem={editingItem}
+        onClose={(reason) => {
+          setItemModalOpen(false);
+          setEditingItem(null);
+          if (reason === 'save') forceRefetch();
+        }}
+      />
+    </>
   );
 }

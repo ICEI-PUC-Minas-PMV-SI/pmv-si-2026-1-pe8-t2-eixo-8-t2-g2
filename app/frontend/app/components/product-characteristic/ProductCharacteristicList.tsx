@@ -8,14 +8,13 @@ import { useState } from 'react';
 import { ProductCharacteristicForm } from './ProductCharacteristicForm';
 
 export function ProductCharacteristicList() {
-  const [charModalState, setCharModalState] = useState({
-    isOpen: false,
-    characteristic: null as ProductCharacteristic | null,
-  });
+  const [charModalState, setCharModalState] = useState(false);
   const { tableProps, forceRefetch, params, setSearch, updateSorter, clearSorters } =
     useTableQuery<ProductCharacteristic>('product-characteristic', (params) =>
       ProductCharacteristicController.list<ProductCharacteristic>(params),
     );
+
+  const [editingChar, setEditingChar] = useState<ProductCharacteristic | null>(null);
 
   // 🔥 Colunas
   const columns = [
@@ -79,8 +78,8 @@ export function ProductCharacteristicList() {
           <Button
             size="small"
             onClick={() => {
-              // exemplo de edição
-              message.info(`Editar ${record.name}`);
+              setEditingChar(record);
+              setCharModalState(true);
             }}
           >
             Editar
@@ -105,10 +104,6 @@ export function ProductCharacteristicList() {
 
   return (
     <>
-      <ProductCharacteristicForm
-        isOpened={charModalState.isOpen}
-        onClose={() => setCharModalState({ isOpen: false, characteristic: null })}
-      />
       <Card
         title="Características"
         extra={
@@ -121,7 +116,7 @@ export function ProductCharacteristicList() {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => setCharModalState({ isOpen: true, characteristic: null })}
+              onClick={() => setCharModalState(true)}
             >
               Nova característica
             </Button>
@@ -130,6 +125,16 @@ export function ProductCharacteristicList() {
       >
         <Table dataSource={tableProps.dataSource} columns={columns} {...tableProps} />
       </Card>
+      <ProductCharacteristicForm
+        isOpened={charModalState}
+        editingChar={editingChar}
+        onClose={(reason) => {
+          setCharModalState(false);
+          setEditingChar(null);
+          if (reason === 'save') forceRefetch();
+        }}
+      />
     </>
+    
   );
 }

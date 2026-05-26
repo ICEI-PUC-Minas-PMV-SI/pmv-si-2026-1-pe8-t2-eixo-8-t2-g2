@@ -133,7 +133,7 @@ export function AboutUsPage() {
                           showCount
                       />
                   </Form.Item>
-                  <AboutItemList setItemModalOpen={setItemModalOpen} />
+                  <AboutItemList />
                   <Button type="primary" icon={<CheckCircleOutlined />}
                     onClick={() => {
                         saveAboutInfo();
