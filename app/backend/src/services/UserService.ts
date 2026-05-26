@@ -57,7 +57,7 @@ class UserService {
         },
         select: userSelect,
       });
-      if (createCustomer) {
+      if (createCustomer && address) {
         await tx.customer.create({
           data: {
             name,

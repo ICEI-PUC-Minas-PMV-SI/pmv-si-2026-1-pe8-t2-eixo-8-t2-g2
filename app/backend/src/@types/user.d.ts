@@ -4,9 +4,9 @@ import type { Request } from './server';
 
 export type UserCreatePayload = {
   email: string;
-  phone: string;
+  phone: string | null;
   name: string;
-  password: string;
+  password: string | null;
   address: {
     postalCode: string;
     street: string;
@@ -16,7 +16,7 @@ export type UserCreatePayload = {
     city: string;
     neighborhood: string;
     isPrimary?: boolean;
-  };
+  } | null;
   googleId?: string;
 };
 

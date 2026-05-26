@@ -5,7 +5,6 @@ import { JWT } from '../utils/JWT';
 import { OTPUtil } from '../utils/OTPUtil';
 import { AppError } from '../error/AppError';
 import { Google } from '../utils/Google';
-import { UserRole } from '../validations/UserValidation';
 import type { User } from '../generated/prisma/client';
 
 class AuthController {
@@ -93,7 +92,9 @@ class AuthController {
       const { name, id, email, role } = await UserService.create({
         email: googleUser?.email,
         name: googleUser?.name,
-        role: UserRole.CUSTOMER,
+        password: null,
+        address: null,
+        phone: null,
         googleId: userGoogleId,
       });
       return { token: JWT.generate({ user: { id, name, email, role } }) };
