@@ -68,7 +68,7 @@ class GoogleApi {
       }
       return { client, accessToken };
     }
-    throw new Error('Google integration not configured');
+    throw new Error('Integração com google não configurada');
   }
 
   async getAuthUrl(integrationType: IntegrationType) {

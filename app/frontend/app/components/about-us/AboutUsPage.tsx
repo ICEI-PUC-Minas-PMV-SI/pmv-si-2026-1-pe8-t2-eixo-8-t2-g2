@@ -5,6 +5,7 @@ import {
   Form,
   Input,
   Row,
+  Space,
   Upload,
   message,
   type UploadFile,
@@ -99,62 +100,64 @@ export function AboutUsPage() {
   }
 
   return (
-    <Row gutter={[16, 16]}>
-      <Col span={24}>
-        <Card title="Conteúdo da Página">
-          <Form layout="vertical" form={aboutForm}>
-            <Form.Item label="Título da Página" name="title">
-              <Input minLength={5} maxLength={20} showCount />
-            </Form.Item>
+    <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <Card title="Conteúdo da Página">
+            <Form layout="vertical" form={aboutForm}>
+              <Form.Item label="Título da Página" name="title">
+                <Input minLength={5} maxLength={20} showCount />
+              </Form.Item>
 
-            <Form.Item label="Imagem de destaque">
-              <Upload
-                listType="picture-card"
-                fileList={aboutImage}
-                onChange={({ fileList }) => setAboutImage(fileList)}
-                beforeUpload={() => false}
-                maxCount={1}
-              >
-                {aboutImage.length >= 1 ? null : (
-                  <div>
-                    <PlusOutlined />
-                    <div
-                      style={{
-                        marginTop: 8,
-                      }}
-                    >
-                      Upload
+              <Form.Item label="Imagem de destaque">
+                <Upload
+                  listType="picture-card"
+                  fileList={aboutImage}
+                  onChange={({ fileList }) => setAboutImage(fileList)}
+                  beforeUpload={() => false}
+                  maxCount={1}
+                >
+                  {aboutImage.length >= 1 ? null : (
+                    <div>
+                      <PlusOutlined />
+                      <div
+                        style={{
+                          marginTop: 8,
+                        }}
+                      >
+                        Upload
+                      </div>
                     </div>
-                  </div>
-                )}
-              </Upload>
-            </Form.Item>
+                  )}
+                </Upload>
+              </Form.Item>
 
-            <Form.Item label="Título da Seção" name="subtitle">
-              <Input minLength={5} maxLength={80} showCount />
-            </Form.Item>
+              <Form.Item label="Título da Seção" name="subtitle">
+                <Input minLength={5} maxLength={80} showCount />
+              </Form.Item>
 
-            <Form.Item label="Texto Principal" name="main">
-              <Input.TextArea rows={4} minLength={5} maxLength={500} showCount />
-            </Form.Item>
+              <Form.Item label="Texto Principal" name="main">
+                <Input.TextArea rows={4} minLength={5} maxLength={500} showCount />
+              </Form.Item>
 
-            <Form.Item label="Texto Complementar" name="complementary">
-              <Input.TextArea rows={4} minLength={5} maxLength={500} showCount />
-            </Form.Item>
+              <Form.Item label="Texto Complementar" name="complementary">
+                <Input.TextArea rows={4} minLength={5} maxLength={500} showCount />
+              </Form.Item>
 
-            <AboutItemList items={items} onChange={setItems} />
+              <AboutItemList items={items} onChange={setItems} />
 
-            <Button
-              type="primary"
-              icon={<CheckCircleOutlined />}
-              loading={saving}
-              onClick={saveAboutInfo}
-            >
-              Salvar alterações
-            </Button>
-          </Form>
-        </Card>
-      </Col>
-    </Row>
+              <Button
+                type="primary"
+                icon={<CheckCircleOutlined />}
+                loading={saving}
+                onClick={saveAboutInfo}
+              >
+                Salvar alterações
+              </Button>
+            </Form>
+          </Card>
+        </Col>
+      </Row>
+    </Space>
   );
 }

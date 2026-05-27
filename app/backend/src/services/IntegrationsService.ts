@@ -83,7 +83,10 @@ class IntegrationsService {
           },
         });
       }
-      throw new AppError('Failed to save integration', HttpCode.INTERNAL_SERVER_ERROR);
+      throw new AppError(
+        'Falha ao salvar dados de integração',
+        HttpCode.INTERNAL_SERVER_ERROR,
+      );
     });
 
     return GoogleApi.getAuthUrl(integration);

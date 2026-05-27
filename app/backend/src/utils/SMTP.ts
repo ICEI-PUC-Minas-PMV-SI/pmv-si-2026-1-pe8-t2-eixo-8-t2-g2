@@ -38,7 +38,7 @@ class SMTP {
     const { client } = await GoogleApi.getClient('gmail');
     const credentials = await IntegrationsService.find('gmail');
     if (!credentials || !credentials.encryptedRefreshToken) {
-      throw new Error('Google credentials not found for Gmail integration');
+      throw new Error('Credenciais não encontradas para integração com Gmail');
     }
     const {
       clientId,
@@ -112,7 +112,7 @@ class SMTP {
         user,
       } = await this.createTransporter();
       if (!user) {
-        throw new Error('User email is not defined');
+        throw new Error('Falha ao buscar e-mail de usuário');
       }
       const mailOptions: SendMailOptions = {
         from: user,

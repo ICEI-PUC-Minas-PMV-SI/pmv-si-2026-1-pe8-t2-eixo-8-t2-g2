@@ -1,11 +1,13 @@
 import { Prisma } from '../db/Prisma';
 import type { PaginationParams, ProductCreatePayload } from '@types';
 import { Text } from '../utils/Text';
-import { ResponseUtil } from 'utils/ResponseUtil';
+import { ResponseUtil } from '../utils/ResponseUtil';
 import type {
   ProductOrderByWithRelationInput,
   ProductWhereInput,
 } from '../generated/prisma/models';
+import { HttpCode } from '../utils/HttpCode';
+import { AppError } from '../error/AppError';
 
 class ProductService {
   async create(product: ProductCreatePayload) {
@@ -84,6 +86,17 @@ class ProductService {
 
   async delete(id: string) {
     const prisma = await Prisma.getClient();
+    const productInSchedulers = await prisma.schedulerItem.findFirst({
+      where: {
+        productId: id,
+      },
+    });
+    if (productInSchedulers) {
+      throw new AppError(
+        'Produto não pode ser removido pois há pedidos registrados com ele',
+        HttpCode.CONFLICT,
+      );
+    }
     await prisma.product.delete({
       where: { id },
     });

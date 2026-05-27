@@ -23,7 +23,7 @@ class AuthRoute {
     });
     app.post('/auth/create-two-factor', async (req: GenericRequest, res) => {
       if (!req.user) {
-        throw new AppError('Invalid user token', HttpCode.UNAUTHORIZED);
+        throw new AppError('Usuário inválido ou sessão expirada', HttpCode.UNAUTHORIZED);
       }
       const result = await AuthController.createTwoFactor(req.user.id);
       res.json(result);
@@ -34,7 +34,10 @@ class AuthRoute {
       AuthValidation.enableTwoFactor(),
       async (req: GenericRequest, res) => {
         if (!req.user) {
-          throw new AppError('Invalid user token', HttpCode.UNAUTHORIZED);
+          throw new AppError(
+            'Usuário inválido ou sessão expirada',
+            HttpCode.UNAUTHORIZED,
+          );
         }
         const result = await AuthController.enableTwoFactor(req.user.id, req.body.otp);
         res.json(result);
@@ -46,7 +49,10 @@ class AuthRoute {
       AuthValidation.disableTwoFactor(),
       async (req: GenericRequest, res) => {
         if (!req.user) {
-          throw new AppError('Invalid user token', HttpCode.UNAUTHORIZED);
+          throw new AppError(
+            'Usuário inválido ou sessão expirada',
+            HttpCode.UNAUTHORIZED,
+          );
         }
         const result = await AuthController.disableTwoFactor(req.user.id, req.body);
         res.json(result);
@@ -66,11 +72,11 @@ class AuthRoute {
       AuthValidation.resetPassword(),
       async (req: GenericRequest, res) => {
         if (req.operation !== 'RESET_PASSWORD') {
-          throw new Error('Invalid token reset password');
+          throw new Error('Falha na validação de token para redefinição de senha');
         }
         const userEmail = req.user?.email;
         if (!userEmail) {
-          throw new Error('Invalid email in user token');
+          throw new Error('Falha ao verificar e-mail de usuário');
         }
         const result = await AuthController.resetPassword(userEmail, req.body.password);
         res.json(result);

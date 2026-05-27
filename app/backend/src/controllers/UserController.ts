@@ -84,7 +84,7 @@ class UserController {
   }
   async validateOTP({ email, otp }: { email: string; otp: string }) {
     const user = await UserService.find({ email }, { otpSecret: true });
-    if (!user) throw new AppError('User not found', HttpCode.NOT_FOUND);
+    if (!user) throw new AppError('Usuário não encontrado', HttpCode.NOT_FOUND);
     if (!user.otpSecret) return false;
 
     return OTPUtil.verify(otp, user.otpSecret, ms('5m'));

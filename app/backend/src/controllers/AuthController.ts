@@ -11,7 +11,7 @@ class AuthController {
   async authenticate(credentials: AuthCredentials) {
     const user = await UserService.find(credentials, { twoFactorSecret: true });
     if (!user) {
-      throw new AppError('Invalid credentials', HttpCode.UNAUTHORIZED);
+      throw new AppError('Credenciais inválidas', HttpCode.UNAUTHORIZED);
     }
     if (user.enabledTwoFactor) {
       const { authCode } = credentials;
@@ -22,7 +22,7 @@ class AuthController {
           isValid = await UserService.isValidRecoveryCode(user.id, authCode);
         }
         if (!isValid) {
-          throw new AppError('Invalid authentication code', 400);
+          throw new AppError('Código de autenticação inválido', 400);
         }
         const token = JWT.generate({ user });
         return { token };
@@ -49,7 +49,7 @@ class AuthController {
     const user = await UserService.find({ email }, { twoFactorSecret: true });
     let isValid = null;
     if (!user) {
-      throw new AppError('Invalid user', HttpCode.BAD_REQUEST);
+      throw new AppError('Usuário inválido', HttpCode.BAD_REQUEST);
     }
     const { twoFactorSecret, ...userProps } = user;
     if (isRecoveryCode) {
@@ -58,7 +58,7 @@ class AuthController {
       isValid = OTPUtil.verify(code, user.twoFactorSecret || '');
     }
     if (!isValid) {
-      throw new AppError('Invalid or already used code', HttpCode.BAD_REQUEST);
+      throw new AppError('Código inválido ou já utilizado', HttpCode.BAD_REQUEST);
     }
     const userData: Partial<User> = { email };
     if (operation === 'AUTH') {
@@ -103,15 +103,18 @@ class AuthController {
       const token = JWT.generate({ user });
       return { token };
     }
-    throw new AppError('Invalid credentials', HttpCode.UNAUTHORIZED);
+    throw new AppError('Credenciais inválidas', HttpCode.UNAUTHORIZED);
   }
   async createTwoFactor(userId: string) {
     const savedUser = await UserService.find({ id: userId });
     if (!savedUser) {
-      throw new AppError('User not found', HttpCode.NOT_FOUND);
+      throw new AppError('Usuário não encontrado', HttpCode.NOT_FOUND);
     }
     if (savedUser.enabledTwoFactor) {
-      throw new AppError('Two factor already enabled', HttpCode.BAD_REQUEST);
+      throw new AppError(
+        'Autenticação de dois fatores já está ativa',
+        HttpCode.BAD_REQUEST,
+      );
     }
     const { url, secret: twoFactorSecret } = OTPUtil.generateAuthURL();
     await UserService.update(userId, { twoFactorSecret });
@@ -123,17 +126,20 @@ class AuthController {
       { enabledTwoFactor: true, twoFactorSecret: true },
     );
     if (!savedUser) {
-      throw new AppError('User not found', HttpCode.NOT_FOUND);
+      throw new AppError('Usuário não encontrado', HttpCode.NOT_FOUND);
     }
     if (savedUser.enabledTwoFactor) {
-      throw new AppError('Two factor already enabled', HttpCode.BAD_REQUEST);
+      throw new AppError(
+        'Autenticação de dois fatores já está ativa',
+        HttpCode.BAD_REQUEST,
+      );
     }
     if (!savedUser.twoFactorSecret) {
-      throw new AppError('Invalid two factor', HttpCode.BAD_REQUEST);
+      throw new AppError('Falha ao validar código', HttpCode.INTERNAL_SERVER_ERROR);
     }
     const isValid = OTPUtil.verify(otpVerify, savedUser.twoFactorSecret);
     if (!isValid) {
-      throw new AppError('Invalid OTP', HttpCode.BAD_REQUEST);
+      throw new AppError('Código inválido', HttpCode.BAD_REQUEST);
     }
     const recoveryCodes = await UserService.generateUserRecoveryCodes(userId);
     const updatedUser = await UserService.update(userId, { enabledTwoFactor: true });
@@ -149,13 +155,16 @@ class AuthController {
       { enabledTwoFactor: true, twoFactorSecret: true },
     );
     if (!savedUser) {
-      throw new AppError('User not found', HttpCode.NOT_FOUND);
+      throw new AppError('Usuário não encontrado', HttpCode.NOT_FOUND);
     }
     if (!savedUser.enabledTwoFactor) {
-      throw new AppError('Two factor already disabled', HttpCode.BAD_REQUEST);
+      throw new AppError(
+        'Autenticação de dois fatores já está desativada',
+        HttpCode.BAD_REQUEST,
+      );
     }
     if (!savedUser.twoFactorSecret) {
-      throw new AppError('Invalid two factor', HttpCode.BAD_REQUEST);
+      throw new AppError('Falha na validação do código', HttpCode.INTERNAL_SERVER_ERROR);
     }
     let isValid = null;
     if (isRecoveryCode) {
@@ -164,7 +173,7 @@ class AuthController {
       isValid = OTPUtil.verify(code, savedUser.twoFactorSecret);
     }
     if (!isValid) {
-      throw new AppError('Invalid or already used code', HttpCode.BAD_REQUEST);
+      throw new AppError('Código inválido ou já utilizado', HttpCode.BAD_REQUEST);
     }
     const updatedUser = await UserService.update(userId, {
       enabledTwoFactor: false,
@@ -176,7 +185,7 @@ class AuthController {
   async forgotPassword(email: string, resetUrl: string) {
     const user = await UserService.find({ email }, { enabledTwoFactor: true });
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('Usuário não encontrado');
     }
     if (user.enabledTwoFactor) {
       return {
@@ -190,7 +199,7 @@ class AuthController {
     const token = JWT.generate(data);
     await UserService.sendResetPasswordMail(user.email, `${resetUrl}?token=${token}`);
     return {
-      message: 'Success send recovery password email',
+      message: 'E-mail de recuperação de senha enviado com sucesso',
     };
   }
   async resetPassword(email: string, newPassword: string) {

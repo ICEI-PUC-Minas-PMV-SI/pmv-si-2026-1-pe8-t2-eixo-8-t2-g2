@@ -3,6 +3,7 @@ import { IntegrationsTab } from './IntegrationsTab';
 import { ProfileTab } from './ProfileTab';
 import { AppSettingsTab } from './AppSettingsTab';
 import { useAuthStore } from '~/hooks/useAuthStore';
+import { Space } from 'antd';
 
 export function SettingsPage() {
   const { isAdmin } = useAuthStore();
@@ -26,5 +27,9 @@ export function SettingsPage() {
     },
   ];
   const filtredTabs = tabs.filter((tab) => !tab.onlyAdmin || isAdmin());
-  return <TabbedPage defaultTab="profile" items={filtredTabs} />;
+  return (
+    <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
+      <TabbedPage defaultTab="profile" items={filtredTabs} />;
+    </Space>
+  );
 }

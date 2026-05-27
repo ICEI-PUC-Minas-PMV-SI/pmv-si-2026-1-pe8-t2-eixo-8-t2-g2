@@ -4,7 +4,7 @@ import type { Product } from './product';
 import type { Request } from './server';
 
 export type ProductItem = {
-  id: Product['id'];
+  productId: Product['id'];
   quantity: number;
   customization?: string;
 };

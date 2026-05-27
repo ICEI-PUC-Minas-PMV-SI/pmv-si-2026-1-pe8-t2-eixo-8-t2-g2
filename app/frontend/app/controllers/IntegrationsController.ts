@@ -11,7 +11,7 @@ class IntegrationsController {
     return data;
   }
   async test(integration: string) {
-    await Request.post('/integrations/test', { integration });
+    return Request.post<{ success: boolean }>('/integrations/test', { integration });
   }
 }
 const instance = new IntegrationsController();

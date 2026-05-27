@@ -34,7 +34,7 @@ export function SchedulerPage() {
   }
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f5f7fb' }}>
+    <Layout style={{ minHeight: '100vh', background: '#f5f7fb', padding: 16 }}>
       <TabbedPage
         defaultTab="schedules"
         items={[

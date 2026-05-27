@@ -38,7 +38,6 @@ class IntegrationsController {
   }
 
   async test(integration: IntegrationType) {
-    console.log('Testing integration:', integration);
     const promises = [];
     if (integration === 'calendar' || integration === 'all') {
       promises.push(

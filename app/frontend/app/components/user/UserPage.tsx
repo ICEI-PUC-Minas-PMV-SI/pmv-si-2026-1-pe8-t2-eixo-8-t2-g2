@@ -122,7 +122,7 @@ export function UserPage() {
   ];
 
   return (
-    <>
+    <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
       <Card
         title="Usuários"
         extra={
@@ -137,6 +137,6 @@ export function UserPage() {
       >
         <Table dataSource={tableProps.dataSource} columns={columns} {...tableProps} />
       </Card>
-    </>
+    </Space>
   );
 }

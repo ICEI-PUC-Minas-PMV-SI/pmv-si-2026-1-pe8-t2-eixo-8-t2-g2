@@ -9,8 +9,7 @@ class SchedulerValidation {
   create = (req: GenericRequest, res: Response, next: NextFunction) => {
     try {
       const productSchema = {
-        id: z.uuid().optional(),
-        productId: z.uuid().optional(),
+        productId: z.uuid(),
         customization: z.string().optional(),
         quantity: z.number().positive().int(),
       };
@@ -34,10 +33,13 @@ class SchedulerValidation {
       z.object(schema).parse(req.body);
       const { items = [], customerId, customerName } = req.body;
       if (!customerId && !customerName && req.user?.role !== UserRole.CUSTOMER) {
-        throw new AppError('Invalid customer to schedule', HttpCode.BAD_REQUEST);
+        throw new AppError('Cliente deve ser selecionado', HttpCode.BAD_REQUEST);
       }
       if (items.length === 0) {
-        throw new AppError('At least one product must be provided', HttpCode.BAD_REQUEST);
+        throw new AppError(
+          'Ao menos um produto deve ser selecionado',
+          HttpCode.BAD_REQUEST,
+        );
       }
       next();
     } catch (err) {

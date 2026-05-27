@@ -49,25 +49,6 @@ export function IntegrationsTab() {
   const [calendarForm] = Form.useForm<IntegrationCalendarForm>();
   const [mailForm] = Form.useForm<IntegrationGmailForm>();
 
-  useEffect(() => {
-    function handleMessage(event: MessageEvent) {
-      if (event.data?.type === 'GOOGLE_AUTH_SUCCESS') {
-        const integration = event.data.integration as 'calendar' | 'gmail' | 'all';
-        const preffix =
-          integration === 'all'
-            ? 'Google Calendar e Gmail'
-            : integration === 'calendar'
-              ? 'Google Calendar'
-              : 'Gmail';
-        message.success(`${preffix} configurado com sucesso!`);
-      }
-    }
-
-    window.addEventListener('message', handleMessage);
-
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
-
   const integrationsQuery = useQuery<IntegrationsPayload>({
     queryKey: ['app-settings'],
     queryFn: () =>
@@ -91,6 +72,32 @@ export function IntegrationsTab() {
       }),
     staleTime: 1000 * 60 * 5,
   });
+
+  useEffect(() => {
+    if (integrationsQuery.data?.google) {
+      googleForm.setFieldsValue({
+        ...integrationsQuery.data?.google,
+        clientSecret: '**********',
+      });
+      setUseSameGoogleAccount(true);
+    }
+    function handleMessage(event: MessageEvent) {
+      if (event.data?.type === 'GOOGLE_AUTH_SUCCESS') {
+        const integration = event.data.integration as 'calendar' | 'gmail' | 'all';
+        const preffix =
+          integration === 'all'
+            ? 'Google Calendar e Gmail'
+            : integration === 'calendar'
+              ? 'Google Calendar'
+              : 'Gmail';
+        message.success(`${preffix} configurado com sucesso!`);
+      }
+    }
+
+    window.addEventListener('message', handleMessage);
+
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   async function handleGoogleLogin(integration: 'all' | 'calendar' | 'gmail') {
     switch (integration) {
@@ -259,7 +266,15 @@ export function IntegrationsTab() {
               <Button
                 type="default"
                 icon={<CheckCircleOutlined />}
-                onClick={() => IntegrationsController.test('all')}
+                onClick={() =>
+                  IntegrationsController.test('all').then((res) => {
+                    if (res.success) {
+                      message.success('Sucesso ao testar credenciais');
+                    } else {
+                      message.error('Falha ao validar credenciais');
+                    }
+                  })
+                }
               >
                 Testar Configurações
               </Button>

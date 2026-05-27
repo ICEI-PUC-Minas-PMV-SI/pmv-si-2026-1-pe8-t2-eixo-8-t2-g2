@@ -1,5 +1,6 @@
 import type {
   PaginationParams,
+  ProductItem,
   SchedulerCreatePayload,
   SchedulerUpdatePayload,
 } from '@types';
@@ -54,14 +55,13 @@ export type CreatedScheduler = {
 };
 
 class SchedulerService {
-  private async getProductsList(products: SchedulerCreatePayload['items']) {
+  private async getProductsList(products: ProductItem[]) {
     return Promise.all(
       products.map(async (product) => {
-        // TODO: Revisar id/productId e corrigir tipagem @GabrielXavier
-        const result = await ProductService.find(product.id || product.productId);
+        const result = await ProductService.find(product.productId);
         if (!result) {
           throw new AppError(
-            `Product with id ${product.id} not found`,
+            `Product with id ${product.productId} not found`,
             HttpCode.NOT_FOUND,
           );
         }
@@ -108,7 +108,7 @@ class SchedulerService {
       if (!customer) {
         const user = await prisma.user.findUnique({ where: { id: userId } });
         if (!user) {
-          throw new AppError('Invalid user/customer', HttpCode.BAD_REQUEST);
+          throw new AppError('Usuário inválido', HttpCode.BAD_REQUEST);
         }
         customer = await prisma.customer.create({
           data: {
@@ -327,7 +327,10 @@ class SchedulerService {
     const { items, ...schedulerData } = data;
 
     if (!items || !items.length) {
-      throw new AppError('Invalid products', HttpCode.BAD_REQUEST);
+      throw new AppError(
+        'Não foi possível identificar os produtos no pedido',
+        HttpCode.BAD_REQUEST,
+      );
     }
 
     const existingScheduler = await prisma.scheduler.findUnique({
@@ -338,33 +341,27 @@ class SchedulerService {
     });
 
     if (!existingScheduler) {
-      throw new AppError('Scheduler not found', HttpCode.NOT_FOUND);
+      throw new AppError('Pedido não encontrado', HttpCode.NOT_FOUND);
     }
 
     const existingItems = existingScheduler.items;
 
-    // IDs enviados
     const incomingIds = items.filter((item) => item.id).map((item) => item.id as string);
 
-    // Itens para remover
     const itemsToDelete = existingItems.filter(
       (existing) => !incomingIds.includes(existing.id),
     );
 
-    // Itens novos
     const itemsToCreate = items.filter((item) => !item.id);
 
-    // Itens para atualizar
     const itemsToUpdate = items.filter((item) => item.id);
 
     await prisma.$transaction(async (tx) => {
-      // Atualiza scheduler
       await tx.scheduler.update({
         where: { id },
         data: schedulerData,
       });
 
-      // Remove itens
       if (itemsToDelete.length) {
         await tx.schedulerItem.deleteMany({
           where: {
@@ -375,7 +372,6 @@ class SchedulerService {
         });
       }
 
-      // Atualiza itens existentes
       for (const item of itemsToUpdate) {
         await tx.schedulerItem.update({
           where: {

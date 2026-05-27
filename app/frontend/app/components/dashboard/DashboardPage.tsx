@@ -556,20 +556,21 @@ export function DashboardPage() {
   };
 
   return (
-    <Layout style={{ background: '#f8f8f7', minHeight: '100vh' }}>
-      <SchedulerPreviewModal
-        open={schedulerPreviewState.isOpened}
-        onClose={() => setSchedulerPreviewState({ isOpened: false, order: null })}
-        order={schedulerPreviewState.order}
-      />
-      <Content
-        style={{
-          /*padding: "24px 28px", maxWidth: 1280,*/ margin: '0 auto',
-          width: '100%',
-        }}
-      >
-        {/* ── Header ── */}
-        {/* <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+    <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
+      <Layout style={{ background: '#f8f8f7', minHeight: '100vh' }}>
+        <SchedulerPreviewModal
+          open={schedulerPreviewState.isOpened}
+          onClose={() => setSchedulerPreviewState({ isOpened: false, order: null })}
+          order={schedulerPreviewState.order}
+        />
+        <Content
+          style={{
+            /*padding: "24px 28px", maxWidth: 1280,*/ margin: '0 auto',
+            width: '100%',
+          }}
+        >
+          {/* ── Header ── */}
+          {/* <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <div style={{ width: 36, height: 36, borderRadius: 10, background: C.primary, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>
               🎂
@@ -584,246 +585,247 @@ export function DashboardPage() {
           </Badge>
         </div> */}
 
-        {/* ── KPIs ── */}
-        <SectionTitle icon={<BarChartOutlined />}>Visão Geral — Hoje</SectionTitle>
-        <Row gutter={[12, 12]}>
-          <Col xs={24} sm={12} md={8} lg={4}>
-            <KpiCard
-              loading={todaySummary.isLoading}
-              title="Pedidos hoje"
-              value={todaySummary.data?.created || 0}
-              icon={<ShoppingOutlined />}
-              trend={2}
-              trendLabel={getTodayOrdersLabel(todaySummary.data)}
-            />
-          </Col>
-          <Col xs={24} sm={12} md={8} lg={5}>
-            <KpiCard
-              loading={todaySummary.isLoading}
-              title="Faturamento estimado"
-              value={todaySummary.data?.totalPrice || 0}
-              prefix="R$"
-              icon={<DollarOutlined />}
-              trend={12}
-              trendLabel="↑ 12% vs semana passada"
-              color="#389e0d"
-            />
-          </Col>
-          <Col xs={24} sm={12} md={8} lg={4}>
-            <KpiCard
-              loading={todaySummary.isLoading}
-              title="Ticket médio"
-              value={todaySummary.data?.avgPrice || 0}
-              prefix="R$"
-              icon={<RiseOutlined />}
-              color="#722ed1"
-            />
-          </Col>
-          <Col xs={24} sm={12} md={8} lg={4}>
-            <KpiCard
-              loading={todaySummary.isLoading}
-              title="Em produção"
-              value={todaySummary.data?.inProgress || 0}
-              // suffix=" pedidos"
-              icon={<FireOutlined />}
-              color={C.progress}
-            />
-          </Col>
-          <Col xs={24} sm={12} md={8} lg={4}>
-            <KpiCard
-              loading={todaySummary.isLoading}
-              title="Entregas hoje"
-              value={todaySummary.data?.schedulers || 0}
-              icon={<CarOutlined />}
-              trend={0}
-              trendLabel={
-                todaySummary.data?.schedulers
-                  ? `${todaySummary.data?.pickup || 0} retirada · ${todaySummary.data?.delivery || 0} entrega`
-                  : ''
-              }
-              color="#fa8c16"
-            />
-          </Col>
-          <Col xs={24} sm={12} md={8} lg={4}>
-            <KpiCard
-              loading={todaySummary.isLoading}
-              title="Cancelamentos"
-              value={
-                (todaySummary.data?.created || 0) === 0
-                  ? 0
-                  : (Math.round(
-                      ((todaySummary.data?.cancelled || 0) * 100) /
-                        (todaySummary.data?.created || 0) +
-                        Number.EPSILON,
-                    ) *
-                      100) /
-                    100
-              }
-              suffix="%"
-              icon={<WarningOutlined />}
-              trend={-1}
-              trendLabel="↑ 1,1pp vs mês"
-              color={C.cancelled}
-            />
-          </Col>
-        </Row>
+          {/* ── KPIs ── */}
+          <SectionTitle icon={<BarChartOutlined />}>Visão Geral — Hoje</SectionTitle>
+          <Row gutter={[12, 12]}>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <KpiCard
+                loading={todaySummary.isLoading}
+                title="Pedidos hoje"
+                value={todaySummary.data?.created || 0}
+                icon={<ShoppingOutlined />}
+                trend={2}
+                trendLabel={getTodayOrdersLabel(todaySummary.data)}
+              />
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={5}>
+              <KpiCard
+                loading={todaySummary.isLoading}
+                title="Faturamento estimado"
+                value={todaySummary.data?.totalPrice || 0}
+                prefix="R$"
+                icon={<DollarOutlined />}
+                trend={12}
+                trendLabel="↑ 12% vs semana passada"
+                color="#389e0d"
+              />
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <KpiCard
+                loading={todaySummary.isLoading}
+                title="Ticket médio"
+                value={todaySummary.data?.avgPrice || 0}
+                prefix="R$"
+                icon={<RiseOutlined />}
+                color="#722ed1"
+              />
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <KpiCard
+                loading={todaySummary.isLoading}
+                title="Em produção"
+                value={todaySummary.data?.inProgress || 0}
+                // suffix=" pedidos"
+                icon={<FireOutlined />}
+                color={C.progress}
+              />
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <KpiCard
+                loading={todaySummary.isLoading}
+                title="Entregas hoje"
+                value={todaySummary.data?.schedulers || 0}
+                icon={<CarOutlined />}
+                trend={0}
+                trendLabel={
+                  todaySummary.data?.schedulers
+                    ? `${todaySummary.data?.pickup || 0} retirada · ${todaySummary.data?.delivery || 0} entrega`
+                    : ''
+                }
+                color="#fa8c16"
+              />
+            </Col>
+            <Col xs={24} sm={12} md={8} lg={4}>
+              <KpiCard
+                loading={todaySummary.isLoading}
+                title="Cancelamentos"
+                value={
+                  (todaySummary.data?.created || 0) === 0
+                    ? 0
+                    : (Math.round(
+                        ((todaySummary.data?.cancelled || 0) * 100) /
+                          (todaySummary.data?.created || 0) +
+                          Number.EPSILON,
+                      ) *
+                        100) /
+                      100
+                }
+                suffix="%"
+                icon={<WarningOutlined />}
+                trend={-1}
+                trendLabel="↑ 1,1pp vs mês"
+                color={C.cancelled}
+              />
+            </Col>
+          </Row>
 
-        {/* ── Demanda ── */}
-        <SectionTitle icon={<BarChartOutlined />}>
-          Demanda & Volume (Últ. 6 meses)
-        </SectionTitle>
-        <Row gutter={[12, 12]}>
-          {/* Volume de pedidos */}
-          <Col xs={24} lg={14}>
-            <Card
-              style={cardStyle}
-              styles={{
-                header: { borderBottom: '1px solid #f5f5f5', padding: '12px 16px' },
-                body: { padding: '12px 16px' },
-              }}
-              title={
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Text strong style={{ fontSize: 13 }}>
-                    Volume de pedidos
-                  </Text>
-                </div>
-              }
-            >
-              <div style={{ display: 'flex', gap: 16, marginBottom: 10 }}>
-                <Space size={4}>
-                  <div
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 2,
-                      background: C.primary,
-                    }}
-                  />
-                  <Text style={{ fontSize: 11, color: '#888' }}>Confirmados</Text>
-                </Space>
-                <Space size={4}>
-                  <div
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 2,
-                      background: C.primaryLight,
-                    }}
-                  />
-                  <Text style={{ fontSize: 11, color: '#888' }}>Pendentes</Text>
-                </Space>
-              </div>
-              <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart
-                    data={(latestMonthsSummary.data?.months || []).map((month) => {
-                      return {
-                        label: month.monthYear,
-                        confirmados: month.status.confirmed,
-                        pendentes: month.status.pending,
-                      };
-                    })}
-                    barCategoryGap="30%"
-                  >
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="#f0f0f0"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="label"
-                      tick={{ fontSize: 11 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                    <RTooltip content={<CustomTooltip />} />
-                    <Bar
-                      dataKey="confirmados"
-                      name="Confirmados"
-                      stackId="a"
-                      fill={C.primary}
-                      radius={[0, 0, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="pendentes"
-                      name="Pendentes"
-                      stackId="a"
-                      fill={C.primaryLight}
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Spin>
-            </Card>
-          </Col>
-
-          {/* Status dos pedidos */}
-          <Col xs={24} sm={12} lg={5}>
-            <Card
-              style={{ ...cardStyle, height: '100%' }}
-              styles={{
-                ...cardHeaderStyles,
-                body: { padding: '12px 16px' },
-              }}
-              title={
-                <Text strong style={{ fontSize: 13 }}>
-                  Status dos pedidos
-                </Text>
-              }
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 12,
+          {/* ── Demanda ── */}
+          <SectionTitle icon={<BarChartOutlined />}>
+            Demanda & Volume (Últ. 6 meses)
+          </SectionTitle>
+          <Row gutter={[12, 12]}>
+            {/* Volume de pedidos */}
+            <Col xs={24} lg={14}>
+              <Card
+                style={cardStyle}
+                styles={{
+                  header: { borderBottom: '1px solid #f5f5f5', padding: '12px 16px' },
+                  body: { padding: '12px 16px' },
                 }}
+                title={
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Text strong style={{ fontSize: 13 }}>
+                      Volume de pedidos
+                    </Text>
+                  </div>
+                }
               >
+                <div style={{ display: 'flex', gap: 16, marginBottom: 10 }}>
+                  <Space size={4}>
+                    <div
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: 2,
+                        background: C.primary,
+                      }}
+                    />
+                    <Text style={{ fontSize: 11, color: '#888' }}>Confirmados</Text>
+                  </Space>
+                  <Space size={4}>
+                    <div
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: 2,
+                        background: C.primaryLight,
+                      }}
+                    />
+                    <Text style={{ fontSize: 11, color: '#888' }}>Pendentes</Text>
+                  </Space>
+                </div>
                 <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
-                  <ResponsiveContainer width="100%" height={180}>
-                    <PieChart>
-                      <Pie
-                        data={getStatusPercent(
-                          latestMonthsSummary.data?.statusPercent || null,
-                        )}
-                        dataKey="value"
-                        nameKey="name"
-                        innerRadius={45}
-                        outerRadius={72}
-                        paddingAngle={2}
-                      >
-                        {getStatusPercent(
-                          latestMonthsSummary.data?.statusPercent || null,
-                        ).map((s, i) => (
-                          <Cell key={i} fill={s.color} />
-                        ))}
-                      </Pie>
-
-                      <RTooltip
-                        formatter={(v: ValueType | undefined) =>
-                          v != null ? [`${v}%`] : []
-                        }
+                  <ResponsiveContainer width="100%" height={220}>
+                    <BarChart
+                      data={(latestMonthsSummary.data?.months || []).map((month) => {
+                        return {
+                          label: month.monthYear,
+                          confirmados: month.status.confirmed,
+                          pendentes: month.status.pending,
+                        };
+                      })}
+                      barCategoryGap="30%"
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#f0f0f0"
+                        vertical={false}
                       />
-                    </PieChart>
+                      <XAxis
+                        dataKey="label"
+                        tick={{ fontSize: 11 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+                      <RTooltip content={<CustomTooltip />} />
+                      <Bar
+                        dataKey="confirmados"
+                        name="Confirmados"
+                        stackId="a"
+                        fill={C.primary}
+                        radius={[0, 0, 0, 0]}
+                      />
+                      <Bar
+                        dataKey="pendentes"
+                        name="Pendentes"
+                        stackId="a"
+                        fill={C.primaryLight}
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
                   </ResponsiveContainer>
                 </Spin>
+              </Card>
+            </Col>
 
-                {/* Legenda */}
+            {/* Status dos pedidos */}
+            <Col xs={24} sm={12} lg={5}>
+              <Card
+                style={{ ...cardStyle, height: '100%' }}
+                styles={{
+                  ...cardHeaderStyles,
+                  body: { padding: '12px 16px' },
+                }}
+                title={
+                  <Text strong style={{ fontSize: 13 }}>
+                    Status dos pedidos
+                  </Text>
+                }
+              >
                 <div
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: 8,
+                    gap: 12,
                   }}
                 >
-                  {getStatusPercent(latestMonthsSummary.data?.statusPercent || null).map(
-                    (s, i) => (
+                  <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
+                    <ResponsiveContainer width="100%" height={180}>
+                      <PieChart>
+                        <Pie
+                          data={getStatusPercent(
+                            latestMonthsSummary.data?.statusPercent || null,
+                          )}
+                          dataKey="value"
+                          nameKey="name"
+                          innerRadius={45}
+                          outerRadius={72}
+                          paddingAngle={2}
+                        >
+                          {getStatusPercent(
+                            latestMonthsSummary.data?.statusPercent || null,
+                          ).map((s, i) => (
+                            <Cell key={i} fill={s.color} />
+                          ))}
+                        </Pie>
+
+                        <RTooltip
+                          formatter={(v: ValueType | undefined) =>
+                            v != null ? [`${v}%`] : []
+                          }
+                        />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </Spin>
+
+                  {/* Legenda */}
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                    }}
+                  >
+                    {getStatusPercent(
+                      latestMonthsSummary.data?.statusPercent || null,
+                    ).map((s, i) => (
                       <div
                         key={i}
                         style={{
@@ -872,53 +874,116 @@ export function DashboardPage() {
                           {s.value}%
                         </Text>
                       </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+            </Col>
+
+            {/* Entrega + Pagamento */}
+            <Col xs={24} sm={12} lg={5}>
+              <Card
+                style={{ ...cardStyle, marginBottom: 12 }}
+                styles={{ ...cardHeaderStyles, body: { padding: '8px 16px' } }}
+                title={
+                  <Text strong style={{ fontSize: 13 }}>
+                    Tipo de entrega
+                  </Text>
+                }
+              >
+                <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
+                  <ResponsiveContainer width="100%" height={100}>
+                    <PieChart>
+                      <Pie
+                        data={getMonthSummaryDelivery(
+                          latestMonthsSummary.data?.months || [],
+                        )}
+                        dataKey="value"
+                        nameKey="name"
+                        outerRadius={44}
+                        paddingAngle={2}
+                      >
+                        {getMonthSummaryDelivery(
+                          latestMonthsSummary.data?.months || [],
+                        ).map((d, i) => (
+                          <Cell key={i} fill={d.color} />
+                        ))}
+                      </Pie>
+                      <RTooltip
+                        formatter={(v: ValueType | undefined) =>
+                          v != null ? [`${v}%`] : []
+                        }
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Spin>
+                <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                  {getMonthSummaryDelivery(latestMonthsSummary.data?.months || []).map(
+                    (d, i) => (
+                      <Space key={i} size={4}>
+                        <div
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: 2,
+                            background: d.color,
+                          }}
+                        />
+                        <Text style={{ fontSize: 11, color: '#666' }}>
+                          {d.name} {d.value}%
+                        </Text>
+                      </Space>
                     ),
                   )}
                 </div>
-              </div>
-            </Card>
-          </Col>
+              </Card>
 
-          {/* Entrega + Pagamento */}
-          <Col xs={24} sm={12} lg={5}>
-            <Card
-              style={{ ...cardStyle, marginBottom: 12 }}
-              styles={{ ...cardHeaderStyles, body: { padding: '8px 16px' } }}
-              title={
-                <Text strong style={{ fontSize: 13 }}>
-                  Tipo de entrega
-                </Text>
-              }
-            >
-              <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
-                <ResponsiveContainer width="100%" height={100}>
-                  <PieChart>
-                    <Pie
-                      data={getMonthSummaryDelivery(
-                        latestMonthsSummary.data?.months || [],
-                      )}
-                      dataKey="value"
-                      nameKey="name"
-                      outerRadius={44}
-                      paddingAngle={2}
-                    >
-                      {getMonthSummaryDelivery(
-                        latestMonthsSummary.data?.months || [],
-                      ).map((d, i) => (
-                        <Cell key={i} fill={d.color} />
-                      ))}
-                    </Pie>
-                    <RTooltip
-                      formatter={(v: ValueType | undefined) =>
-                        v != null ? [`${v}%`] : []
-                      }
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Spin>
-              <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                {getMonthSummaryDelivery(latestMonthsSummary.data?.months || []).map(
-                  (d, i) => (
+              <Card
+                style={cardStyle}
+                styles={{ ...cardHeaderStyles, body: { padding: '8px 16px' } }}
+                title={
+                  <Text strong style={{ fontSize: 13 }}>
+                    Pagamento
+                  </Text>
+                }
+              >
+                <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
+                  <ResponsiveContainer width="100%" height={100}>
+                    <PieChart>
+                      <Pie
+                        data={getMonthsSummaryPayment(
+                          latestMonthsSummary.data?.summary.paymentMethod,
+                        )}
+                        dataKey="value"
+                        nameKey="name"
+                        outerRadius={44}
+                        paddingAngle={2}
+                      >
+                        {getMonthsSummaryPayment(
+                          latestMonthsSummary.data?.summary.paymentMethod,
+                        ).map((d, i) => (
+                          <Cell key={i} fill={d.color} />
+                        ))}
+                      </Pie>
+                      <RTooltip
+                        formatter={(v: ValueType | undefined) =>
+                          v != null ? [`${v}%`] : []
+                        }
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Spin>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '4px 12px',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {getMonthsSummaryPayment(
+                    latestMonthsSummary.data?.summary.paymentMethod,
+                  ).map((d, i) => (
                     <Space key={i} size={4}>
                       <div
                         style={{
@@ -932,350 +997,287 @@ export function DashboardPage() {
                         {d.name} {d.value}%
                       </Text>
                     </Space>
-                  ),
-                )}
-              </div>
-            </Card>
+                  ))}
+                </div>
+              </Card>
+            </Col>
+          </Row>
 
-            <Card
-              style={cardStyle}
-              styles={{ ...cardHeaderStyles, body: { padding: '8px 16px' } }}
-              title={
-                <Text strong style={{ fontSize: 13 }}>
-                  Pagamento
-                </Text>
-              }
-            >
-              <Spin spinning={latestMonthsSummary.isLoading} fullscreen={false}>
-                <ResponsiveContainer width="100%" height={100}>
-                  <PieChart>
-                    <Pie
-                      data={getMonthsSummaryPayment(
-                        latestMonthsSummary.data?.summary.paymentMethod,
-                      )}
-                      dataKey="value"
-                      nameKey="name"
-                      outerRadius={44}
-                      paddingAngle={2}
-                    >
-                      {getMonthsSummaryPayment(
-                        latestMonthsSummary.data?.summary.paymentMethod,
-                      ).map((d, i) => (
-                        <Cell key={i} fill={d.color} />
-                      ))}
-                    </Pie>
-                    <RTooltip
-                      formatter={(v: ValueType | undefined) =>
-                        v != null ? [`${v}%`] : []
+          {/* ── Produtos & Produção ── */}
+          <SectionTitle icon={<ToolOutlined />}>Produtos & Produção</SectionTitle>
+          <Row gutter={[12, 12]}>
+            {/* Alertas */}
+            <Col xs={24} lg={12}>
+              <Card
+                style={cardStyle}
+                styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
+                title={
+                  <Text strong style={{ fontSize: 13 }}>
+                    🔔 Pedidos que precisam de atenção
+                  </Text>
+                }
+              >
+                <Space orientation="vertical" style={{ width: '100%' }}>
+                  <Alert
+                    type="warning"
+                    showIcon
+                    description="Bolo de Pedro Costa — prazo de confirmação pendente há 2 dias"
+                  />
+                  <Alert
+                    type="info"
+                    showIcon
+                    description="3 pedidos para o fim de semana sem confirmação de pagamento"
+                  />
+                </Space>
+              </Card>
+            </Col>
+            {/* Top products */}
+            <Col xs={24} lg={12}>
+              <Card
+                style={cardStyle}
+                styles={{ ...cardHeaderStyles, body: { padding: 0 } }}
+                title={
+                  <Text strong style={{ fontSize: 13 }}>
+                    🏆 Produtos mais pedidos — mês
+                  </Text>
+                }
+              >
+                <Table<TopProducts>
+                  rowKey={'id'}
+                  loading={topProductsSummary.isLoading}
+                  dataSource={topProductsSummary.data || []}
+                  columns={productColumns}
+                  pagination={false}
+                  size="small"
+                />
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Faturamento mensal */}
+          <Row gutter={[12, 12]} style={{ marginTop: 12 }}>
+            <Col xs={24}>
+              <Card
+                style={cardStyle}
+                styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
+                title={
+                  <Text strong style={{ fontSize: 13 }}>
+                    📈 Faturamento — últimos 6 meses
+                  </Text>
+                }
+              >
+                <Spin spinning={latestMonthsRevenueSummary.isLoading} fullscreen={false}>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <AreaChart data={latestMonthsRevenueSummary.data} dataKey={'revenue'}>
+                      <defs>
+                        <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={C.primary} stopOpacity={0.18} />
+                          <stop offset="95%" stopColor={C.primary} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#f0f0f0"
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="monthYear"
+                        tick={{ fontSize: 11 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        dataKey="revenue"
+                        tick={{ fontSize: 11 }}
+                        axisLine={false}
+                        tickLine={false}
+                        tickFormatter={(v: number) => `R$${(v / 1000).toFixed(0)}k`}
+                      />
+                      <RTooltip content={<CustomTooltip prefix="R$ " />} />
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        name="Faturamento"
+                        stroke={C.primary}
+                        strokeWidth={2.5}
+                        fill="url(#revGrad)"
+                        dot={{ r: 4, fill: C.primary }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </Spin>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* ── Agenda & Planejamento ── */}
+          <SectionTitle icon={<CalendarOutlined />}>Agenda & Planejamento</SectionTitle>
+          <Row gutter={[12, 12]}>
+            {/* Agenda do dia */}
+            <Col xs={24} lg={12}>
+              <Card
+                style={cardStyle}
+                title={
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <Text strong style={{ fontSize: 13 }}>
+                      📅 Entregas do dia
+                    </Text>
+                    <Segmented
+                      size="small"
+                      options={['Todos', 'Entrega', 'Retirada']}
+                      value={agendaFilter}
+                      onChange={(v) =>
+                        setAgendaFilter(v as 'Todos' | 'Entrega' | 'Retirada')
                       }
                     />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Spin>
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: '4px 12px',
-                  justifyContent: 'center',
-                }}
+                  </div>
+                }
+                styles={{ ...cardHeaderStyles, body: { padding: '0 16px' } }}
               >
-                {getMonthsSummaryPayment(
-                  latestMonthsSummary.data?.summary.paymentMethod,
-                ).map((d, i) => (
-                  <Space key={i} size={4}>
-                    <div
+                <List<DeliveryToday>
+                  dataSource={filteredAgenda}
+                  renderItem={(item) => (
+                    <List.Item
+                      className="delivery-today-item"
                       style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: 2,
-                        background: d.color,
+                        padding: '10px 12px',
+                        borderRadius: 12,
+                        marginBottom: 4,
                       }}
-                    />
-                    <Text style={{ fontSize: 11, color: '#666' }}>
-                      {d.name} {d.value}%
-                    </Text>
-                  </Space>
-                ))}
-              </div>
-            </Card>
-          </Col>
-        </Row>
-
-        {/* ── Produtos & Produção ── */}
-        <SectionTitle icon={<ToolOutlined />}>Produtos & Produção</SectionTitle>
-        <Row gutter={[12, 12]}>
-          {/* Alertas */}
-          <Col xs={24} lg={12}>
-            <Card
-              style={cardStyle}
-              styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
-              title={
-                <Text strong style={{ fontSize: 13 }}>
-                  🔔 Pedidos que precisam de atenção
-                </Text>
-              }
-            >
-              <Space orientation="vertical" style={{ width: '100%' }}>
-                <Alert
-                  type="warning"
-                  showIcon
-                  description="Bolo de Pedro Costa — prazo de confirmação pendente há 2 dias"
-                />
-                <Alert
-                  type="info"
-                  showIcon
-                  description="3 pedidos para o fim de semana sem confirmação de pagamento"
-                />
-              </Space>
-            </Card>
-          </Col>
-          {/* Top products */}
-          <Col xs={24} lg={12}>
-            <Card
-              style={cardStyle}
-              styles={{ ...cardHeaderStyles, body: { padding: 0 } }}
-              title={
-                <Text strong style={{ fontSize: 13 }}>
-                  🏆 Produtos mais pedidos — mês
-                </Text>
-              }
-            >
-              <Table<TopProducts>
-                rowKey={'id'}
-                loading={topProductsSummary.isLoading}
-                dataSource={topProductsSummary.data || []}
-                columns={productColumns}
-                pagination={false}
-                size="small"
-              />
-            </Card>
-          </Col>
-        </Row>
-
-        {/* Faturamento mensal */}
-        <Row gutter={[12, 12]} style={{ marginTop: 12 }}>
-          <Col xs={24}>
-            <Card
-              style={cardStyle}
-              styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
-              title={
-                <Text strong style={{ fontSize: 13 }}>
-                  📈 Faturamento — últimos 6 meses
-                </Text>
-              }
-            >
-              <Spin spinning={latestMonthsRevenueSummary.isLoading} fullscreen={false}>
-                <ResponsiveContainer width="100%" height={180}>
-                  <AreaChart data={latestMonthsRevenueSummary.data} dataKey={'revenue'}>
-                    <defs>
-                      <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={C.primary} stopOpacity={0.18} />
-                        <stop offset="95%" stopColor={C.primary} stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      stroke="#f0f0f0"
-                      vertical={false}
-                    />
-                    <XAxis
-                      dataKey="monthYear"
-                      tick={{ fontSize: 11 }}
-                      axisLine={false}
-                      tickLine={false}
-                    />
-                    <YAxis
-                      dataKey="revenue"
-                      tick={{ fontSize: 11 }}
-                      axisLine={false}
-                      tickLine={false}
-                      tickFormatter={(v: number) => `R$${(v / 1000).toFixed(0)}k`}
-                    />
-                    <RTooltip content={<CustomTooltip prefix="R$ " />} />
-                    <Area
-                      type="monotone"
-                      dataKey="revenue"
-                      name="Faturamento"
-                      stroke={C.primary}
-                      strokeWidth={2.5}
-                      fill="url(#revGrad)"
-                      dot={{ r: 4, fill: C.primary }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </Spin>
-            </Card>
-          </Col>
-        </Row>
-
-        {/* ── Agenda & Planejamento ── */}
-        <SectionTitle icon={<CalendarOutlined />}>Agenda & Planejamento</SectionTitle>
-        <Row gutter={[12, 12]}>
-          {/* Agenda do dia */}
-          <Col xs={24} lg={12}>
-            <Card
-              style={cardStyle}
-              title={
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}
-                >
-                  <Text strong style={{ fontSize: 13 }}>
-                    📅 Entregas do dia
-                  </Text>
-                  <Segmented
-                    size="small"
-                    options={['Todos', 'Entrega', 'Retirada']}
-                    value={agendaFilter}
-                    onChange={(v) =>
-                      setAgendaFilter(v as 'Todos' | 'Entrega' | 'Retirada')
-                    }
-                  />
-                </div>
-              }
-              styles={{ ...cardHeaderStyles, body: { padding: '0 16px' } }}
-            >
-              <List<DeliveryToday>
-                dataSource={filteredAgenda}
-                renderItem={(item) => (
-                  <List.Item
-                    className="delivery-today-item"
-                    style={{
-                      padding: '10px 12px',
-                      borderRadius: 12,
-                      marginBottom: 4,
-                    }}
-                    onClick={() => handleOpenOrder(item)}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: 10,
-                        width: '100%',
-                      }}
+                      onClick={() => handleOpenOrder(item)}
                     >
-                      <Text
+                      <div
                         style={{
-                          fontSize: 12,
-                          color: '#aaa',
-                          minWidth: 40,
-                          paddingTop: 2,
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: 10,
+                          width: '100%',
                         }}
                       >
-                        {item.time}
-                      </Text>
-
-                      <Avatar
-                        size={32}
-                        style={{
-                          background:
-                            item.deliveryType === 'delivery'
-                              ? `${C.primary}22`
-                              : `${C.pickup}22`,
-                          color: item.deliveryType === 'delivery' ? C.primary : C.pickup,
-                          fontSize: 13,
-                          flexShrink: 0,
-                        }}
-                      >
-                        {item.deliveryType === 'delivery' ? '🚗' : '🏪'}
-                      </Avatar>
-
-                      <div style={{ flex: 1 }}>
-                        <Text
-                          strong
-                          style={{
-                            fontSize: 13,
-                            display: 'block',
-                          }}
-                        >
-                          {item.customerName}
-                        </Text>
-
                         <Text
                           style={{
                             fontSize: 12,
-                            color: '#888',
+                            color: '#aaa',
+                            minWidth: 40,
+                            paddingTop: 2,
                           }}
                         >
-                          {item.productLabel}
+                          {item.time}
                         </Text>
+
+                        <Avatar
+                          size={32}
+                          style={{
+                            background:
+                              item.deliveryType === 'delivery'
+                                ? `${C.primary}22`
+                                : `${C.pickup}22`,
+                            color:
+                              item.deliveryType === 'delivery' ? C.primary : C.pickup,
+                            fontSize: 13,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {item.deliveryType === 'delivery' ? '🚗' : '🏪'}
+                        </Avatar>
+
+                        <div style={{ flex: 1 }}>
+                          <Text
+                            strong
+                            style={{
+                              fontSize: 13,
+                              display: 'block',
+                            }}
+                          >
+                            {item.customerName}
+                          </Text>
+
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              color: '#888',
+                            }}
+                          >
+                            {item.productLabel}
+                          </Text>
+                        </div>
+
+                        <StatusTag status={item.status} />
                       </div>
+                    </List.Item>
+                  )}
+                />
+              </Card>
+            </Col>
 
-                      <StatusTag status={item.status} />
-                    </div>
-                  </List.Item>
-                )}
-              />
-            </Card>
-          </Col>
+            {/* Antecedência mínima */}
+            <Col xs={24} lg={12}>
+              <Card
+                style={cardStyle}
+                styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
+                title={
+                  <Text strong style={{ fontSize: 13 }}>
+                    ⏰ Antecedência mínima por produto (horas)
+                  </Text>
+                }
+              >
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={leadTimes} layout="vertical" barCategoryGap="25%">
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#f0f0f0"
+                      horizontal={false}
+                    />
+                    <XAxis
+                      type="number"
+                      tick={{ fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                      tickFormatter={(v: number) => `${v}h`}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      tick={{ fontSize: 11 }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={140}
+                    />
+                    <RTooltip
+                      formatter={(v: ValueType | undefined) =>
+                        v != null ? [`${v}h`, 'Antecedência'] : []
+                      }
+                    />
+                    <Bar
+                      dataKey="horas"
+                      name="Antecedência"
+                      fill={C.primary}
+                      radius={[0, 4, 4, 0]}
+                    >
+                      {leadTimes.map((_, i) => (
+                        <Cell
+                          key={i}
+                          fill={i < 2 ? C.primary : i < 4 ? C.primaryLight : '#f5c8bf'}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </Card>
+            </Col>
+          </Row>
 
-          {/* Antecedência mínima */}
-          <Col xs={24} lg={12}>
-            <Card
-              style={cardStyle}
-              styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
-              title={
-                <Text strong style={{ fontSize: 13 }}>
-                  ⏰ Antecedência mínima por produto (horas)
-                </Text>
-              }
-            >
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={leadTimes} layout="vertical" barCategoryGap="25%">
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke="#f0f0f0"
-                    horizontal={false}
-                  />
-                  <XAxis
-                    type="number"
-                    tick={{ fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                    tickFormatter={(v: number) => `${v}h`}
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    tick={{ fontSize: 11 }}
-                    axisLine={false}
-                    tickLine={false}
-                    width={140}
-                  />
-                  <RTooltip
-                    formatter={(v: ValueType | undefined) =>
-                      v != null ? [`${v}h`, 'Antecedência'] : []
-                    }
-                  />
-                  <Bar
-                    dataKey="horas"
-                    name="Antecedência"
-                    fill={C.primary}
-                    radius={[0, 4, 4, 0]}
-                  >
-                    {leadTimes.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={i < 2 ? C.primary : i < 4 ? C.primaryLight : '#f5c8bf'}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </Card>
-          </Col>
-        </Row>
-
-        {/* ── Alertas & Fluxo ── */}
-        <Row gutter={[12, 12]} style={{ marginTop: 12 }}>
-          {/* Alertas */}
-          {/* <Col xs={24} lg={12}>
+          {/* ── Alertas & Fluxo ── */}
+          <Row gutter={[12, 12]} style={{ marginTop: 12 }}>
+            {/* Alertas */}
+            {/* <Col xs={24} lg={12}>
             <Card
               style={cardStyle}
               styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
@@ -1305,8 +1307,8 @@ export function DashboardPage() {
             </Card>
           </Col> */}
 
-          {/* Fluxo do processo */}
-          {/* <Col xs={24} lg={12}>
+            {/* Fluxo do processo */}
+            {/* <Col xs={24} lg={12}>
             <Card
               style={cardStyle}
               styles={{ ...cardHeaderStyles, body: { padding: '12px 16px' } }}
@@ -1364,8 +1366,9 @@ export function DashboardPage() {
               ))}
             </Card>
           </Col> */}
-        </Row>
-      </Content>
-    </Layout>
+          </Row>
+        </Content>
+      </Layout>
+    </Space>
   );
 }

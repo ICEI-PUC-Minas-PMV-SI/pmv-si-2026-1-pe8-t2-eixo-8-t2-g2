@@ -37,7 +37,7 @@ class UserService {
     });
     if (alreadyExists) {
       throw new AppError(
-        'User with this email or phone already exists',
+        'E-mail e/ou telefone já está cadastrado para outro usuário',
         HttpCode.BAD_REQUEST,
       );
     }
@@ -91,10 +91,7 @@ class UserService {
 
   async find(params: Partial<User>, customSelect: UserSelect = {}) {
     if (!params.id && !params.email) {
-      throw new AppError(
-        'At least one of id or email must be provided to find a user.',
-        HttpCode.BAD_REQUEST,
-      );
+      throw new AppError('Falha ao buscar informações do usuário', HttpCode.BAD_REQUEST);
     }
     const prisma = await Prisma.getClient();
     const { password, ...searchParams } = params;
@@ -111,7 +108,7 @@ class UserService {
     if (password && userPassword) {
       const isValidPassword = await Crypt.isValidHash(password, userPassword);
       if (!isValidPassword) {
-        throw new AppError('Invalid credentials', HttpCode.UNAUTHORIZED);
+        throw new AppError('Credenciais inválidas', HttpCode.UNAUTHORIZED);
       }
     }
 
@@ -187,7 +184,7 @@ class UserService {
   async forgotPassword(email: string) {
     const user = await this.find({ email });
     if (!user) {
-      throw new AppError('User not found', HttpCode.NOT_FOUND);
+      throw new AppError('Usuário não encontrado', HttpCode.NOT_FOUND);
     }
     const secret = OTPUtil.generateSecret();
 
@@ -260,7 +257,10 @@ class UserService {
         },
       });
       if (count === 1) {
-        throw new AppError('Cannot remove the last admin user', HttpCode.BAD_REQUEST);
+        throw new AppError(
+          'Não é possível retirar permissão de todos os usuários administrativos',
+          HttpCode.BAD_REQUEST,
+        );
       }
     }
     await prisma.user.update({
