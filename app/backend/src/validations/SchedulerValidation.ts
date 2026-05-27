@@ -9,7 +9,9 @@ class SchedulerValidation {
   create = (req: GenericRequest, res: Response, next: NextFunction) => {
     try {
       const productSchema = {
-        id: z.uuid(),
+        id: z.uuid().optional(),
+        productId: z.uuid().optional(),
+        customization: z.string().optional(),
         quantity: z.number().positive().int(),
       };
 

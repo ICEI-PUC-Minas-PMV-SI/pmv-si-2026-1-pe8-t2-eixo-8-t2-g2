@@ -57,7 +57,8 @@ class SchedulerService {
   private async getProductsList(products: SchedulerCreatePayload['items']) {
     return Promise.all(
       products.map(async (product) => {
-        const result = await ProductService.find(product.id);
+        // TODO: Revisar id/productId e corrigir tipagem @GabrielXavier
+        const result = await ProductService.find(product.id || product.productId);
         if (!result) {
           throw new AppError(
             `Product with id ${product.id} not found`,
