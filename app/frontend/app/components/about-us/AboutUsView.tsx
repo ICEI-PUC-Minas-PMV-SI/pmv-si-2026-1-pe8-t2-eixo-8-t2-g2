@@ -1,146 +1,294 @@
-import { useQuery } from '@tanstack/react-query';
-import AboutController from '~/controllers/AboutController';
-import AboutItemController from '~/controllers/AboutItemController';
-import type { AboutItem } from '~/@types/about';
+import { Button, Card, Col, Flex, Image, Row, Typography } from 'antd';
 
-const MOCK_PRODUCTS = [
-  { id: 1, name: 'Churrito', category: 'Biscoito Artesanal', price: 'R$ 25,00' },
-  { id: 2, name: 'Casadinho', category: 'Biscoito Artesanal', price: 'R$ 20,00' },
-  { id: 3, name: 'Biscoito de Baunilha e Ninho', category: 'Biscoito Artesanal', price: 'R$ 25,00' },
-  { id: 4, name: 'Canelinha', category: 'Biscoito Artesanal', price: 'R$ 30,00' },
-];
+import { useQuery } from '@tanstack/react-query';
+
+import AboutController from '~/controllers/AboutController';
+import NumberUtil from '~/utils/NumberUtil';
+
+const { Title, Paragraph, Text } = Typography;
 
 export function AboutUsView() {
   const { data: about } = useQuery({
     queryKey: ['about-page-info'],
-    queryFn: () => AboutController.getPage(),
-    staleTime: 60 * 60 * 1000,
+    queryFn: () => AboutController.find(),
+    staleTime: 1000 * 60 * 60,
   });
 
-    const { data: itemsData } = useQuery<{ data: AboutItem[] }>({
-    queryKey: ['about-item'],
-    queryFn: () => AboutItemController.list({ page: 1, pageSize: 100, filters: {}, sorters: [], search: '' }),
-    });
-
-  const items = itemsData?.data ?? [];
-
   return (
-    <div style={{ fontFamily: 'sans-serif', color: '#2c2c2c' }}>
-        {/* <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16, lineHeight: 1.2 }}>
-            {about?.title ?? 'Quem Somos'}
-        </h2> */}
-
-
-      {/* Banner */}
-      <div style={{
-        position: 'relative',
-        borderRadius: 16,
-        overflow: 'hidden',
-        marginBottom: 48,
-        minHeight: 320,
-        background: '#e8e0d8',
-        display: 'flex',
-        alignItems: 'center',
-      }}>
-        <div style={{ flex: 1, padding: '48px 56px', zIndex: 1 }}>
-          <h1 style={{ fontSize: 32, fontWeight: 700, marginBottom: 16, lineHeight: 1.2 }}>
-            {about?.subtitle ?? 'Olá! Eu sou a Isabella!'}
-          </h1>
-          <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16, maxWidth: 360, color: '#444' }}>
-            {about?.main}
-          </p>
-          {about?.complementary && (
-            <p style={{ fontSize: 15, lineHeight: 1.8, maxWidth: 360, color: '#444' }}>
-              {about.complementary}
-            </p>
-          )}
-        </div>
-        {/* placeholder da imagem */}
-        <div style={{
-          width: 340,
-          minHeight: 320,
-          background: '#cfc5bb',
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#999',
-          fontSize: 13,
-        }}>
-          Imagem de destaque
-        </div>
-      </div>
-
-      {/* Diferenciais */}
-      {items.length > 0 && (
-        <div style={{ marginBottom: 56, textAlign: 'center' }}>
-          <h2 style={{ fontSize: 22, fontWeight: 600, marginBottom: 32 }}>
-            Nossos diferenciais
-          </h2>
-          <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'nowrap' }}>
-            {items.slice(0, 5).map((item) => (
-                <div key={item.id} style={{
-                    border: '1px solid #e8e8e8',
-                    borderRadius: 12,
-                    padding: '28px 20px',
-                    flex: 1, 
-                    minWidth: 120,    
-                    display: 'flex',
-                    overflow: 'hidden',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: 12,
-                    background: '#fff',
-                }}>
-                {item.icon
-                  ? <img src={item.icon} alt={item.text} style={{ width: 48, height: 48, objectFit: 'contain' }} />
-                  : <div style={{ width: 48, height: 48, background: '#f5f5f5', borderRadius: 8 }} />
-                }
-                <span style={{ fontSize: 13, color: '#444', textAlign: 'center', lineHeight: 1.5, whiteSpace: 'normal', wordBreak: 'break-word' }}>
-                    {item.text}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Produtos mockados */}
-      <div style={{ marginBottom: 32, textAlign: 'center' }}>
-        <h2 style={{ fontSize: 22, fontWeight: 600, marginBottom: 32 }}>
-          Alguns dos nossos itens mais vendidos
-        </h2>
-        <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
-          {MOCK_PRODUCTS.map((p) => (
-            <div key={p.id} style={{
-              border: '1px solid #e8e8e8',
-              borderRadius: 12,
+    <div
+      style={{
+        background: '#f5f3f1',
+        paddingBottom: '80px',
+      }}
+    >
+      <div
+        style={{
+          // maxWidth: 1200,
+          margin: '0 auto',
+        }}
+      >
+        <Flex vertical gap={96}>
+          {/* HERO */}
+          <section
+            style={{
               overflow: 'hidden',
-              width: 180,
-              background: '#fff',
-              textAlign: 'left',
-            }}>
-              <div style={{ height: 140, background: '#f0ebe5' }} />
-              <div style={{ padding: '12px 14px' }}>
-                <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{p.name}</div>
-                <div style={{ fontSize: 12, color: '#999', marginBottom: 8 }}>{p.category}</div>
-                <div style={{ color: '#c0392b', fontWeight: 600, fontSize: 14, marginBottom: 10 }}>{p.price}</div>
-                <button style={{
+              background: '#f1efec',
+            }}
+          >
+            <Row align="middle">
+              <Col xs={24} lg={12}>
+                <Flex
+                  vertical
+                  gap={24}
+                  style={{
+                    padding: '56px 48px',
+                  }}
+                >
+                  <Title
+                    level={1}
+                    style={{
+                      margin: 0,
+                      fontSize: 42,
+                      lineHeight: 1.15,
+                      fontWeight: 700,
+                      color: '#2d2d2d',
+                    }}
+                  >
+                    {about?.subtitle ?? 'Olá! Eu sou a Isabella!'}
+                  </Title>
+
+                  <Paragraph
+                    style={{
+                      margin: 0,
+                      fontSize: 16,
+                      lineHeight: 2,
+                      color: '#555',
+                    }}
+                  >
+                    {about?.main}
+                  </Paragraph>
+
+                  {about?.complementary && (
+                    <Paragraph
+                      style={{
+                        margin: 0,
+                        fontSize: 16,
+                        lineHeight: 2,
+                        color: '#555',
+                      }}
+                    >
+                      {about.complementary}
+                    </Paragraph>
+                  )}
+                </Flex>
+              </Col>
+
+              <Col xs={24} lg={12}>
+                <Flex
+                  align="center"
+                  justify="center"
+                  style={{
+                    minHeight: 520,
+                    background: '#e7e1db',
+                  }}
+                >
+                  <Text type="secondary">Imagem de destaque</Text>
+                </Flex>
+              </Col>
+            </Row>
+          </section>
+
+          {/* DIFERENCIAIS */}
+          {!!about?.items?.length && (
+            <section>
+              <Flex vertical gap={48} align="center">
+                <Title
+                  level={2}
+                  style={{
+                    margin: 0,
+                    fontSize: 30,
+                    color: '#2d2d2d',
+                    textAlign: 'center',
+                  }}
+                >
+                  Nossos diferenciais
+                </Title>
+
+                <Row
+                  gutter={[24, 24]}
+                  style={{
+                    width: '100%',
+                    justifyContent: 'space-evenly',
+                  }}
+                >
+                  {about.items.map((item) => (
+                    <Col xs={24} sm={12} md={12} lg={6} key={item.id}>
+                      <Card
+                        variant={'borderless'}
+                        style={{
+                          height: '100%',
+                          borderRadius: 20,
+                          borderColor: '#e7e3de',
+                          background: '#faf8f6',
+                          boxShadow: 'none',
+                        }}
+                        styles={{
+                          body: {
+                            padding: '36px 24px',
+                          },
+                        }}
+                      >
+                        <Flex vertical align="center" gap={20}>
+                          {item.icon ? (
+                            <Image
+                              src={item.icon}
+                              preview={false}
+                              width={72}
+                              height={72}
+                              style={{
+                                objectFit: 'contain',
+                              }}
+                            />
+                          ) : (
+                            <Flex
+                              align="center"
+                              justify="center"
+                              style={{
+                                width: 72,
+                                height: 72,
+                                borderRadius: 16,
+                                background: '#f1efec',
+                              }}
+                            />
+                          )}
+
+                          <Text
+                            style={{
+                              textAlign: 'center',
+                              lineHeight: 1.7,
+                              fontSize: 14,
+                              color: '#444',
+                            }}
+                          >
+                            {item.text}
+                          </Text>
+                        </Flex>
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              </Flex>
+            </section>
+          )}
+
+          {/* PRODUTOS */}
+          <section>
+            <Flex vertical gap={48} align="center">
+              <Title
+                level={2}
+                style={{
+                  margin: 0,
+                  fontSize: 30,
+                  color: '#2d2d2d',
+                  textAlign: 'center',
+                }}
+              >
+                Alguns dos nossos itens mais vendidos
+              </Title>
+
+              <Row
+                gutter={[24, 24]}
+                style={{
                   width: '100%',
-                  padding: '6px 0',
-                  border: '1px solid #c0392b',
-                  borderRadius: 6,
-                  background: 'transparent',
-                  color: '#c0392b',
-                  fontSize: 12,
-                  cursor: 'pointer',
-                }}>
-                  Ver detalhes
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+                  display: 'flex',
+                  justifyContent: 'space-evenly',
+                }}
+              >
+                {about?.topProducts?.map((product) => (
+                  <Col
+                    xs={24}
+                    sm={12}
+                    md={12}
+                    lg={6}
+                    key={product.id}
+                    style={{ maxWidth: 300 }}
+                  >
+                    <Card
+                      hoverable
+                      style={{
+                        borderRadius: 20,
+                        overflow: 'hidden',
+                        borderColor: '#e7e3de',
+                        background: '#faf8f6',
+                        boxShadow: 'none',
+                      }}
+                      styles={{
+                        body: {
+                          padding: 18,
+                        },
+                      }}
+                      cover={
+                        <div
+                          style={{
+                            height: 220,
+                            background: '#f1efec',
+                          }}
+                        />
+                      }
+                    >
+                      <Flex vertical gap={16}>
+                        <Flex vertical gap={4}>
+                          <Text
+                            strong
+                            style={{
+                              fontSize: 15,
+                              color: '#2d2d2d',
+                            }}
+                          >
+                            {product.name}
+                          </Text>
+
+                          {/* <Text
+                            type="secondary"
+                            style={{
+                              fontSize: 13,
+                            }}
+                          >
+                            {product.category}
+                          </Text> */}
+                        </Flex>
+
+                        <Text
+                          strong
+                          style={{
+                            color: '#d35b52',
+                            fontSize: 16,
+                            textAlign: 'right',
+                          }}
+                        >
+                          {NumberUtil.currency(product.price)}
+                        </Text>
+
+                        <Button
+                          block
+                          ghost
+                          danger
+                          style={{
+                            height: 38,
+                            borderRadius: 10,
+                            fontSize: 13,
+                          }}
+                        >
+                          Ver detalhes
+                        </Button>
+                      </Flex>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </Flex>
+          </section>
+        </Flex>
       </div>
     </div>
   );

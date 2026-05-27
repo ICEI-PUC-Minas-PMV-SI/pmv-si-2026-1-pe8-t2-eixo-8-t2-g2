@@ -117,3 +117,7 @@ body {
 .delivery-today-item:active {
   transform: scale(0.995);
 }
+
+div#root>div>div>main {
+  padding: 0px !important;
+}

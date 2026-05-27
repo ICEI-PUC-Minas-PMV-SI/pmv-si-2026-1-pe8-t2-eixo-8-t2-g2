@@ -282,44 +282,24 @@ model AppSettings {
   updatedAt DateTime @updatedAt
 }
 
-model AppSettings {
-  id String @id @default("default")
-
-  siteName String?
-
-  logoUrl String?
-
-  whatsapp     String?
-  contactEmail String?
-  serviceHours String?
-  address      String?
-
-  instagram String?
-
-  primaryColor   String?
-  secondaryColor String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model AboutInfo {
-  id              String    @id @default(cuid())
-  title           String   
-  subtitle        String
-  main            String
-  complementary   String
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime        @updatedAt @default(now())
+  id            String      @id @default(cuid())
+  title         String
+  subtitle      String
+  main          String
+  complementary String
+  items         AboutItem[] @relation("AboutItem")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now()) @updatedAt
 }
 
 model AboutItem {
-  id      String @id @default(uuid())
+  id String @id @default(uuid())
 
-  text        String
-  orderIndex  Int     @default(0)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime        @updatedAt @default(now())
+  text       String
+  orderIndex Int       @default(0)
+  aboutId    String
+  aboutInfo  AboutInfo @relation("AboutItem", fields: [aboutId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
 }

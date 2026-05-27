@@ -292,12 +292,13 @@ class DashboardService {
     return Object.values(revenueByMonth).sort((a, b) => a.timestamp - b.timestamp);
   }
 
-  async topProducts() {
+  async topProducts(count: number = 10) {
     const prisma = await Prisma.getClient();
     const result = await prisma.$queryRaw<
       {
         id: string;
         name: string;
+        price: number;
         quantity: number;
         revenue: number;
       }[]
@@ -305,6 +306,7 @@ class DashboardService {
   SELECT
     P.id,
     P.name,
+    P.price,
     SUM(SI.quantity) as quantity,
     SUM(SI.quantity * SI.priceAtBooking) as revenue
   FROM SchedulerItem SI
@@ -312,7 +314,7 @@ class DashboardService {
     ON SI.productId = P.id
   GROUP BY P.id, P.name
   ORDER BY SUM(SI.quantity) DESC
-  LIMIT 10
+  LIMIT ${count}
 `;
     const schedulerItemSum = await prisma.schedulerItem.aggregate({
       _sum: {

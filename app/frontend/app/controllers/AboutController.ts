@@ -1,5 +1,4 @@
 import type { CreateAbout, About } from '~/@types/about';
-import type { TableParams } from '~/hooks/useTableQuery';
 import Request from '~/utils/Request';
 
 class AboutController {
@@ -23,11 +22,10 @@ class AboutController {
     return result;
   }
 
-  async getPage() {
-    const result = await Request.get<About>('/aboutPage');
+  async find() {
+    const result = await Request.get<About>('/about');
     return result;
   }
-
 }
 
 export default new AboutController();

@@ -1,6 +1,15 @@
-import React, { useMemo, useContext, useState, useEffect } from 'react';
-import { Card, Space, Button, Table, message, Typography } from 'antd';
-import { HolderOutlined, PlusOutlined, PictureOutlined } from '@ant-design/icons';
+import React, { createContext, useContext, useMemo } from 'react';
+
+import { Button, Card, Image, Input, Space, Table, Typography, Upload } from 'antd';
+
+import type { UploadProps } from 'antd';
+
+import {
+  HolderOutlined,
+  PlusOutlined,
+  PictureOutlined,
+  DeleteOutlined,
+} from '@ant-design/icons';
 
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
 
@@ -12,43 +21,41 @@ import {
 } from '@dnd-kit/sortable';
 
 import { CSS } from '@dnd-kit/utilities';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import type { AboutItem } from '~/@types/about';
-import AboutItemController from '~/controllers/AboutItemController';
-import { ModalAddAboutItem } from './ModalAddAboutItem';
-import { useTableQuery } from '~/hooks/useTableQuery';
-// import { ref } from 'process';
 
-interface Props { 
-  setItemModalOpen: (v: boolean) => void;
-  onRefetch?: () => void; 
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+
+import type { AboutItem } from '~/@types/about';
+
+interface Props {
+  items: AboutItem[];
+  onChange: (items: AboutItem[]) => void;
+  onDeletePersistedItem?: (id: string) => void;
 }
 
 interface RowContextProps {
-  setActivatorNodeRef?: (el: HTMLElement | null) => void;
+  setActivatorNodeRef?: (element: HTMLElement | null) => void;
   listeners?: any;
 }
 
-const RowContext = React.createContext<RowContextProps>({});
+const RowContext = createContext<RowContextProps>({});
 
-// 🔥 Botão de drag
-const DragHandle = () => {
+function DragHandle() {
   const { setActivatorNodeRef, listeners } = useContext(RowContext);
 
   return (
     <Button
       type="text"
-      size="small"
       icon={<HolderOutlined />}
       style={{ cursor: 'grab' }}
       ref={setActivatorNodeRef}
       {...listeners}
     />
   );
-};
+}
 
-const SortableRow = (props: any) => {
+function SortableRow(props: any) {
   const isPlaceholder = props.className?.includes('ant-table-placeholder');
+
   const {
     attributes,
     listeners,
@@ -57,7 +64,10 @@ const SortableRow = (props: any) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: props['data-row-key'], disabled: isPlaceholder });
+  } = useSortable({
+    id: props['data-row-key'],
+    disabled: isPlaceholder,
+  });
 
   if (isPlaceholder) {
     return <tr {...props} />;
@@ -67,11 +77,19 @@ const SortableRow = (props: any) => {
     ...props.style,
     transform: CSS.Transform.toString(transform),
     transition,
-    ...(isDragging ? { position: 'relative', zIndex: 9999 } : {}),
+    ...(isDragging
+      ? {
+          position: 'relative',
+          zIndex: 9999,
+        }
+      : {}),
   };
 
   const contextValue = useMemo(
-    () => ({ setActivatorNodeRef, listeners }),
+    () => ({
+      setActivatorNodeRef,
+      listeners,
+    }),
     [setActivatorNodeRef, listeners],
   );
 
@@ -80,173 +98,206 @@ const SortableRow = (props: any) => {
       <tr {...props} ref={setNodeRef} style={style} {...attributes} />
     </RowContext.Provider>
   );
-};
+}
 
-export function AboutItemList() {
-  const [itemModalOpen, setItemModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<AboutItem | null>(null);
+export function AboutItemList({ items, onChange, onDeletePersistedItem }: Props) {
+  const updateItem = (key: string, partial: Partial<AboutItem>) => {
+    onChange(
+      items.map((item) =>
+        (item.id || item.tempId) === key
+          ? {
+              ...item,
+              ...partial,
+            }
+          : item,
+      ),
+    );
+  };
 
-  const { tableProps, forceRefetch, setSearch, params } = useTableQuery<AboutItem>(
-    'about-item',
-    (params) => AboutItemController.list<AboutItem>(params),
-  );
+  const removeItem = (record: AboutItem) => {
+    const key = record.id || record.tempId;
 
-  const [localData, setLocalData] = useState<AboutItem[]>([]);
+    if (record.icon && record.icon.startsWith('blob:')) {
+      URL.revokeObjectURL(record.icon);
+    }
 
-    useEffect(() => {
-        if (tableProps.dataSource) {
-        setLocalData([...tableProps.dataSource]);
-        }
-    }, [tableProps.dataSource]);
+    if (record.id) {
+      onDeletePersistedItem?.(record.id);
+    }
 
-    const onDragEnd = async ({ active, over }: DragEndEvent) => {
-        if (!over || active.id === over.id) return;
+    onChange(items.filter((item) => (item.id || item.tempId) !== key));
+  };
 
-        const activeIndex = localData.findIndex((i) => i.id === active.id);
-        const overIndex = localData.findIndex((i) => i.id === over?.id);
+  const addItem = () => {
+    onChange([
+      ...items,
+      {
+        tempId: crypto.randomUUID(),
+        text: '',
+        icon: '',
+        orderIndex: items.length + 1,
+      },
+    ]);
+  };
 
-        const reordered = arrayMove([...localData], activeIndex, overIndex).map(
-            (item, index) => ({ ...item, orderIndex: index + 1 })
-        );
+  const onDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) {
+      return;
+    }
 
-        setLocalData(reordered);
+    const oldIndex = items.findIndex((item) => (item.id || item.tempId) === active.id);
 
-        await AboutItemController.reorder(reordered.map((item) => ({
-            id: item.id,
-            orderIndex: item.orderIndex,
-        })));
+    const newIndex = items.findIndex((item) => (item.id || item.tempId) === over.id);
 
-        forceRefetch();
-    };
+    const reordered = arrayMove(items, oldIndex, newIndex).map((item, index) => ({
+      ...item,
+      orderIndex: index + 1,
+    }));
+
+    onChange(reordered);
+  };
+
+  const uploadProps = (record: AboutItem): UploadProps => ({
+    showUploadList: false,
+
+    beforeUpload(file) {
+      const key = record.id || record.tempId || '';
+
+      if (record.icon && record.icon.startsWith('blob:')) {
+        URL.revokeObjectURL(record.icon);
+      }
+
+      const url = URL.createObjectURL(file);
+
+      updateItem(key, {
+        icon: url,
+        file,
+      });
+
+      return false;
+    },
+  });
 
   const columns = [
     {
-      key: 'sort',
       width: 60,
       align: 'center' as const,
+
       render: () => <DragHandle />,
     },
+
     {
-      title: 'Ordem',
-      dataIndex: 'orderIndex',
-    },
-    {
-      title: 'Ícone',
-      dataIndex: 'name',
+      title: 'Imagem',
+
+      width: 100,
+
       render: (_: any, record: AboutItem) => (
-        <Space>
+        <Upload {...uploadProps(record)}>
           <div
             style={{
-              width: 42,
-              height: 42,
+              width: 48,
+              height: 48,
               borderRadius: 12,
               overflow: 'hidden',
               background: '#f5f5f5',
-              flexShrink: 0,
+              cursor: 'pointer',
+              display: 'grid',
+              placeItems: 'center',
+              border: '1px dashed #d9d9d9',
             }}
           >
             {record.icon ? (
-              <img
+              <Image
                 src={record.icon}
-                alt={record.text}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                preview={false}
+                width={48}
+                height={48}
+                style={{
+                  objectFit: 'cover',
+                }}
               />
             ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'grid',
-                  placeItems: 'center',
-                }}
-              >
-                <PictureOutlined />
-              </div>
+              <PictureOutlined />
             )}
           </div>
-        </Space>
+        </Upload>
       ),
     },
+
     {
       title: 'Texto',
-      dataIndex: 'text',
-    },
-    
-    {
-      title: 'Ações',
-      render: (_: any, record: AboutItem) => (
-        <Space>
-          <Button
-            size="small"
-            onClick={() => {
-              setEditingItem(record);
-              setItemModalOpen(true);
-            }}
-          >
-            Editar
-          </Button>
 
-          <Button
-            size="small"
-            danger
-            onClick={async () => {
-              await AboutItemController.delete(record.id);
-              forceRefetch();
-              message.success('Diferencial removido.');
+      render: (_: any, record: AboutItem) => {
+        const key = record.id || record.tempId;
+
+        return (
+          <Input
+            value={record.text}
+            placeholder="Digite o texto..."
+            maxLength={50}
+            showCount
+            onChange={(e) => {
+              updateItem(key || '', {
+                text: e.target.value,
+              });
             }}
-          >
-            Excluir
-          </Button>
-        </Space>
+          />
+        );
+      },
+    },
+
+    {
+      width: 80,
+
+      align: 'center' as const,
+
+      render: (_: any, record: AboutItem) => (
+        <Button
+          danger
+          type="text"
+          icon={<DeleteOutlined />}
+          onClick={() => removeItem(record)}
+        />
       ),
     },
   ];
 
   return (
-    <>
-      <Card
-        title="Diferenciais"
-        extra={
-          <Space>
-            <Typography.Text type="secondary">
-              {localData.length}/5
-            </Typography.Text>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setItemModalOpen(true)}
-              disabled={localData.length >= 5}
-            >
-              Adicionar Item
-            </Button>
-          </Space>
-        }
-      >
-        <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
-          <SortableContext
-            items={localData.map((c) => c.id)}
-            strategy={verticalListSortingStrategy}
+    <Card
+      title="Diferenciais"
+      extra={
+        <Space>
+          <Typography.Text type="secondary">{items.length}/5</Typography.Text>
+
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={addItem}
+            disabled={items.length >= 5}
           >
-            <Table
-              components={{ body: { row: SortableRow } }}
-              rowKey="id"
-              dataSource={localData.slice(0,5)}
-              columns={columns}
-              {...tableProps}
-              pagination={false}
-            />
-          </SortableContext>
-        </DndContext>
-      </Card>
-      <ModalAddAboutItem
-        isOpened={itemModalOpen}
-        editingItem={editingItem}
-        onClose={(reason) => {
-          setItemModalOpen(false);
-          setEditingItem(null);
-          if (reason === 'save') forceRefetch();
-        }}
-      />
-    </>
+            Adicionar Item
+          </Button>
+        </Space>
+      }
+    >
+      <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
+        <SortableContext
+          items={items.map((item) => item.id || item.tempId || '')}
+          strategy={verticalListSortingStrategy}
+        >
+          <Table
+            pagination={false}
+            dataSource={items}
+            rowKey={(record) => record.id || record.tempId!}
+            components={{
+              body: {
+                row: SortableRow,
+              },
+            }}
+            columns={columns}
+          />
+        </SortableContext>
+      </DndContext>
+    </Card>
   );
 }

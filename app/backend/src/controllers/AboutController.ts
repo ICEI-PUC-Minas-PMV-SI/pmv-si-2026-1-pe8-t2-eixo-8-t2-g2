@@ -1,18 +1,13 @@
-import type { AboutCreatePayload} from '@types';
+import type { AboutCreatePayload } from '@types';
 import { AboutService } from '../services/AboutService';
-import { UserRole } from '../validations/UserValidation';
 
 class AboutController {
-  async create(product: AboutCreatePayload) {
-    var result;
-    var validateExists = await this.findOne();
-    if(validateExists){
-      result = await this.update(validateExists.id, product);
-    }else{
-      result = await AboutService.create(product);
+  async create(data: AboutCreatePayload) {
+    const record = await this.findOne();
+    if (record && record.id) {
+      return this.update(record.id, data);
     }
-
-    return result;
+    return AboutService.create(data);
   }
 
   async find(id: string) {
