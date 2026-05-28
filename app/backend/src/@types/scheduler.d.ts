@@ -4,18 +4,42 @@ import type { Product } from './product';
 import type { Request } from './server';
 
 export type ProductItem = {
-  id: Product['id'];
+  productId: Product['id'];
   quantity: number;
+  customization?: string;
 };
 
 export type SchedulerRequest = Request<SchedulerFilter, SchedulerSort>;
 
 export type SchedulerCreatePayload = {
-  customerId: string;
+  userId: string;
+  customerId?: string;
+  customerName?: string;
+  customerPhone: string;
   scheduledAt: string;
+  scheduledTo?: string;
   paymentMethod: PaymentMethod;
   deliveryType: DeliveryType;
-  products: ProductItem[];
+  items: ProductItem[];
+};
+
+export type SchedulerItemPayload = {
+  id?: string;
+  productId: string;
+  quantity: number;
+  orderIndex: number;
+  customization?: string;
+  priceAtBooking?: number;
+  durationMinutes?: number;
+};
+
+export type SchedulerUpdatePayload = {
+  scheduledAt?: string;
+  scheduledTo?: string;
+  status?: SchedulerStatus;
+  deliveryType?: DeliveryType;
+  paymentMethod?: PaymentMethod;
+  items: SchedulerItemPayload[];
 };
 
 export type LeadTimeConfig = {

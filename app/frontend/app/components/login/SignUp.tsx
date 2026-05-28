@@ -1,6 +1,7 @@
 import { Layout } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import { CreateUserForm } from '../user/CreateUserForm';
+import Title from 'antd/es/typography/Title';
 
 export function SignUp() {
   return (
@@ -20,10 +21,12 @@ export function SignUp() {
           margin: 'auto',
           backgroundColor: 'rgba(255, 255, 255, 0.9)',
           borderRadius: 8,
-          width: '40%',
-          padding: 24,
-          marginTop: 36,
-          marginBottom: 36,
+          maxWidth: 'max(60%, 700px)',
+          width: '100%',
+          paddingLeft: 16,
+          paddingRight: 16,
+          marginTop: 12,
+          marginBottom: 12,
         }}
       >
         <CreateUserForm />

@@ -6,6 +6,9 @@ import { ROUTES, useNavigation } from '~/hooks/useNavigation';
 import { ExclamationCircleOutlined, MenuOutlined } from '@ant-design/icons';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { CartPreview } from '../cart/CartPreview';
+import { useCartStore } from '~/hooks/useCartStore';
 
 type Props = {
   onMenuClick?: () => void; // 👈 botão mobile
@@ -16,6 +19,8 @@ export default function AppHeader({ onMenuClick }: Props) {
   const { logout, isLogged, getUserShortname } = useAuthStore();
   const { pathname } = useLocation();
   const isMobile = !Grid.useBreakpoint().lg;
+  const queryClient = useQueryClient();
+  const { clearCart } = useCartStore();
   const logoutConfirm = () => {
     Modal.confirm({
       icon: <ExclamationCircleOutlined />,
@@ -26,7 +31,10 @@ export default function AppHeader({ onMenuClick }: Props) {
       },
       okText: 'Sair',
       onOk() {
+        queryClient.clear();
+        clearCart();
         logout();
+        localStorage.clear();
       },
     });
   };
@@ -51,9 +59,12 @@ export default function AppHeader({ onMenuClick }: Props) {
         {/* DIREITA */}
         <Flex gap="small" align="center">
           {!isLogged() && pathname !== ROUTES.LOGIN && (
-            <Button variant="solid" color="primary" onClick={() => goToLogin()}>
-              Entrar
-            </Button>
+            <>
+              <CartPreview />
+              <Button variant="solid" color="primary" onClick={() => goToLogin()}>
+                Entrar
+              </Button>
+            </>
           )}
 
           {isLogged() && (
@@ -62,6 +73,7 @@ export default function AppHeader({ onMenuClick }: Props) {
                 <Text style={{ color: 'white' }}>Olá, {getUserShortname()}</Text>
               )}
 
+              <CartPreview />
               <Tooltip title="Sair">
                 <Button
                   onClick={logoutConfirm}

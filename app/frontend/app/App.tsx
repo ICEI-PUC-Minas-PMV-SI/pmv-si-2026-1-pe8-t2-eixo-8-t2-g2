@@ -13,18 +13,24 @@ import { ForgotPassword } from './components/login/ForgotPassword';
 import { ResetPassword } from './components/login/ResetPassword';
 import { Validate2FA } from './components/login/Validate2FA';
 import { CatalogPage } from './components/catalog/CatalogPage';
+import { CartPage } from './components/cart/CartPage';
+import { UserPage } from './components/user/UserPage';
+import { AboutUsPage } from './components/about-us/AboutUsPage';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<ProtectedLayout />}>
-          <Route index element={<Navigate to="/dashboard" />} />
+          <Route index element={<Navigate to="/scheduler" />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/scheduler" element={<SchedulerPage />} />
           <Route path="/product" element={<ProductPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/about" element={<AboutUsPage />} />
           <Route path="/cost-calculator" element={<CostCalculator />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/users" element={<UserPage />} />
         </Route>
 
         {/* Catálogo público com layout próprio (sidebar + header com logo/login) */}

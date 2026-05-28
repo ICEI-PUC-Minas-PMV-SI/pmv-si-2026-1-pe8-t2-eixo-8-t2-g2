@@ -32,81 +32,10 @@ export function SchedulerPage() {
 
     return popup;
   }
-  const ttl = 1000 * 60 * 60; // 1 hora
-  const gmailUrlQuery = useQuery({
-    queryKey: ['gmail-auth-url'],
-    queryFn: () => {
-      return Request.get<{ url: string }>('/gmail/auth-url').then((result) => {
-        console.log('URL de autenticação do Gmail:', result.url);
-        setGmailUrl(result.url);
-        return result;
-      });
-    },
-    staleTime: ttl,
-  });
-
-  const googleCalendarUrlQuery = useQuery({
-    queryKey: ['google-calendar-auth-url'],
-    queryFn: () =>
-      Request.get<{ url: string }>('/scheduler/google-auth-url').then((result) => {
-        console.log('URL de autenticação do Google Calendar:', result.url);
-        setGoogleCalendarUrl(result.url);
-        return result;
-      }),
-    staleTime: ttl,
-  });
-
-  useEffect(() => {
-    function handleMessage(event: MessageEvent) {
-      if (event.data?.type === 'GOOGLE_AUTH_SUCCESS') {
-        console.log('Autenticado com sucesso!');
-        // aqui você pode:
-        // - atualizar estado
-        // - buscar agenda
-        // - mostrar toast
-      } else if (event.data.type === 'GMAIL_AUTH_SUCCESS') {
-        console.log('E-mail configurado com sucesso!');
-        // aqui você pode:
-        // - atualizar estado
-        // - mostrar toast
-      }
-    }
-
-    window.addEventListener('message', handleMessage);
-
-    return () => window.removeEventListener('message', handleMessage);
-  }, []);
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f5f7fb' }}>
-      <Header
-        style={{
-          background: '#fff',
-          borderBottom: '1px solid #f0f0f0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingInline: 24,
-        }}
-      >
-        <Button
-          loading={gmailUrlQuery.isLoading}
-          icon={<Gmail style={{ fontSize: 24, display: 'flex' }} />}
-          onClick={() => openGoogleAuthPopup(gmailUrl)}
-        >
-          Configurar E-mail
-        </Button>
-      </Header>
+    <Layout style={{ minHeight: '100vh', background: '#f5f7fb', padding: 16 }}>
       <TabbedPage
-        extraContent={
-          <Button
-            loading={googleCalendarUrlQuery.isLoading}
-            icon={<GoogleCalendar style={{ fontSize: 24, display: 'flex' }} />}
-            onClick={() => openGoogleAuthPopup(googleCalendarUrl)}
-          >
-            Conectar agenda Google
-          </Button>
-        }
         defaultTab="schedules"
         items={[
           {

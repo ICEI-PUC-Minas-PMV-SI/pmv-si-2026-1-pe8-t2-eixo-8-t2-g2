@@ -24,3 +24,5 @@ export * from './ArrowDown91';
 export * from './EnvelopeThin';
 export * from './LockSimpleThin';
 export * from './CircleCheck';
+export * from './UserShield';
+export * from './Interrogation';

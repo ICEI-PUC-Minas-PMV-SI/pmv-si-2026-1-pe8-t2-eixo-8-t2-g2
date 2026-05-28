@@ -1,28 +1,37 @@
-import { addMonths, format, subDays, subMonths } from 'date-fns';
+import { addMonths } from 'date-fns/addMonths';
+
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
+import { startOfDay } from 'date-fns/startOfDay';
+import { endOfDay } from 'date-fns/endOfDay';
+
+import { fromZonedTime } from 'date-fns-tz';
 import { Prisma } from '../db/Prisma';
-import { ptBR } from 'date-fns/locale';
 import NumberUtil from '../utils/NumberUtil';
 
 class DashboardService {
   getStartAndEndDay(date: Date | string) {
-    const startOfDay = new Date(date);
-    const endOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    endOfDay.setHours(23, 59, 59, 999);
+    const timeZone = 'America/Sao_Paulo';
+
+    const localDate = new Date(date);
+
+    const start = startOfDay(localDate);
+    const end = endOfDay(localDate);
+
     return {
-      startOfDay,
-      endOfDay,
+      startOfDay: fromZonedTime(start, timeZone),
+      endOfDay: fromZonedTime(end, timeZone),
     };
   }
   async overviewToday() {
     const prisma = await Prisma.getClient();
-    const now = new Date(new Date(new Date().setDate(21)).setMonth(3));
+    const now = new Date();
     const { startOfDay, endOfDay } = this.getStartAndEndDay(now);
-    const { startOfDay: startOfTomorrow, endOfDay: endOfTomorrow } =
+    const { startOfDay: startOfYesterday, endOfDay: endOfYesterday } =
       this.getStartAndEndDay(subDays(new Date(), 1));
     const schedulers = await prisma.scheduler.findMany({
       where: {
-        scheduledAt: {
+        scheduledTo: {
           gte: startOfDay,
           lte: endOfDay,
         },
@@ -31,11 +40,12 @@ class DashboardService {
         items: true,
       },
     });
-    const schedulersTomorrow = await prisma.scheduler.findMany({
+
+    const schedulersYesterday = await prisma.scheduler.findMany({
       where: {
         scheduledAt: {
-          gte: startOfTomorrow,
-          lte: endOfTomorrow,
+          gte: startOfYesterday,
+          lte: endOfYesterday,
         },
       },
       include: {
@@ -81,7 +91,7 @@ class DashboardService {
     return {
       ...data,
       schedulers: schedulers.length,
-      schedulersTomorrow: schedulersTomorrow.length,
+      schedulersYesterday: schedulersYesterday.length,
       created: created.length,
       cancelled: cancelled.length,
       delivery: schedulers.filter((scheduler) => scheduler.deliveryType === 'delivery')
@@ -119,11 +129,25 @@ class DashboardService {
     return result;
   }
 
+  formatDate(date: Date) {
+    return new Intl.DateTimeFormat('pt-BR', {
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date);
+  }
+
+  formatMonthYear(date: Date) {
+    return new Intl.DateTimeFormat('pt-BR', {
+      month: 'short',
+      year: 'numeric',
+    }).format(date);
+  }
+
   getMonthRevenue(currentDate: Date) {
     return {
       timestamp: currentDate.getTime(),
-      dateStr: format(currentDate, 'MM/yyyy'),
-      monthYear: format(currentDate, 'MMM/yyyy', { locale: ptBR }),
+      dateStr: this.formatDate(currentDate),
+      monthYear: this.formatMonthYear(currentDate),
       revenue: 0,
     };
   }
@@ -131,8 +155,8 @@ class DashboardService {
   getMonthSummary(currentDate: Date) {
     return {
       timestamp: currentDate.getTime(),
-      dateStr: format(currentDate, 'MM/yyyy'),
-      monthYear: format(currentDate, 'MMM/yyyy', { locale: ptBR }),
+      dateStr: this.formatDate(currentDate),
+      monthYear: this.formatMonthYear(currentDate),
       status: {
         pending: 0,
         confirmed: 0,
@@ -268,12 +292,13 @@ class DashboardService {
     return Object.values(revenueByMonth).sort((a, b) => a.timestamp - b.timestamp);
   }
 
-  async topProducts() {
+  async topProducts(count: number = 10) {
     const prisma = await Prisma.getClient();
     const result = await prisma.$queryRaw<
       {
         id: string;
         name: string;
+        price: number;
         quantity: number;
         revenue: number;
       }[]
@@ -281,6 +306,7 @@ class DashboardService {
   SELECT
     P.id,
     P.name,
+    P.price,
     SUM(SI.quantity) as quantity,
     SUM(SI.quantity * SI.priceAtBooking) as revenue
   FROM SchedulerItem SI
@@ -288,7 +314,7 @@ class DashboardService {
     ON SI.productId = P.id
   GROUP BY P.id, P.name
   ORDER BY SUM(SI.quantity) DESC
-  LIMIT 10
+  LIMIT ${count}
 `;
     const schedulerItemSum = await prisma.schedulerItem.aggregate({
       _sum: {
@@ -331,7 +357,7 @@ class DashboardService {
         },
       },
       where: {
-        scheduledAt: {
+        scheduledTo: {
           gte: startOfDay,
           lte: endOfDay,
         },

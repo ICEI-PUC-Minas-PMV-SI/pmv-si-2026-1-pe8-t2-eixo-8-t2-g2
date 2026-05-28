@@ -27,6 +27,10 @@ class ProductCategoryController {
   async list<T>(params: TableParams) {
     return Request.getTableData<T>('/product-category-list', params);
   }
+
+  async reorder(categories: { id: string; orderIndex: number }[]) {
+    return Request.post('/product-category/reorder', { categories });
+  }
 }
 
 export default new ProductCategoryController();

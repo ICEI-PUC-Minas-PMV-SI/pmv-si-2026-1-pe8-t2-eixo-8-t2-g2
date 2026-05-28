@@ -60,8 +60,18 @@ export function ProductDrawer(props: ComponentProps) {
         bookingLeadTimeMinutes: product.bookingLeadTimeMinutes,
         bookingLeadDays: product.bookingLeadDays,
         isActive: product.isActive,
-        characteristics: product.characteristics,
-        categories: product.categories,
+        characteristics: product.characteristics.map((char) => {
+          const {
+            characteristic: { id, name },
+          } = char;
+          return { label: name, value: id };
+        }),
+        categories: product.categories.map((data) => {
+          const {
+            category: { id, name },
+          } = data;
+          return { label: name, value: id };
+        }),
       });
       setProductImages(
         product.imageUrl

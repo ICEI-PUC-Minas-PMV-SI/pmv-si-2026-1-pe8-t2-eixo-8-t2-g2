@@ -11,7 +11,7 @@ export function ProductPage() {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
   return (
-    <Space orientation="vertical" size="large" style={{ width: '100%' }}>
+    <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
       <ProductDrawer
         drawerOpened={productDrawerOpen}
         onClose={() => setProductDrawerOpen(false)}
@@ -33,7 +33,7 @@ export function ProductPage() {
           {
             key: 'categories',
             label: 'Categorias',
-            children: <ProductCategoryList setCategoryModalOpen={setCategoryModalOpen} />,
+            children: <ProductCategoryList />,
           },
         ]}
       />
