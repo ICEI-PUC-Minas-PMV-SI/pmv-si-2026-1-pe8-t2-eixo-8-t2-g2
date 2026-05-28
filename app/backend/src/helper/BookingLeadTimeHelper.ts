@@ -1,4 +1,4 @@
-import type { LeadTimeConfig } from '@types';
+import type { LeadTimeConfig } from '../@types';
 import { addMinutes } from 'date-fns/addMinutes';
 import { addDays } from 'date-fns/addDays';
 import { isAfter } from 'date-fns/isAfter';

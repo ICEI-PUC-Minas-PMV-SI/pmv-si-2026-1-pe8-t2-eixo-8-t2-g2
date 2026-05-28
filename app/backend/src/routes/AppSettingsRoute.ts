@@ -1,5 +1,5 @@
 import { Router, type Application } from 'express';
-import { AppSettingsController } from 'controllers/AppSettingsController';
+import { AppSettingsController } from '../controllers/AppSettingsController';
 
 class AppSettingsRoute {
   register(app: Application) {

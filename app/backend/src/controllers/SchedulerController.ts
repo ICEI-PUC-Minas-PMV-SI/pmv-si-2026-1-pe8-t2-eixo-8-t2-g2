@@ -3,7 +3,7 @@ import type {
   SchedulerFilterKey,
   SchedulerRequest,
   SchedulerUpdatePayload,
-} from '@types';
+} from '../@types';
 import { SchedulerService, type CreatedScheduler } from '../services/SchedulerService';
 import type {
   SchedulerOrderByWithRelationInput,
@@ -17,7 +17,7 @@ import type {
   SchedulerStatus,
 } from '../generated/prisma/enums';
 import { CustomerService } from '../services/CustomerService';
-import { GoogleCalendarApi } from 'integration/GoogleCalendarApi';
+import { GoogleCalendarApi } from '../integration/GoogleCalendarApi';
 import { Logger } from '../logger/Logger';
 
 class SchedulerController {

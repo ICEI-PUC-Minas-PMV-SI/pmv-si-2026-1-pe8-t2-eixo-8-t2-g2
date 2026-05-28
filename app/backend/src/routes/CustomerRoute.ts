@@ -1,5 +1,5 @@
 import type { Application } from 'express';
-import type { GenericRequest } from '@types';
+import type { GenericRequest } from '../@types';
 import { CustomerValidation } from '../validations/CustomerValidation';
 import { CustomerController } from '../controllers/CustomerController';
 import { ResponseUtil } from '../utils/ResponseUtil';

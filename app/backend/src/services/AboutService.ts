@@ -1,5 +1,5 @@
 import { Prisma } from '../db/Prisma';
-import type { AboutCreatePayload } from '@types';
+import type { AboutCreatePayload } from '../@types';
 import DashboardService from './DashboardService';
 
 class AboutService {

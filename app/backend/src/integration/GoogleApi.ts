@@ -1,8 +1,8 @@
-import type { GoogleCredentials } from '@types';
+import type { GoogleCredentials } from '../@types';
 import { Crypt } from '../utils/Crypt';
 import { Env } from '../utils/Env';
 import type { IntegrationType } from '../generated/prisma/enums';
-import { IntegrationsService } from 'services/IntegrationsService';
+import { IntegrationsService } from '../services/IntegrationsService';
 import { Logger } from '../logger/Logger';
 import type { Credentials } from 'google-auth-library/build/src/auth/credentials';
 import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';

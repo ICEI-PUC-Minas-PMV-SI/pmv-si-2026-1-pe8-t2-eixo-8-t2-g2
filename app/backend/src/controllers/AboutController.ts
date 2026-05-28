@@ -1,4 +1,4 @@
-import type { AboutCreatePayload } from '@types';
+import type { AboutCreatePayload } from '../@types';
 import { AboutService } from '../services/AboutService';
 
 class AboutController {

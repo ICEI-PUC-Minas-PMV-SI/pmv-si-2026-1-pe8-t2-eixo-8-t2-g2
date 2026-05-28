@@ -1,6 +1,6 @@
 import { Router, type Application } from 'express';
 import { ProductValidation } from '../validations/ProductValidation';
-import type { GenericRequest, Response } from '@types';
+import type { GenericRequest, Response } from '../@types';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
 import { ProductCategoryController } from '../controllers/ProductCategoryController';
 

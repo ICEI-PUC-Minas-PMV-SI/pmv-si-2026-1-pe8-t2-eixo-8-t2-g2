@@ -1,4 +1,4 @@
-import type { IntegrationsPayload } from '@types';
+import type { IntegrationsPayload } from '../@types';
 import { Prisma } from '../db/Prisma';
 import { GoogleApi } from '../integration/GoogleApi';
 import type {

@@ -1,4 +1,4 @@
-import { GoogleApi } from 'integration/GoogleApi';
+import { GoogleApi } from '../integration/GoogleApi';
 import nodemailer from 'nodemailer';
 import type { SendMailOptions } from 'nodemailer';
 import type { Attachment } from 'nodemailer/lib/mailer/index';

@@ -1,5 +1,5 @@
 import { Prisma } from '../db/Prisma';
-import type { PaginationParams, ProductCreatePayload } from '@types';
+import type { PaginationParams, ProductCreatePayload } from '../@types';
 import { Text } from '../utils/Text';
 import { ResponseUtil } from '../utils/ResponseUtil';
 import type {

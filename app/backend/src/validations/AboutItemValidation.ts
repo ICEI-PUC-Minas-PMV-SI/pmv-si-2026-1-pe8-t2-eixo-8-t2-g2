@@ -1,5 +1,5 @@
 import z from 'zod';
-import type { Response, NextFunction, GenericRequest } from '@types';
+import type { Response, NextFunction, GenericRequest } from '../@types';
 import { ErrorValidation } from './ErrorValidation';
 
 class AboutItemValidation {
@@ -16,7 +16,6 @@ class AboutItemValidation {
   };
   update = (req: GenericRequest, res: Response, next: NextFunction) => {
     try {
-
       const schema = {
         text: z.optional(z.string().min(3).max(50)),
       };

@@ -1,8 +1,8 @@
 import { AboutController } from '../controllers/AboutController';
 import { Router, type Application } from 'express';
 import { AboutValidation } from '../validations/AboutValidation';
-import type { Response, AboutRequest, GenericRequest } from '@types';
-import { UserScopeMiddleware } from 'middlewares/UserScopeMiddleware';
+import type { Response, AboutRequest } from '../@types';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
 
 class AboutRoute {
   register(app: Application) {

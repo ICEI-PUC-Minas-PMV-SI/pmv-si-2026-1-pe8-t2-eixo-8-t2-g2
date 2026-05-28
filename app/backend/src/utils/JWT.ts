@@ -1,4 +1,4 @@
-import type { TokenData } from '@types';
+import type { TokenData } from '../@types';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 
 class JWT {

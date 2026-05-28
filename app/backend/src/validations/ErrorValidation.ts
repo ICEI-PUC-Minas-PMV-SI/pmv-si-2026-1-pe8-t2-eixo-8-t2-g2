@@ -1,4 +1,4 @@
-import type { Response } from '@types';
+import type { Response } from '../@types';
 import { AppError } from '../error/AppError';
 import z, { ZodError } from 'zod';
 

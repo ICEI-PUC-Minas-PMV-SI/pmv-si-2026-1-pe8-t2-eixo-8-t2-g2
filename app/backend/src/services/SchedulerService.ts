@@ -3,7 +3,7 @@ import type {
   ProductItem,
   SchedulerCreatePayload,
   SchedulerUpdatePayload,
-} from '@types';
+} from '../@types';
 import { Prisma } from '../db/Prisma';
 import { ProductService } from './ProductService';
 import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper';

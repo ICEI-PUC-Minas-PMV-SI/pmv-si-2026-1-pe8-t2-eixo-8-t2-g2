@@ -1,10 +1,10 @@
 import { AuthController } from '../controllers/AuthController';
 import type { Application } from 'express';
 import { AuthValidation } from '../validations/AuthValidation';
-import type { GenericRequest } from '@types';
+import type { GenericRequest } from '../@types';
 import { AppError } from '../error/AppError';
 import { HttpCode } from '../utils/HttpCode';
-import { RequestUtil } from 'utils/RequestUtil';
+import { RequestUtil } from '../utils/RequestUtil';
 
 class AuthRoute {
   register(app: Application) {

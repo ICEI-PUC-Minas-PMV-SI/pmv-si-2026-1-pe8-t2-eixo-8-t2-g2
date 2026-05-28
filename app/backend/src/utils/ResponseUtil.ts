@@ -1,4 +1,4 @@
-import type { Response } from '@types';
+import type { Response } from '../@types';
 import { AppError } from '../error/AppError';
 import { Prisma } from '../generated/prisma/client';
 import { PrismaError } from './PrismaError';

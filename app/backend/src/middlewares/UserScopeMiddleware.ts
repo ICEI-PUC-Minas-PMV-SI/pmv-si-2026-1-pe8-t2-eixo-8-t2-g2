@@ -1,6 +1,6 @@
 import { HttpCode } from '../utils/HttpCode';
 import { JWT } from '../utils/JWT';
-import type { Response, NextFunction, GenericRequest } from '@types';
+import type { Response, NextFunction, GenericRequest } from '../@types';
 import { RequestUtil } from '../utils/RequestUtil';
 import { ResponseUtil } from '../utils/ResponseUtil';
 import { UserRole } from '../validations/UserValidation';

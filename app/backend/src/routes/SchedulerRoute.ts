@@ -1,7 +1,7 @@
 import { SchedulerController } from '../controllers/SchedulerController';
 import { Router, type Application } from 'express';
 import { SchedulerValidation } from '../validations/SchedulerValidation';
-import type { Response, SchedulerRequest } from '@types';
+import type { Response, SchedulerRequest } from '../@types';
 import { UserRole } from '../validations/UserValidation';
 
 class SchedulerRoute {

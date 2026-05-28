@@ -1,7 +1,7 @@
 import { UserController } from '../controllers/UserController';
 import { Router, type Application } from 'express';
 import { UserValidation } from '../validations/UserValidation';
-import type { GenericRequest, Response, UserRequest } from '@types';
+import type { GenericRequest, Response, UserRequest } from '../@types';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
 import { JWT } from '../utils/JWT';
 

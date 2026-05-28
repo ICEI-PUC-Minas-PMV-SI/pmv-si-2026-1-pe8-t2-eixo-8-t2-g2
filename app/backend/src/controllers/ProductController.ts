@@ -1,4 +1,4 @@
-import type { ProductCreatePayload, ProductFilterKey, ProductRequest } from '@types';
+import type { ProductCreatePayload, ProductFilterKey, ProductRequest } from '../@types';
 import { ProductService } from '../services/ProductService';
 import type {
   ProductOrderByWithRelationInput,

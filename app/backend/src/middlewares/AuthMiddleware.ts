@@ -1,10 +1,10 @@
 import { AppError } from '../error/AppError';
-import type { Response, NextFunction, Application, GenericRequest } from '@types';
+import type { Response, NextFunction, Application, GenericRequest } from '../@types';
 import { HttpCode } from '../utils/HttpCode';
 import { JWT } from '../utils/JWT';
 import { ResponseUtil } from '../utils/ResponseUtil';
 import z from 'zod';
-import { RequestUtil } from 'utils/RequestUtil';
+import { RequestUtil } from '../utils/RequestUtil';
 
 class AuthMiddleware {
   priority = 1;

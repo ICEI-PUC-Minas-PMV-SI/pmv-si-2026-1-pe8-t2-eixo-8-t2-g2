@@ -3,8 +3,8 @@ import { IntegrationsController } from '../controllers/IntegrationsController';
 import { AppError } from '../error/AppError';
 import { ResponseUtil } from '../utils/ResponseUtil';
 import { HttpCode } from '../utils/HttpCode';
-import { Logger } from 'logger/Logger';
-import { UserScopeMiddleware } from 'middlewares/UserScopeMiddleware';
+import { Logger } from '../logger/Logger';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
 
 class IntegrationsRoute {
   private logger = new Logger('IntegrationsRoute');

@@ -1,6 +1,6 @@
 import ms from 'ms';
 import { UserService } from '../services/UserService';
-import type { UserCreatePayload, UserFilterKey, UserRequest } from '@types';
+import type { UserCreatePayload, UserFilterKey, UserRequest } from '../@types';
 import type { User } from '../generated/prisma/client';
 import { AppError } from '../error/AppError';
 import { HttpCode } from '../utils/HttpCode';

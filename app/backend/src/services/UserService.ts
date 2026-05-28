@@ -3,7 +3,7 @@ import { Crypt } from '../utils/Crypt';
 import { HttpCode } from '../utils/HttpCode';
 import { OTPUtil } from '../utils/OTPUtil';
 import { SMTP } from '../utils/SMTP';
-import type { PaginationParams, UserCreatePayload } from '@types';
+import type { PaginationParams, UserCreatePayload } from '../@types';
 import { Prisma } from '../db/Prisma';
 import type { User } from '../generated/prisma/client';
 import { AppError } from '../error/AppError';
@@ -13,8 +13,8 @@ import type {
   UserSelect,
   UserWhereInput,
 } from '../generated/prisma/models';
-import { PasswordResetTemplate } from 'templates/email/PasswordResetTemplate';
-import { ResponseUtil } from 'utils/ResponseUtil';
+import { PasswordResetTemplate } from '../templates/email/PasswordResetTemplate';
+import { ResponseUtil } from '../utils/ResponseUtil';
 
 const userSelect = {
   id: true,
