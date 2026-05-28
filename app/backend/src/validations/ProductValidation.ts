@@ -1,5 +1,5 @@
 import z from 'zod';
-import type { Response, NextFunction, GenericRequest } from '@types';
+import type { Response, NextFunction, GenericRequest } from '../@types';
 import { ErrorValidation } from './ErrorValidation';
 
 class ProductValidation {

@@ -94,7 +94,7 @@ class OTPUtil {
           },
         });
         if (exists && j === maxAttempt - 1) {
-          throw new Error('Failed to generate unique codes');
+          throw new Error('Falha ao gerar códigos de recuperação');
         }
         if (!exists) {
           codeList.push({

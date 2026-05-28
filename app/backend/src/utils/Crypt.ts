@@ -7,8 +7,6 @@ export type EncryptOptions = {
   algorithm: crypto.CipherGCMTypes;
 };
 
-const key = crypto.scryptSync(process.env.ENCRYPTION_KEY!, 'salt', 32);
-
 class Crypt {
   async hash(text: string): Promise<string> {
     const saltRounds = 10;
@@ -19,23 +17,39 @@ class Crypt {
     const isValid = await bcrypt.compare(plainText, encryptedText);
     return isValid;
   }
+  deriveKey(salt: Buffer) {
+    return crypto.scryptSync(process.env.ENCRYPTION_KEY!, salt, 32);
+  }
   encrypt(text: string, opts: EncryptOptions = { algorithm: 'aes-256-gcm' }) {
-    const iv = crypto.randomBytes(16);
+    const iv = crypto.randomBytes(12);
     const { algorithm } = opts;
+    const salt = crypto.randomBytes(16);
+    const key = this.deriveKey(salt);
     const cipher = crypto.createCipheriv(algorithm, key, iv);
     const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
-    return iv.toString('hex') + ':' + encrypted.toString('hex');
+    const authTag = cipher.getAuthTag();
+    return [
+      salt.toString('hex'),
+      iv.toString('hex'),
+      encrypted.toString('hex'),
+      authTag.toString('hex'),
+    ].join(':');
   }
   decrypt(text: string, opts: EncryptOptions = { algorithm: 'aes-256-gcm' }) {
     const { algorithm } = opts;
-    const [ivHex, encryptedHex] = text.split(':');
-    if (!ivHex || !encryptedHex) {
-      throw new AppError('Invalid ivHex or encryptedHex', HttpCode.INTERNAL_SERVER_ERROR);
+    const [saltHex, ivHex, encryptedHex, authTagHex] = text.split(':');
+
+    if (!saltHex || !ivHex || !encryptedHex || !authTagHex) {
+      throw new AppError('Invalid encrypted payload', HttpCode.INTERNAL_SERVER_ERROR);
     }
+    const salt = Buffer.from(saltHex, 'hex');
+    const key = this.deriveKey(salt);
     const iv = Buffer.from(ivHex, 'hex');
     const encrypted = Buffer.from(encryptedHex, 'hex');
+    const authTag = Buffer.from(authTagHex, 'hex');
 
     const decipher = crypto.createDecipheriv(algorithm, key, iv);
+    decipher.setAuthTag(authTag);
     const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
 
     return decrypted.toString();

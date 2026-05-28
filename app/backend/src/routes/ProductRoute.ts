@@ -1,7 +1,7 @@
 import { Router, type Application } from 'express';
 import { ProductValidation } from '../validations/ProductValidation';
 import { ProductController } from '../controllers/ProductController';
-import type { GenericRequest, ProductRequest, Response } from '@types';
+import type { GenericRequest, ProductRequest, Response } from '../@types';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
 
 class ProductRoute {

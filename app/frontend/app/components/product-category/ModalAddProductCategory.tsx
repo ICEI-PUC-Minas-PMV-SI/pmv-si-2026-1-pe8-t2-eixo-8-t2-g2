@@ -1,4 +1,5 @@
 import { Col, Form, Input, InputNumber, message, Modal, Row, Switch } from 'antd';
+import { useEffect } from 'react';
 import type { CreateProductCategoryPayload, ProductCategory } from '~/@types/product';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
 import { useTableQuery } from '~/hooks/useTableQuery';
@@ -6,11 +7,21 @@ import TextUtil from '~/utils/TextUtil';
 
 type ComponentProps = {
   isOpened: boolean;
+  editingCategory?: ProductCategory | null;
   onClose: (reason?: 'cancel' | 'save', productCategory?: ProductCategory) => void;
 };
 
 export function ModalAddProductCategory(props: ComponentProps) {
-  const { isOpened, onClose } = props;
+  const { isOpened, onClose, editingCategory } = props;
+  const isEditing = !!editingCategory;
+
+  useEffect(() => {
+    if (editingCategory) {
+      categoryForm.setFieldsValue(editingCategory);
+    } else {
+      categoryForm.resetFields();
+    }
+  }, [editingCategory, isOpened]);
 
   const {
     tableProps: { dataSource },
@@ -22,28 +33,35 @@ export function ModalAddProductCategory(props: ComponentProps) {
   const [categoryForm] = Form.useForm();
   return (
     <Modal
-      title="Nova categoria"
+      title={isEditing ? 'Editar categoria' : 'Nova categoria'}
       getContainer={document.body}
       open={isOpened}
       onCancel={() => onClose('cancel')}
-      onOk={() => {
-        categoryForm.validateFields().then(async (values) => {
-          const next: CreateProductCategoryPayload = {
-            name: values.name,
-            slug: values.slug || TextUtil.createSlug(values.name),
-            description: values.description,
-            isActive: values.isActive ?? true,
-            orderIndex: values.orderIndex ?? categories.length + 1,
-            parentId: null,
-          };
-          const result = await ProductCategoryController.create(next);
-          forceRefetch();
-          message.success('Categoria criada.');
-          onClose('save', result);
-          categoryForm.resetFields();
-        });
+        onOk={() => {
+          categoryForm.validateFields().then(async (values) => {
+            const next: CreateProductCategoryPayload = {
+              name: values.name,
+              slug: values.slug || TextUtil.createSlug(values.name),
+              description: values.description,
+              isActive: values.isActive ?? true,
+              orderIndex: values.orderIndex ?? categories.length + 1,
+              parentId: null,
+            };
+
+            let result;
+            if (isEditing) {
+              result = await ProductCategoryController.update({ id: editingCategory.id, ...next });
+            } else {
+              result = await ProductCategoryController.create(next);
+            }
+
+            forceRefetch();
+            message.success(isEditing ? 'Categoria atualizada.' : 'Categoria criada.');
+            onClose('save', result);
+            categoryForm.resetFields();
+          });
       }}
-      okText="Criar"
+      okText={isEditing ? 'Salvar' : 'Criar'}
       cancelText="Cancelar"
     >
       <Form

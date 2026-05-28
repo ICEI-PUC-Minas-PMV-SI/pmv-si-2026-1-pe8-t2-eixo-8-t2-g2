@@ -17,13 +17,6 @@ class Storage {
     const value = typeof isObject ? JSON.stringify(valueToSet) : valueToSet;
     localStorage.setItem(key, value);
   }
-
-  setToken(token: string) {
-    this.set('auth', token);
-  }
-  getToken() {
-    return this.get('auth');
-  }
 }
 
 export default new Storage();

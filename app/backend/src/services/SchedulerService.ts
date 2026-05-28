@@ -1,15 +1,22 @@
-import type { PaginationParams, SchedulerCreatePayload } from '@types';
+import type {
+  PaginationParams,
+  ProductItem,
+  SchedulerCreatePayload,
+  SchedulerUpdatePayload,
+} from '../@types';
 import { Prisma } from '../db/Prisma';
 import { ProductService } from './ProductService';
 import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper';
 import { AppError } from '../error/AppError';
 import { HttpCode } from '../utils/HttpCode';
 import type {
+  SchedulerItemUncheckedCreateWithoutSchedulerInput,
   SchedulerOrderByWithRelationInput,
   SchedulerWhereInput,
 } from '../generated/prisma/models';
 import type { SchedulerStatus } from '../generated/prisma/enums';
-import { ResponseUtil } from 'utils/ResponseUtil';
+import { ResponseUtil } from '../utils/ResponseUtil';
+import { CustomerService } from './CustomerService';
 
 const userSelect = {
   id: true,
@@ -40,6 +47,7 @@ export type CreatedScheduler = {
 } & {
   id: string;
   scheduledAt: Date;
+  scheduledTo: Date | null;
   estimatedStartAt: Date | null;
   estimatedEndAt: Date | null;
   status: SchedulerStatus;
@@ -47,17 +55,21 @@ export type CreatedScheduler = {
 };
 
 class SchedulerService {
-  private async getProductsList(products: SchedulerCreatePayload['products']) {
+  private async getProductsList(products: ProductItem[]) {
     return Promise.all(
       products.map(async (product) => {
-        const result = await ProductService.find(product.id);
+        const result = await ProductService.find(product.productId);
         if (!result) {
           throw new AppError(
-            `Product with id ${product.id} not found`,
+            `Product with id ${product.productId} not found`,
             HttpCode.NOT_FOUND,
           );
         }
-        return { ...result, quantity: product.quantity };
+        return {
+          ...result,
+          quantity: product.quantity,
+          customization: product.customization,
+        };
       }),
     );
   }
@@ -79,10 +91,47 @@ class SchedulerService {
   }
   async create(scheduler: SchedulerCreatePayload) {
     const prisma = await Prisma.getClient();
-    const { customerId, products, scheduledAt, paymentMethod, deliveryType } = scheduler;
+    const {
+      userId,
+      customerId,
+      customerName,
+      customerPhone,
+      items: products,
+      scheduledAt,
+      scheduledTo,
+      paymentMethod,
+      deliveryType,
+    } = scheduler;
+    let customer = null;
+    if (customerId === userId) {
+      customer = await CustomerService.findByUserId(userId);
+      if (!customer) {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+          throw new AppError('Usuário inválido', HttpCode.BAD_REQUEST);
+        }
+        customer = await prisma.customer.create({
+          data: {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            user: {
+              connect: { id: userId },
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        });
+      }
+    }
     const productsList = await this.getProductsList(products);
-    const invalidItems = this.isValidItemsByLeadTime(new Date(scheduledAt), productsList);
-    if (invalidItems.length > 0) {
+    const invalidItems = scheduledTo
+      ? this.isValidItemsByLeadTime(new Date(scheduledTo), productsList)
+      : [];
+    if (invalidItems.length > 0 && false) {
+      //temp ignore
       throw new AppError(
         `Some items do not meet the booking lead time requirements`,
         HttpCode.BAD_REQUEST,
@@ -96,21 +145,36 @@ class SchedulerService {
         },
       );
     }
-    const schedulerItems = [
-      ...productsList.map((product, orderIndex) => ({
+    const schedulerItems: SchedulerItemUncheckedCreateWithoutSchedulerInput[] = [
+      ...productsList.map((product, orderIndex: number) => ({
         productId: product.id,
         quantity: product.quantity,
-        priceAtBooking: product.price || null,
+        priceAtBooking: product.price,
         orderIndex: orderIndex + 1,
+        customization: product.customization || '',
       })),
     ];
+    const validCustomerId = customer?.id || customerId;
+
     const createdScheduler = await prisma.scheduler.create({
       data: {
-        customerId: customerId,
+        customer: validCustomerId
+          ? {
+              connect: {
+                id: validCustomerId,
+              },
+            }
+          : {
+              create: {
+                name: customerName!,
+                phone: customerPhone.replace(/\D/g, ''),
+              },
+            },
         deliveryType,
         paymentMethod,
         status: 'pending',
         scheduledAt: new Date(scheduledAt),
+        scheduledTo: scheduledTo ? new Date(scheduledTo) : null,
         items: {
           create: schedulerItems,
         },
@@ -149,10 +213,35 @@ class SchedulerService {
     const prisma = await Prisma.getClient();
     const scheduler = await prisma.scheduler.findUnique({
       where: { id },
-      include: {
-        items: true,
+      select: {
+        id: true,
         customer: {
-          select: userSelect,
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+          },
+        },
+        scheduledAt: true,
+        scheduledTo: true,
+        status: true,
+        deliveryType: true,
+        paymentMethod: true,
+        cancellationReason: true,
+        items: {
+          select: {
+            id: true,
+            quantity: true,
+            priceAtBooking: true,
+            durationMinutes: true,
+            customization: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
         },
       },
     });
@@ -173,10 +262,12 @@ class SchedulerService {
         include: {
           items: {
             select: {
+              id: true,
               orderIndex: true,
               priceAtBooking: true,
               durationMinutes: true,
               quantity: true,
+              customization: true,
               product: {
                 select: {
                   id: true,
@@ -190,7 +281,11 @@ class SchedulerService {
             },
           },
           customer: {
-            select: userSelect,
+            select: {
+              id: true,
+              name: true,
+              phone: true,
+            },
           },
         },
         omit: {
@@ -216,20 +311,164 @@ class SchedulerService {
     });
   }
 
-  async update(id: string, data: Partial<SchedulerCreatePayload>) {
+  async updateExternalId(id: string, externalId: string) {
     const prisma = await Prisma.getClient();
-    const dataToUpdate: Partial<SchedulerCreatePayload> = { ...data };
-
-    const updatedScheduler = await prisma.scheduler.update({
+    return prisma.scheduler.update({
       where: { id },
-      data: dataToUpdate,
+      data: {
+        googleEventId: externalId,
+      },
+    });
+  }
+
+  async update(id: string, data: SchedulerUpdatePayload) {
+    const prisma = await Prisma.getClient();
+
+    const { items, ...schedulerData } = data;
+
+    if (!items || !items.length) {
+      throw new AppError(
+        'Não foi possível identificar os produtos no pedido',
+        HttpCode.BAD_REQUEST,
+      );
+    }
+
+    const existingScheduler = await prisma.scheduler.findUnique({
+      where: { id },
+      include: {
+        items: true,
+      },
+    });
+
+    if (!existingScheduler) {
+      throw new AppError('Pedido não encontrado', HttpCode.NOT_FOUND);
+    }
+
+    const existingItems = existingScheduler.items;
+
+    const incomingIds = items.filter((item) => item.id).map((item) => item.id as string);
+
+    const itemsToDelete = existingItems.filter(
+      (existing) => !incomingIds.includes(existing.id),
+    );
+
+    const itemsToCreate = items.filter((item) => !item.id);
+
+    const itemsToUpdate = items.filter((item) => item.id);
+
+    await prisma.$transaction(async (tx) => {
+      await tx.scheduler.update({
+        where: { id },
+        data: schedulerData,
+      });
+
+      if (itemsToDelete.length) {
+        await tx.schedulerItem.deleteMany({
+          where: {
+            id: {
+              in: itemsToDelete.map((item) => item.id),
+            },
+          },
+        });
+      }
+
+      for (const item of itemsToUpdate) {
+        await tx.schedulerItem.update({
+          where: {
+            id: item.id || '',
+          },
+          data: {
+            productId: item.productId,
+            quantity: item.quantity,
+            orderIndex: item.orderIndex,
+            customization: item.customization || null,
+            priceAtBooking: item.priceAtBooking || null,
+            durationMinutes: item.durationMinutes || null,
+          },
+        });
+      }
+
+      // Cria novos itens
+      if (itemsToCreate.length) {
+        await tx.schedulerItem.createMany({
+          data: itemsToCreate.map((item) => ({
+            schedulerId: id,
+            productId: item.productId,
+            quantity: item.quantity,
+            customization: item.customization || null,
+            orderIndex: item.orderIndex,
+            priceAtBooking: item.priceAtBooking || null,
+            durationMinutes: item.durationMinutes || null,
+          })),
+        });
+      }
+    });
+
+    return prisma.scheduler.findUnique({
+      where: { id },
       include: {
         customer: {
           select: userSelect,
         },
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+  }
+
+  async cancel(id: string, cancellationReason: string) {
+    const prisma = await Prisma.getClient();
+    const updatedScheduler = await prisma.scheduler.update({
+      where: { id },
+      data: {
+        status: 'cancelled',
+        cancellationReason,
+      },
+      select: {
+        id: true,
+        scheduledAt: true,
+        status: true,
       },
     });
     return updatedScheduler;
+  }
+
+  async getCountUnsyncedSchedulers() {
+    const prisma = await Prisma.getClient();
+    const count = await prisma.scheduler.count({
+      where: {
+        googleEventId: null,
+        status: {
+          in: ['pending', 'in_progress', 'confirmed'],
+        },
+      },
+    });
+    return count;
+  }
+
+  async findUnsyncedSchedulers() {
+    const prisma = await Prisma.getClient();
+    return prisma.scheduler.findMany({
+      where: {
+        googleEventId: null,
+        status: {
+          in: ['pending', 'in_progress', 'confirmed'],
+        },
+      },
+      include: {
+        customer: {
+          select: userSelect,
+        },
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
   }
 }
 

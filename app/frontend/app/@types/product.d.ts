@@ -10,6 +10,8 @@ export type ProductCategory = {
 
 export type CreateProductCategoryPayload = Omit<ProductCategory, 'id'>;
 
+export type ProductCharacteristicType = { characteristic: { id: string; name: string } };
+
 export type Product = {
   id: string;
   name: string;
@@ -21,9 +23,9 @@ export type Product = {
   bookingLeadTimeMinutes: number;
   bookingLeadDays: number;
   isActive: boolean;
-  characteristics: string[];
+  characteristics: ProductCharacteristicType[];
   imageUrl?: string;
-  categories: string[];
+  categories: { category: { id: string; name: string } }[];
 };
 
 export type CreateProduct = Omit<Product, 'id'>;

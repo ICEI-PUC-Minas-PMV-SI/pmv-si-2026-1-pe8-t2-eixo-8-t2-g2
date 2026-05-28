@@ -1,11 +1,13 @@
 import { Prisma } from '../db/Prisma';
-import type { PaginationParams, ProductCreatePayload } from '@types';
+import type { PaginationParams, ProductCreatePayload } from '../@types';
 import { Text } from '../utils/Text';
-import { ResponseUtil } from 'utils/ResponseUtil';
+import { ResponseUtil } from '../utils/ResponseUtil';
 import type {
   ProductOrderByWithRelationInput,
   ProductWhereInput,
 } from '../generated/prisma/models';
+import { HttpCode } from '../utils/HttpCode';
+import { AppError } from '../error/AppError';
 
 class ProductService {
   async create(product: ProductCreatePayload) {
@@ -53,8 +55,26 @@ class ProductService {
       prisma.product.findMany({
         ...pageParams,
         include: {
-          categories: true,
-          characteristics: true,
+          categories: {
+            select: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+          characteristics: {
+            select: {
+              characteristic: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
         },
         where,
         orderBy: orderBy && orderBy.length > 0 ? orderBy : { createdAt: 'desc' },
@@ -66,6 +86,17 @@ class ProductService {
 
   async delete(id: string) {
     const prisma = await Prisma.getClient();
+    const productInSchedulers = await prisma.schedulerItem.findFirst({
+      where: {
+        productId: id,
+      },
+    });
+    if (productInSchedulers) {
+      throw new AppError(
+        'Produto não pode ser removido pois há pedidos registrados com ele',
+        HttpCode.CONFLICT,
+      );
+    }
     await prisma.product.delete({
       where: { id },
     });

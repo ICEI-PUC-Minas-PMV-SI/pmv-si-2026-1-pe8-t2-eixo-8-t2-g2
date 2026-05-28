@@ -1,6 +1,6 @@
 import { Router, type Application } from 'express';
 import { ProductValidation } from '../validations/ProductValidation';
-import type { GenericRequest, Response } from '@types';
+import type { GenericRequest, Response } from '../@types';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
 import { ProductCategoryController } from '../controllers/ProductCategoryController';
 
@@ -54,6 +54,12 @@ class ProductCategoryRoute {
         res.status(204).send();
       },
     );
+
+    router.post('/product-category/reorder', async (req, res) => {
+      const { categories } = req.body; // ← era 'category'
+      const result = await ProductCategoryController.reorder(categories);
+      res.json(result);
+    });
 
     app.use(router);
   }

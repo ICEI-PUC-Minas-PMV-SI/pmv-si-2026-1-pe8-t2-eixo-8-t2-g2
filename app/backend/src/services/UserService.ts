@@ -3,12 +3,18 @@ import { Crypt } from '../utils/Crypt';
 import { HttpCode } from '../utils/HttpCode';
 import { OTPUtil } from '../utils/OTPUtil';
 import { SMTP } from '../utils/SMTP';
-import type { UserCreatePayload } from '@types';
+import type { PaginationParams, UserCreatePayload } from '../@types';
 import { Prisma } from '../db/Prisma';
 import type { User } from '../generated/prisma/client';
 import { AppError } from '../error/AppError';
 import { OTPTemplate } from '../templates/email/OTPTemplate';
-import type { UserSelect } from '../generated/prisma/models';
+import type {
+  UserOrderByWithRelationInput,
+  UserSelect,
+  UserWhereInput,
+} from '../generated/prisma/models';
+import { PasswordResetTemplate } from '../templates/email/PasswordResetTemplate';
+import { ResponseUtil } from '../utils/ResponseUtil';
 
 const userSelect = {
   id: true,
@@ -19,33 +25,73 @@ const userSelect = {
 };
 
 class UserService {
-  async create(user: UserCreatePayload) {
+  async create(
+    user: UserCreatePayload,
+    { createCustomer }: { createCustomer?: boolean } = {},
+  ) {
     const prisma = await Prisma.getClient();
-    const { email, name, role, password, googleId = null } = user;
+    const alreadyExists = await prisma.user.findFirst({
+      where: {
+        OR: [{ email: user.email }, { phone: user.phone }],
+      },
+    });
+    if (alreadyExists) {
+      throw new AppError(
+        'E-mail e/ou telefone já está cadastrado para outro usuário',
+        HttpCode.BAD_REQUEST,
+      );
+    }
+    const { email, name, phone, address, password, googleId = null } = user;
     let pass = null;
     if (password) {
       pass = await Crypt.hash(password);
     }
-    const createdUser = await prisma.user.create({
-      data: {
-        email,
-        name,
-        role,
-        password: pass,
-        googleId,
-      },
-      select: userSelect,
+    const createdUser = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          email,
+          name,
+          role: 'customer',
+          password: pass,
+          googleId,
+        },
+        select: userSelect,
+      });
+      if (createCustomer && address) {
+        await tx.customer.create({
+          data: {
+            name,
+            addresses: {
+              create: {
+                postalCode: address.postalCode,
+                street: address.street,
+                number: address.number,
+                complement: address.complement || null,
+                state: address.state,
+                city: address.city,
+                neighborhood: address.neighborhood,
+                country: 'BR',
+                isPrimary: address.isPrimary ?? false,
+              },
+            },
+            phone,
+            user: {
+              connect: {
+                id: newUser.id,
+              },
+            },
+          },
+        });
+      }
+      return newUser;
     });
-
+    console.log('Created user:', createdUser);
     return createdUser;
   }
 
   async find(params: Partial<User>, customSelect: UserSelect = {}) {
     if (!params.id && !params.email) {
-      throw new AppError(
-        'At least one of id or email must be provided to find a user.',
-        HttpCode.BAD_REQUEST,
-      );
+      throw new AppError('Falha ao buscar informações do usuário', HttpCode.BAD_REQUEST);
     }
     const prisma = await Prisma.getClient();
     const { password, ...searchParams } = params;
@@ -62,19 +108,37 @@ class UserService {
     if (password && userPassword) {
       const isValidPassword = await Crypt.isValidHash(password, userPassword);
       if (!isValidPassword) {
-        throw new AppError('Invalid credentials', HttpCode.UNAUTHORIZED);
+        throw new AppError('Credenciais inválidas', HttpCode.UNAUTHORIZED);
       }
     }
 
     return userInfo;
   }
 
-  async list() {
+  async list(
+    filter?: UserWhereInput,
+    orderBy?: UserOrderByWithRelationInput[],
+    pagination?: PaginationParams,
+  ) {
     const prisma = await Prisma.getClient();
-    const users = await prisma.user.findMany({
-      select: userSelect,
-    });
-    return users;
+    const where = filter ? filter : {};
+    const pageParams = pagination || {};
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        ...pageParams,
+        select: {
+          id: true,
+          email: true,
+          createdAt: true,
+          role: true,
+          name: true,
+        },
+        orderBy: orderBy && orderBy.length > 0 ? orderBy : { createdAt: 'desc' },
+      }),
+      prisma.user.count({ where }),
+    ]);
+    return { data: users, total, ...ResponseUtil.handlePageParams(pageParams, total) };
   }
 
   async delete(id: string) {
@@ -120,7 +184,7 @@ class UserService {
   async forgotPassword(email: string) {
     const user = await this.find({ email });
     if (!user) {
-      throw new AppError('User not found', HttpCode.NOT_FOUND);
+      throw new AppError('Usuário não encontrado', HttpCode.NOT_FOUND);
     }
     const secret = OTPUtil.generateSecret();
 
@@ -132,6 +196,15 @@ class UserService {
       body: template,
       subject: `${otp} - Código de recuperação de senha`,
       to: user.email,
+      attachments,
+    });
+  }
+  async sendResetPasswordMail(email: string, resetUrl: string) {
+    const { template, attachments } = PasswordResetTemplate.buildResetEmail(resetUrl);
+    await SMTP.sendMail({
+      body: template,
+      subject: 'Redefinição de senha',
+      to: email,
       attachments,
     });
   }
@@ -150,6 +223,50 @@ class UserService {
       data: codes.map((code) => ({ codeHash: code.hash, userId })),
     });
     return codes.map(({ code }) => code);
+  }
+  async isValidRecoveryCode(userId: string, recoveryCode: string) {
+    const prisma = await Prisma.getClient();
+    const result = await prisma.recoveryCode.findUnique({
+      where: {
+        codeHash: OTPUtil.hashRecoveryCode(recoveryCode),
+        userId,
+      },
+    });
+    if (result && !result.used) {
+      await prisma.recoveryCode.update({
+        where: { id: result.id },
+        data: { used: true },
+      });
+    }
+    return !result?.used;
+  }
+  async deleteRecoveryCodes(userId: string) {
+    const prisma = await Prisma.getClient();
+    await prisma.recoveryCode.deleteMany({
+      where: {
+        userId,
+      },
+    });
+  }
+  async changeRole(id: string, role: 'admin' | 'customer') {
+    const prisma = await Prisma.getClient();
+    if (role === 'customer') {
+      const count = await prisma.user.count({
+        where: {
+          role: 'admin',
+        },
+      });
+      if (count === 1) {
+        throw new AppError(
+          'Não é possível retirar permissão de todos os usuários administrativos',
+          HttpCode.BAD_REQUEST,
+        );
+      }
+    }
+    await prisma.user.update({
+      where: { id },
+      data: { role },
+    });
   }
 }
 

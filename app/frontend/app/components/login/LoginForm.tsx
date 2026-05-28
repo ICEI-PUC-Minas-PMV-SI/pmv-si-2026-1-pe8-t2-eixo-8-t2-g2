@@ -4,6 +4,7 @@ import { useNavigation } from '~/hooks/useNavigation';
 import Rules from '~/utils/Rules';
 import { GoogleButton } from './GoogleButton';
 import Text from 'antd/es/typography/Text';
+import { useQueryClient } from '@tanstack/react-query';
 
 type FieldType = {
   email?: string;
@@ -13,6 +14,7 @@ type FieldType = {
 
 export default function LoginForm() {
   const navigation = useNavigation();
+  const queryClient = useQueryClient();
   return (
     <>
       <Form
@@ -26,8 +28,16 @@ export default function LoginForm() {
         }}
         initialValues={{ remember: true }}
         onFinish={async (formData: Required<FieldType>) => {
-          await AuthController.authenticate(formData.email, formData.password);
-          navigation.goToHome();
+          const { token, required2FACode } = await AuthController.authenticate(
+            formData.email,
+            formData.password,
+          );
+          queryClient.clear();
+          if (token) {
+            navigation.goToHome();
+          } else if (required2FACode) {
+            navigation.goToLogin({ required2FA: true, email: formData.email });
+          }
         }}
         onFinishFailed={() => {
           console.log('onFinishFailed');
@@ -58,6 +68,7 @@ export default function LoginForm() {
         <Flex justify="flex-end" style={{ paddingLeft: 6, paddingRight: 6 }}>
           <Button
             type="link"
+            href="/forgot-password"
             style={{ marginBottom: 12, paddingBottom: 0, paddingRight: 0 }}
           >
             Esqueceu a senha?

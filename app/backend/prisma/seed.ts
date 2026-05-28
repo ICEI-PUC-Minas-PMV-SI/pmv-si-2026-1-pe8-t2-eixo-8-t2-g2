@@ -1,6 +1,6 @@
 import path from 'node:path';
 import dotenv from 'dotenv';
-import { addDays } from 'date-fns';
+import { addDays } from 'date-fns/addDays';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { faker } from '@faker-js/faker';
@@ -28,6 +28,11 @@ const args = process.argv.slice(2);
 function getFlag(name: string) {
   const flag = args.find((a) => a.startsWith(`--${name}=`));
   return flag ? parseInt(flag.split('=')[1], 10) : null;
+}
+
+function getPhone() {
+  // return `(${faker.string.numeric(2)}) 9${faker.string.numeric(4)}-${faker.string.numeric(4)}`;
+  return `${faker.string.numeric(2)}9${faker.string.numeric(8)}`;
 }
 
 const hasFlag = (name: string) => args.includes(`--${name}`);
@@ -278,6 +283,12 @@ const STATUSES = [
   'cancelled',
 ] satisfies SchedulerStatus[];
 
+const ABOUT_TEXT = [{title: 'Título Sobre', subtitle: 'Subtítulo', main: 'Texto principal da tela', complementary: 'Texto Adicional'}]
+
+const ABOUT_ITEMS = [{text: 'Lorem Ipsum', orderIndex: 1},
+  {text: 'Dolor Sit', orderIndex: 2}
+]
+
 // ─────────────────────────────────────────────
 // Reset
 // ─────────────────────────────────────────────
@@ -296,6 +307,8 @@ async function resetDatabase() {
   await prisma.customer.deleteMany();
   await prisma.user.deleteMany();
   await prisma.googleCredentials.deleteMany();
+  await prisma.aboutInfo.deleteMany();
+  await prisma.aboutItem.deleteMany();
 
   console.log('✅ Base de dados limpa.');
 }
@@ -468,7 +481,7 @@ async function seedUsers() {
       data: {
         name: user.name,
         email: user.email,
-        phone: faker.phone.number(),
+        phone: getPhone(),
         notes: faker.datatype.boolean() ? faker.lorem.sentence() : null,
         userId: user.id,
       },
@@ -497,7 +510,7 @@ async function seedStandaloneCustomers() {
       data: {
         name: faker.person.fullName(),
         email: faker.internet.email(),
-        phone: faker.phone.number(),
+        phone: getPhone(),
         notes: faker.datatype.boolean() ? faker.lorem.sentence() : null,
         // userId intentionally omitted → standalone customer
       },
@@ -563,6 +576,33 @@ async function seedSchedulers(allCustomers: Customer[], products: Product[]) {
 }
 
 // ─────────────────────────────────────────────
+// Seed: About + items
+// ─────────────────────────────────────────────
+async function seedAbout() {
+  for (const about of ABOUT_TEXT) {
+    await prisma.aboutInfo.create({
+      data: {
+        title: about.title,
+        subtitle: about.subtitle,
+        main: about.main,
+        complementary: about.complementary,
+      },
+    });
+  }
+  
+  for (const aboutItem of ABOUT_ITEMS) {
+    await prisma.aboutItem.create({
+      data: {
+        text: aboutItem.text,
+        orderIndex: aboutItem.orderIndex,
+      },
+    });
+  }
+  
+  console.log(`Textos Sobre e itens criados`);
+}
+
+// ─────────────────────────────────────────────
 // Main
 // ─────────────────────────────────────────────
 async function main() {
@@ -573,6 +613,7 @@ async function main() {
   const characteristics = await seedCharacteristics();
   const categories = await seedCategories();
   const products = await seedProducts(characteristics, categories);
+  const about = await seedAbout();
 
   const { linkedCustomers } = await seedUsers();
   const standaloneCustomers = await seedStandaloneCustomers();

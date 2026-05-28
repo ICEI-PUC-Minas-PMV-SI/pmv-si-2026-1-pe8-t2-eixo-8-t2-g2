@@ -1,3 +1,5 @@
+import type { UserRole } from '.../validations/UserValidation';
+
 export type SchedulerFilter = {
   deliveryType: ('pickup' | 'delivery')[];
   status: ('pending' | 'confirmed' | 'cancelled' | 'completed')[];
@@ -10,7 +12,8 @@ export type SchedulerSort =
   | 'customer_name'
   | 'customer_date'
   | 'items_quantity'
-  | 'items_price';
+  | 'items_price'
+  | 'scheduledAt';
 
 export type ProductFilter = {
   isActive: boolean;
@@ -20,3 +23,11 @@ export type ProductFilter = {
 export type ProductFilterKey = keyof ProductFilter;
 
 export type ProductSort = 'name' | 'price';
+
+export type UserFilter = {
+  role: UserRole[];
+};
+
+export type UserFilterKey = keyof UserFilter;
+
+export type UserSort = 'name' | 'createdAt';

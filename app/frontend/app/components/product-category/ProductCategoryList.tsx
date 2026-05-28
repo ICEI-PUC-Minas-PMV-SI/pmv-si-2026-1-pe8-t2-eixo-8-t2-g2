@@ -1,6 +1,7 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useMemo, useContext, useState, useEffect } from 'react';
 import { Card, Space, Button, Table, message, Input } from 'antd';
 import { HolderOutlined, PlusOutlined } from '@ant-design/icons';
+import { ModalAddProductCategory } from '../product-category/ModalAddProductCategory';
 
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
 
@@ -8,6 +9,7 @@ import {
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
+  arrayMove,
 } from '@dnd-kit/sortable';
 
 import { CSS } from '@dnd-kit/utilities';
@@ -18,7 +20,7 @@ import { useTableQuery } from '~/hooks/useTableQuery';
 // import { ref } from 'process';
 
 interface Props {
-  setCategoryModalOpen: (v: boolean) => void;
+
 }
 
 interface RowContextProps {
@@ -80,27 +82,43 @@ const SortableRow = (props: any) => {
   );
 };
 
-export function ProductCategoryList({ setCategoryModalOpen }: Props) {
+export function ProductCategoryList() {
+  const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+
   const { tableProps, forceRefetch, params, setSearch } = useTableQuery<ProductCategory>(
     'product-category',
     (params) => ProductCategoryController.list<ProductCategory>(params),
   );
 
+  const [editingCategory, setEditingCategory] = useState<ProductCategory | null>(null);
+
+  const [localData, setLocalData] = useState<ProductCategory[]>([]);
+
+    useEffect(() => {
+        if (tableProps.dataSource) {
+        setLocalData([...tableProps.dataSource]);
+        }
+    }, [tableProps.dataSource]);
+
   // 🔥 Drag end
-  const onDragEnd = ({ active, over }: DragEndEvent) => {
+  const onDragEnd = async ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
 
-    // setCategories((prev) => {
-    //   const oldIndex = prev.findIndex((c) => c.id === active.id);
-    //   const newIndex = prev.findIndex((c) => c.id === over.id);
+    const activeIndex = localData.findIndex((i) => i.id === active.id);
+    const overIndex = localData.findIndex((i) => i.id === over?.id);
 
-    //   const newArray = arrayMove(prev, oldIndex, newIndex);
+    const reordered = arrayMove([...localData], activeIndex, overIndex).map(
+        (category, index) => ({ ...category, orderIndex: index + 1 })
+    );
 
-    //   return newArray.map((item, index) => ({
-    //     ...item,
-    //     ordem: index + 1,
-    //   }));
-    // });
+    setLocalData(reordered);
+
+    await ProductCategoryController.reorder(reordered.map((category) => ({
+        id: category.id,
+        orderIndex: category.orderIndex,
+    })));
+
+    forceRefetch();
   };
 
   // 🔥 Colunas
@@ -134,13 +152,12 @@ export function ProductCategoryList({ setCategoryModalOpen }: Props) {
           <Button
             size="small"
             onClick={() => {
-              // exemplo de edição
-              message.info(`Editar ${record.name}`);
+              setEditingCategory(record);
+              setCategoryModalOpen(true);
             }}
           >
             Editar
           </Button>
-
           <Button
             size="small"
             danger
@@ -158,45 +175,55 @@ export function ProductCategoryList({ setCategoryModalOpen }: Props) {
     },
   ];
 
-  return (
-    <Card
-      title="Categorias"
-      extra={
-        <Space>
-          {/* <Button onClick={() => setCategoryModalOpen(true)}>Nova categoria</Button> */}
-          <Input
-            placeholder="Buscar..."
-            value={params.search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          {/* <Button onClick={() => setCharModalOpen(true)}>Nova característica</Button> */}
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setCategoryModalOpen(true)}
+return (
+    <>
+      <Card
+        title="Categorias"
+        extra={
+          <Space>
+            <Input
+              placeholder="Buscar..."
+              value={params.search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setCategoryModalOpen(true)}
+            >
+              Nova categoria
+            </Button>
+          </Space>
+        }
+      >
+        <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
+          <SortableContext
+            items={localData.map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
           >
-            Nova categoria
-          </Button>
-        </Space>
-      }
-    >
-      <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
-        <SortableContext
-          items={tableProps.dataSource?.map((c) => c.id) || []}
-          strategy={verticalListSortingStrategy}
-        >
-          <Table
-            components={{
-              body: {
-                row: SortableRow,
-              },
-            }}
-            dataSource={tableProps.dataSource}
-            columns={columns}
-            {...tableProps}
-          />
-        </SortableContext>
-      </DndContext>
-    </Card>
+            <Table
+              components={{
+                body: {
+                  row: SortableRow,
+                },
+              }}
+              dataSource={localData}
+              columns={columns}
+              {...tableProps}
+            />
+          </SortableContext>
+        </DndContext>
+      </Card>
+
+      <ModalAddProductCategory
+        isOpened={categoryModalOpen}
+        editingCategory={editingCategory}
+        onClose={(reason) => {
+          setCategoryModalOpen(false);
+          setEditingCategory(null);
+          if (reason === 'save') forceRefetch();
+        }}
+      />
+    </>
   );
 }

@@ -8,6 +8,7 @@ class TextUtil {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-');
   }
+
   formatPhone(value: string) {
     const digits = value.replace(/\D/g, '').slice(0, 11);
 
@@ -18,7 +19,6 @@ class TextUtil {
     const ddd = digits.slice(0, 2);
     const remaining = digits.slice(2);
 
-    // Celular com 9 dígitos
     if (remaining.length > 8) {
       const firstPart = remaining.slice(0, 5);
       const secondPart = remaining.slice(5, 9);
@@ -26,7 +26,6 @@ class TextUtil {
       return `(${ddd}) ${firstPart}${secondPart ? `-${secondPart}` : ''}`;
     }
 
-    // Telefone comum
     const firstPart = remaining.slice(0, 4);
     const secondPart = remaining.slice(4, 8);
 
@@ -34,6 +33,20 @@ class TextUtil {
   }
 
   unformatPhone(value: string) {
+    return value.replace(/\D/g, '');
+  }
+
+  formatPostalCode(value: string) {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+
+    if (digits.length <= 5) {
+      return digits;
+    }
+
+    return `${digits.slice(0, 5)}-${digits.slice(5)}`;
+  }
+
+  unformatPostalCode(value: string) {
     return value.replace(/\D/g, '');
   }
 }

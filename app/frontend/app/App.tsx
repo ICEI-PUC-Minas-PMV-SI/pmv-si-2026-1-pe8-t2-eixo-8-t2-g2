@@ -9,24 +9,36 @@ import { ProductPage } from './components/product/ProductPage';
 import { SettingsPage } from './components/settings/SettingsPage';
 import { CostCalculator } from './components/recipe/CostCalculator';
 import { SignUp } from './components/login/SignUp';
+import { ForgotPassword } from './components/login/ForgotPassword';
+import { ResetPassword } from './components/login/ResetPassword';
+import { Validate2FA } from './components/login/Validate2FA';
+import { CartPage } from './components/cart/CartPage';
+import { UserPage } from './components/user/UserPage';
+import { AboutUsPage } from './components/about-us/AboutUsPage';
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<ProtectedLayout />}>
-          <Route index element={<Navigate to="/dashboard" />} />
+          <Route index element={<Navigate to="/scheduler" />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/scheduler" element={<SchedulerPage />} />
           <Route path="/product" element={<ProductPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/about" element={<AboutUsPage />} />
           <Route path="/cost-calculator" element={<CostCalculator />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/users" element={<UserPage />} />
         </Route>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Welcome />} />
           <Route path="/home" element={<Welcome />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/validate-2fa" element={<Validate2FA />} />
         </Route>
       </Routes>
     </BrowserRouter>

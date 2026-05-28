@@ -1,21 +1,26 @@
-import { Avatar, Button, Flex, Grid, Modal, Tooltip } from 'antd';
+import { Button, Flex, Grid, Modal, Tooltip } from 'antd';
 import { Header } from 'antd/es/layout/layout';
 import Text from 'antd/es/typography/Text';
 import AppIcon from '../icon/AppIcon';
 import { ROUTES, useNavigation } from '~/hooks/useNavigation';
-import { ExclamationCircleOutlined, UserOutlined, MenuOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, MenuOutlined } from '@ant-design/icons';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { CartPreview } from '../cart/CartPreview';
+import { useCartStore } from '~/hooks/useCartStore';
 
 type Props = {
   onMenuClick?: () => void; // 👈 botão mobile
 };
 
 export default function AppHeader({ onMenuClick }: Props) {
-  const { goToLogin, goToDashboard } = useNavigation();
+  const { goToLogin } = useNavigation();
   const { logout, isLogged, getUserShortname } = useAuthStore();
   const { pathname } = useLocation();
   const isMobile = !Grid.useBreakpoint().lg;
+  const queryClient = useQueryClient();
+  const { clearCart } = useCartStore();
   const logoutConfirm = () => {
     Modal.confirm({
       icon: <ExclamationCircleOutlined />,
@@ -26,7 +31,10 @@ export default function AppHeader({ onMenuClick }: Props) {
       },
       okText: 'Sair',
       onOk() {
+        queryClient.clear();
+        clearCart();
         logout();
+        localStorage.clear();
       },
     });
   };
@@ -45,31 +53,27 @@ export default function AppHeader({ onMenuClick }: Props) {
             />
           )}
 
-          {/* opcional: logo */}
           <Text style={{ color: 'white', fontWeight: 600 }}>Meu App</Text>
         </Flex>
 
         {/* DIREITA */}
         <Flex gap="small" align="center">
           {!isLogged() && pathname !== ROUTES.LOGIN && (
-            <Button variant="solid" color="primary" onClick={goToLogin}>
-              Entrar
-            </Button>
+            <>
+              <CartPreview />
+              <Button variant="solid" color="primary" onClick={() => goToLogin()}>
+                Entrar
+              </Button>
+            </>
           )}
 
           {isLogged() && (
             <>
-              {/* esconder nome no mobile */}
               {!isMobile && (
                 <Text style={{ color: 'white' }}>Olá, {getUserShortname()}</Text>
               )}
 
-              {/* <Avatar
-                onClick={goToDashboard}
-                style={{ backgroundColor: 'grey', cursor: 'pointer' }}
-                icon={<UserOutlined />}
-              ></Avatar> */}
-
+              <CartPreview />
               <Tooltip title="Sair">
                 <Button
                   onClick={logoutConfirm}

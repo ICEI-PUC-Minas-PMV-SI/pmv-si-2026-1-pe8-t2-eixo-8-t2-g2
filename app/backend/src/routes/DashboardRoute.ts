@@ -1,6 +1,6 @@
 import type { Application } from 'express';
-import { UserScopeMiddleware } from 'middlewares/UserScopeMiddleware';
-import DashboardService from 'services/DashboardService';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
+import DashboardService from '../services/DashboardService';
 
 class DashboardRoute {
   register(app: Application) {
