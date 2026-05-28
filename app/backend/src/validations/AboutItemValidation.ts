@@ -1,6 +1,6 @@
 import z from 'zod';
-import type { Response, NextFunction, GenericRequest } from '../@types';
-import { ErrorValidation } from './ErrorValidation';
+import type { Response, NextFunction, GenericRequest } from '../@types/index.js';
+import { ErrorValidation } from './ErrorValidation.js';
 
 class AboutItemValidation {
   create = (req: GenericRequest, res: Response, next: NextFunction) => {

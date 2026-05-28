@@ -1,13 +1,11 @@
-import { AboutController } from '../controllers/AboutController';
-import { Router, type Application } from 'express';
-import { AboutValidation } from '../validations/AboutValidation';
-import type { Response, AboutRequest } from '../@types';
-import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
+import { AboutController } from '../controllers/AboutController.js';
+import { type Router } from 'express';
+import { AboutValidation } from '../validations/AboutValidation.js';
+import type { Response, AboutRequest } from '../@types/index.js';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 
 class AboutRoute {
-  register(app: Application) {
-    const router = Router();
-
+  register(router: Router) {
     router.post(
       '/about',
       UserScopeMiddleware.adminOnly(),
@@ -38,8 +36,6 @@ class AboutRoute {
         res.json(result);
       },
     );
-
-    app.use(router);
   }
 }
 

@@ -1,4 +1,4 @@
-import { Prisma } from '../db/Prisma';
+import { Prisma } from '../db/Prisma.js';
 
 class CustomerService {
   async find(phone: string) {

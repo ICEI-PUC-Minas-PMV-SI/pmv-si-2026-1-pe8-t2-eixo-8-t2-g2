@@ -1,6 +1,9 @@
-import { ResponseUtil } from '../utils/ResponseUtil';
-import { Prisma } from '../db/Prisma';
-import type { ProductCharacteristicCreatePayload, PaginationParams } from '../@types';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
+import { Prisma } from '../db/Prisma.js';
+import type {
+  ProductCharacteristicCreatePayload,
+  PaginationParams,
+} from '../@types/index.js';
 
 class ProductCharacteristicService {
   async create(characteristic: ProductCharacteristicCreatePayload) {

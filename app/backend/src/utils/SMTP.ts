@@ -1,11 +1,11 @@
-import { GoogleApi } from '../integration/GoogleApi';
+import { GoogleApi } from '../integration/GoogleApi.js';
 import nodemailer from 'nodemailer';
 import type { SendMailOptions } from 'nodemailer';
 import type { Attachment } from 'nodemailer/lib/mailer/index';
-import { Crypt } from './Crypt';
-import { IntegrationsService } from '../services/IntegrationsService';
-import MailComposer from 'nodemailer/lib/mail-composer';
-import { RequestUtil } from './RequestUtil';
+import { Crypt } from './Crypt.js';
+import { IntegrationsService } from '../services/IntegrationsService.js';
+import MailComposer from 'nodemailer/lib/mail-composer/index.js';
+import { RequestUtil } from './RequestUtil.js';
 
 export type SMTPOpts = {
   subject: string;

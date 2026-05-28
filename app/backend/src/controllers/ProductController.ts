@@ -1,10 +1,14 @@
-import type { ProductCreatePayload, ProductFilterKey, ProductRequest } from '../@types';
-import { ProductService } from '../services/ProductService';
+import type {
+  ProductCreatePayload,
+  ProductFilterKey,
+  ProductRequest,
+} from '../@types/index.js';
+import { ProductService } from '../services/ProductService.js';
 import type {
   ProductOrderByWithRelationInput,
   ProductWhereInput,
-} from '../generated/prisma/models';
-import { UserRole } from '../validations/UserValidation';
+} from '../generated/prisma/models.js';
+import { UserRole } from '../validations/UserValidation.js';
 
 class ProductController {
   async create(product: ProductCreatePayload) {

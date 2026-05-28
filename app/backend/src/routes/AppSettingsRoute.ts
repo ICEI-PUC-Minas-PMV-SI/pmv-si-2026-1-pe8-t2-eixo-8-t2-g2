@@ -1,10 +1,8 @@
-import { Router, type Application } from 'express';
-import { AppSettingsController } from '../controllers/AppSettingsController';
+import { type Router } from 'express';
+import { AppSettingsController } from '../controllers/AppSettingsController.js';
 
 class AppSettingsRoute {
-  register(app: Application) {
-    const router = Router();
-
+  register(router: Router) {
     router.get('/app-settings', async (_req, res) => {
       const data = await AppSettingsController.find();
       res.json(data);
@@ -13,8 +11,6 @@ class AppSettingsRoute {
       const data = await AppSettingsController.save(req.body);
       res.json(data);
     });
-
-    app.use(router);
   }
 }
 

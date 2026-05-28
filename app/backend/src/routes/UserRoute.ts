@@ -1,13 +1,12 @@
-import { UserController } from '../controllers/UserController';
-import { Router, type Application } from 'express';
-import { UserValidation } from '../validations/UserValidation';
-import type { GenericRequest, Response, UserRequest } from '../@types';
-import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
-import { JWT } from '../utils/JWT';
+import { UserController } from '../controllers/UserController.js';
+import { type Router } from 'express';
+import { UserValidation } from '../validations/UserValidation.js';
+import type { GenericRequest, Response, UserRequest } from '../@types/index.js';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
+import { JWT } from '../utils/JWT.js';
 
 class UserRoute {
-  register(app: Application) {
-    const router = Router();
+  register(router: Router) {
     router.post(
       '/user',
       UserValidation.create(),
@@ -129,8 +128,6 @@ class UserRoute {
         res.json(result);
       },
     );
-
-    app.use(router);
   }
 }
 

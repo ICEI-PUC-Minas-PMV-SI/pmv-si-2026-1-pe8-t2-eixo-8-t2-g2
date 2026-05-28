@@ -1,5 +1,5 @@
-import { RequestUtil } from '../utils/RequestUtil';
-import { GoogleApi, INTEGRATION } from './GoogleApi';
+import { RequestUtil } from '../utils/RequestUtil.js';
+import { GoogleApi, INTEGRATION } from './GoogleApi.js';
 
 export interface GoogleCalendarEventDateTime {
   dateTime: string;

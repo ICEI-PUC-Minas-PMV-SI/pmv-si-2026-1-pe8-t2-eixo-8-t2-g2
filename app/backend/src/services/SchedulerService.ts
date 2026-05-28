@@ -3,20 +3,20 @@ import type {
   ProductItem,
   SchedulerCreatePayload,
   SchedulerUpdatePayload,
-} from '../@types';
-import { Prisma } from '../db/Prisma';
-import { ProductService } from './ProductService';
-import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper';
-import { AppError } from '../error/AppError';
-import { HttpCode } from '../utils/HttpCode';
+} from '../@types/index.js';
+import { Prisma } from '../db/Prisma.js';
+import { ProductService } from './ProductService.js';
+import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper.js';
+import { AppError } from '../error/AppError.js';
+import { HttpCode } from '../utils/HttpCode.js';
 import type {
   SchedulerItemUncheckedCreateWithoutSchedulerInput,
   SchedulerOrderByWithRelationInput,
   SchedulerWhereInput,
-} from '../generated/prisma/models';
-import type { SchedulerStatus } from '../generated/prisma/enums';
-import { ResponseUtil } from '../utils/ResponseUtil';
-import { CustomerService } from './CustomerService';
+} from '../generated/prisma/models.js';
+import type { SchedulerStatus } from '../generated/prisma/enums.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
+import { CustomerService } from './CustomerService.js';
 
 const userSelect = {
   id: true,

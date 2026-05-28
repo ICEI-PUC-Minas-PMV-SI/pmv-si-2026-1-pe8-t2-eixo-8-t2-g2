@@ -1,11 +1,11 @@
-import { UserService } from '../services/UserService';
-import type { AuthCredentials } from '../@types';
-import { HttpCode } from '../utils/HttpCode';
-import { JWT } from '../utils/JWT';
-import { OTPUtil } from '../utils/OTPUtil';
-import { AppError } from '../error/AppError';
-import { Google } from '../utils/Google';
-import type { User } from '../generated/prisma/client';
+import { UserService } from '../services/UserService.js';
+import type { AuthCredentials } from '../@types/index.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { JWT } from '../utils/JWT.js';
+import { OTPUtil } from '../utils/OTPUtil.js';
+import { AppError } from '../error/AppError.js';
+import { Google } from '../utils/Google.js';
+import type { User } from '../generated/prisma/client.js';
 
 class AuthController {
   async authenticate(credentials: AuthCredentials) {

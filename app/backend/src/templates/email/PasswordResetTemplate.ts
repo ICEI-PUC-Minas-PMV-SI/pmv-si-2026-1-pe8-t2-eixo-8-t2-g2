@@ -1,5 +1,5 @@
-import BaseEmailTemplate from './BaseEmailTemplate';
-import { EmailColors } from './EmailColors';
+import BaseEmailTemplate from './BaseEmailTemplate.js';
+import { EmailColors } from './EmailColors.js';
 
 class PasswordResetTemplate extends BaseEmailTemplate {
   buildResetEmail(resetLink: string) {

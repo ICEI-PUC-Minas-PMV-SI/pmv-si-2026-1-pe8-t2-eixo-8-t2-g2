@@ -1,5 +1,5 @@
-import type { Response } from '../@types';
-import { AppError } from '../error/AppError';
+import type { Response } from '../@types/index.js';
+import { AppError } from '../error/AppError.js';
 import z, { ZodError } from 'zod';
 
 class ErrorValidation {

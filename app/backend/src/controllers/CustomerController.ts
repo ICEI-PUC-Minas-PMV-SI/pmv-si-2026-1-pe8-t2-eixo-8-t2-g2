@@ -1,4 +1,4 @@
-import { CustomerService } from '../services/CustomerService';
+import { CustomerService } from '../services/CustomerService.js';
 
 class CustomerController {
   async getCustomerByPhone(phone: string) {

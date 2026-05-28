@@ -1,7 +1,7 @@
 import type { Application } from 'express';
 // import * as middlewares from '@middlewares/';
-import { AppMiddleware } from './middlewares/AppMiddleware';
-import { AuthMiddleware } from './middlewares/AuthMiddleware';
+import { AppMiddleware } from './middlewares/AppMiddleware.js';
+import { AuthMiddleware } from './middlewares/AuthMiddleware.js';
 
 class MiddlewareManager {
   register(app: Application) {

@@ -6,8 +6,8 @@ import { startOfDay } from 'date-fns/startOfDay';
 import { endOfDay } from 'date-fns/endOfDay';
 
 import { fromZonedTime } from 'date-fns-tz';
-import { Prisma } from '../db/Prisma';
-import NumberUtil from '../utils/NumberUtil';
+import { Prisma } from '../db/Prisma.js';
+import NumberUtil from '../utils/NumberUtil.js';
 
 class DashboardService {
   getStartAndEndDay(date: Date | string) {

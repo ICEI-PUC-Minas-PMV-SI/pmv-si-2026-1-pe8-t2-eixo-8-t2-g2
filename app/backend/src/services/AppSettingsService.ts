@@ -1,5 +1,5 @@
-import { Prisma } from '../db/Prisma';
-import type { AppSettingsCreateInput } from '../generated/prisma/models';
+import { Prisma } from '../db/Prisma.js';
+import type { AppSettingsCreateInput } from '../generated/prisma/models.js';
 
 class AppSettingsService {
   async save(data: AppSettingsCreateInput) {

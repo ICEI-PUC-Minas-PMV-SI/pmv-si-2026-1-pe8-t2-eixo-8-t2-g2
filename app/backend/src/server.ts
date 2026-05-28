@@ -1,14 +1,15 @@
-import './utils/Env';
+import './utils/Env.js';
 import express from 'express';
-import { Env } from './utils/Env';
-import { HttpCode } from './utils/HttpCode';
-import { ResponseUtil } from './utils/ResponseUtil';
+import { Env } from './utils/Env.js';
+import { HttpCode } from './utils/HttpCode.js';
+import { ResponseUtil } from './utils/ResponseUtil.js';
 
-import { Router } from './Router';
-import { MiddlewareManager } from './MiddlewareManager';
-import { AppError } from './error/AppError';
-import type { Response, NextFunction, GenericRequest } from './@types';
+import { Router } from './Router.js';
+import { MiddlewareManager } from './MiddlewareManager.js';
+import { AppError } from './error/AppError.js';
+import type { Response, NextFunction, GenericRequest } from './@types/index.js';
 import cors from 'cors';
+
 const app = express();
 const PORT = parseInt(Env.get('SRV_PORT', '3000'));
 

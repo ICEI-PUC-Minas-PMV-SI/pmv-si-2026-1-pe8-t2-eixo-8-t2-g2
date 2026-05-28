@@ -1,7 +1,7 @@
 import winston from 'winston';
 import path from 'node:path';
 import fs from 'node:fs';
-import { Env } from '../utils/Env';
+import { Env } from '../utils/Env.js';
 
 export class Logger {
   // Cache de instâncias por contexto - evita criar múltiplas instâncias

@@ -1,16 +1,14 @@
-import { Router, type Application } from 'express';
-import { IntegrationsController } from '../controllers/IntegrationsController';
-import { AppError } from '../error/AppError';
-import { ResponseUtil } from '../utils/ResponseUtil';
-import { HttpCode } from '../utils/HttpCode';
-import { Logger } from '../logger/Logger';
-import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
+import { type Router } from 'express';
+import { IntegrationsController } from '../controllers/IntegrationsController.js';
+import { AppError } from '../error/AppError.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { Logger } from '../logger/Logger.js';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 
 class IntegrationsRoute {
   private logger = new Logger('IntegrationsRoute');
-  register(app: Application) {
-    const router = Router();
-
+  register(router: Router) {
     router.get('/integrations', UserScopeMiddleware.adminOnly(), async (_req, res) => {
       const data = await IntegrationsController.list();
       res.json(data);
@@ -117,8 +115,6 @@ class IntegrationsRoute {
         );
       }
     });
-
-    app.use(router);
   }
 }
 

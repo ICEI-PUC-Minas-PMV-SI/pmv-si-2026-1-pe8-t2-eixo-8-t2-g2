@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { TOTP } from 'otpauth';
 import base32Encode from 'base32-encode';
 import ms from 'ms';
-import { Prisma } from '../db/Prisma';
+import { Prisma } from '../db/Prisma.js';
 
 const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 

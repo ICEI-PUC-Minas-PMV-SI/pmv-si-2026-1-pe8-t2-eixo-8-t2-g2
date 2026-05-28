@@ -1,10 +1,10 @@
-import { HttpCode } from '../utils/HttpCode';
-import { JWT } from '../utils/JWT';
-import type { Response, NextFunction, GenericRequest } from '../@types';
-import { RequestUtil } from '../utils/RequestUtil';
-import { ResponseUtil } from '../utils/ResponseUtil';
-import { UserRole } from '../validations/UserValidation';
-import { AppError } from '../error/AppError';
+import { HttpCode } from '../utils/HttpCode.js';
+import { JWT } from '../utils/JWT.js';
+import type { Response, NextFunction, GenericRequest } from '../@types/index.js';
+import { RequestUtil } from '../utils/RequestUtil.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
+import { UserRole } from '../validations/UserValidation.js';
+import { AppError } from '../error/AppError.js';
 
 type ValidationTokenResult = {
   error: AppError | null;

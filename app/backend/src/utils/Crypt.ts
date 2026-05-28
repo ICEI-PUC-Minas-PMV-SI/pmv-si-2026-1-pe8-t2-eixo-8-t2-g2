@@ -1,7 +1,7 @@
-import { AppError } from '../error/AppError';
+import { AppError } from '../error/AppError.js';
 import bcrypt from 'bcrypt';
 import crypto from 'node:crypto';
-import { HttpCode } from './HttpCode';
+import { HttpCode } from './HttpCode.js';
 
 export type EncryptOptions = {
   algorithm: crypto.CipherGCMTypes;

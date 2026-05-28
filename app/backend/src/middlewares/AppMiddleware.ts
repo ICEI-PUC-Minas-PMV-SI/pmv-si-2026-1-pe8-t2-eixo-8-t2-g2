@@ -1,4 +1,4 @@
-import type { IMiddleware } from '../interfaces/IMiddleware';
+import type { IMiddleware } from '../interfaces/IMiddleware.js';
 import express, { type Application } from 'express';
 
 class AppMiddleware implements IMiddleware {

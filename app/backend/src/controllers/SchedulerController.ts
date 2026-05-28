@@ -3,22 +3,22 @@ import type {
   SchedulerFilterKey,
   SchedulerRequest,
   SchedulerUpdatePayload,
-} from '../@types';
-import { SchedulerService, type CreatedScheduler } from '../services/SchedulerService';
+} from '../@types/index.js';
+import { SchedulerService, type CreatedScheduler } from '../services/SchedulerService.js';
 import type {
   SchedulerOrderByWithRelationInput,
   SchedulerWhereInput,
-} from '../generated/prisma/models';
-import { GoogleApi, INTEGRATION } from '../integration/GoogleApi';
-import { UserRole } from '../validations/UserValidation';
+} from '../generated/prisma/models.js';
+import { GoogleApi, INTEGRATION } from '../integration/GoogleApi.js';
+import { UserRole } from '../validations/UserValidation.js';
 import type {
   DeliveryType,
   PaymentMethod,
   SchedulerStatus,
-} from '../generated/prisma/enums';
-import { CustomerService } from '../services/CustomerService';
-import { GoogleCalendarApi } from '../integration/GoogleCalendarApi';
-import { Logger } from '../logger/Logger';
+} from '../generated/prisma/enums.js';
+import { CustomerService } from '../services/CustomerService.js';
+import { GoogleCalendarApi } from '../integration/GoogleCalendarApi.js';
+import { Logger } from '../logger/Logger.js';
 
 class SchedulerController {
   private logger = new Logger('SchedulerController');

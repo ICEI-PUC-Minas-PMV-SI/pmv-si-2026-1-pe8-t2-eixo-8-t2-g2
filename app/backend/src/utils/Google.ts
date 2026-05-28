@@ -1,5 +1,6 @@
-import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
-import { Env } from './Env';
+// import { OAuth2Client } from 'google-auth-library/build/src/auth/oauth2client';
+import { OAuth2Client } from 'google-auth-library';
+import { Env } from './Env.js';
 
 class Google {
   async verifyToken(token: string) {

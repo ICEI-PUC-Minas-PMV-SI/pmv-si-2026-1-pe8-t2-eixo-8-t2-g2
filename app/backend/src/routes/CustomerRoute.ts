@@ -1,12 +1,12 @@
-import type { Application } from 'express';
-import type { GenericRequest } from '../@types';
-import { CustomerValidation } from '../validations/CustomerValidation';
-import { CustomerController } from '../controllers/CustomerController';
-import { ResponseUtil } from '../utils/ResponseUtil';
+import type { Router } from 'express';
+import type { GenericRequest } from '../@types/index.js';
+import { CustomerValidation } from '../validations/CustomerValidation.js';
+import { CustomerController } from '../controllers/CustomerController.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
 
 class CustomerRoute {
-  register(app: Application) {
-    app.get(
+  register(router: Router) {
+    router.get(
       '/customer',
       CustomerValidation.getCustomer(),
       async (req: GenericRequest, res) => {

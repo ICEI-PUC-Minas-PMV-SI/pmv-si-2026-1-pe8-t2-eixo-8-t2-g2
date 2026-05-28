@@ -1,14 +1,14 @@
 import ms from 'ms';
-import { UserService } from '../services/UserService';
-import type { UserCreatePayload, UserFilterKey, UserRequest } from '../@types';
-import type { User } from '../generated/prisma/client';
-import { AppError } from '../error/AppError';
-import { HttpCode } from '../utils/HttpCode';
-import { OTPUtil } from '../utils/OTPUtil';
+import { UserService } from '../services/UserService.js';
+import type { UserCreatePayload, UserFilterKey, UserRequest } from '../@types/index.js';
+import type { User } from '../generated/prisma/client.js';
+import { AppError } from '../error/AppError.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { OTPUtil } from '../utils/OTPUtil.js';
 import type {
   UserOrderByWithRelationInput,
   UserWhereInput,
-} from '../generated/prisma/models';
+} from '../generated/prisma/models.js';
 
 class UserController {
   async create(

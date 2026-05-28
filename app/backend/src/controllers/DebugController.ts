@@ -1,9 +1,9 @@
-import { AppError } from '../error/AppError';
-import type { DebugMailData } from '../@types';
-import { OTPTemplate } from '../templates/email/OTPTemplate';
+import { AppError } from '../error/AppError.js';
+import type { DebugMailData } from '../@types/index.js';
+import { OTPTemplate } from '../templates/email/OTPTemplate.js';
 import type { Attachment } from 'nodemailer/lib/mailer/index';
-import { HttpCode } from '../utils/HttpCode';
-import { SMTP } from '../utils/SMTP';
+import { HttpCode } from '../utils/HttpCode.js';
+import { SMTP } from '../utils/SMTP.js';
 class DebugController {
   async sendMail(data: DebugMailData) {
     const email = {

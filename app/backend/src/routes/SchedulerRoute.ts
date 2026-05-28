@@ -1,13 +1,11 @@
-import { SchedulerController } from '../controllers/SchedulerController';
-import { Router, type Application } from 'express';
-import { SchedulerValidation } from '../validations/SchedulerValidation';
-import type { Response, SchedulerRequest } from '../@types';
-import { UserRole } from '../validations/UserValidation';
+import { SchedulerController } from '../controllers/SchedulerController.js';
+import { type Router } from 'express';
+import { SchedulerValidation } from '../validations/SchedulerValidation.js';
+import type { Response, SchedulerRequest } from '../@types/index.js';
+import { UserRole } from '../validations/UserValidation.js';
 
 class SchedulerRoute {
-  register(app: Application) {
-    const router = Router();
-
+  register(router: Router) {
     router.get('/scheduler/google-auth-url', async (_req, res) => {
       const url = await SchedulerController.getGoogleAuthUrl();
       res.json({ url });
@@ -83,7 +81,6 @@ class SchedulerRoute {
       await SchedulerController.delete(id);
       res.status(204).send();
     });
-    app.use(router);
   }
 }
 

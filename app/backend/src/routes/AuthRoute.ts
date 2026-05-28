@@ -1,34 +1,34 @@
-import { AuthController } from '../controllers/AuthController';
-import type { Application } from 'express';
-import { AuthValidation } from '../validations/AuthValidation';
-import type { GenericRequest } from '../@types';
-import { AppError } from '../error/AppError';
-import { HttpCode } from '../utils/HttpCode';
-import { RequestUtil } from '../utils/RequestUtil';
+import { AuthController } from '../controllers/AuthController.js';
+import type { Router } from 'express';
+import { AuthValidation } from '../validations/AuthValidation.js';
+import type { GenericRequest } from '../@types/index.js';
+import { AppError } from '../error/AppError.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { RequestUtil } from '../utils/RequestUtil.js';
 
 class AuthRoute {
-  register(app: Application) {
-    app.post('/auth', AuthValidation.auth(), async (req: GenericRequest, res) => {
+  register(router: Router) {
+    router.post('/auth', AuthValidation.auth(), async (req: GenericRequest, res) => {
       const result = await AuthController.authenticate(req.body);
       res.json(result);
     });
-    app.post('/auth/validate', async (_req: GenericRequest, res) => {
+    router.post('/auth/validate', async (_req: GenericRequest, res) => {
       res.json({
         valid: true,
       });
     });
-    app.post('/auth/google', async (req: GenericRequest, res) => {
+    router.post('/auth/google', async (req: GenericRequest, res) => {
       const result = await AuthController.googleAuth(req.body);
       res.json(result);
     });
-    app.post('/auth/create-two-factor', async (req: GenericRequest, res) => {
+    router.post('/auth/create-two-factor', async (req: GenericRequest, res) => {
       if (!req.user) {
         throw new AppError('Usuário inválido ou sessão expirada', HttpCode.UNAUTHORIZED);
       }
       const result = await AuthController.createTwoFactor(req.user.id);
       res.json(result);
     });
-    app.post(
+    router.post(
       '/auth/enable-two-factor',
       RequestUtil.rateLimit(),
       AuthValidation.enableTwoFactor(),
@@ -43,7 +43,7 @@ class AuthRoute {
         res.json(result);
       },
     );
-    app.post(
+    router.post(
       '/auth/disable-two-factor',
       RequestUtil.rateLimit(),
       AuthValidation.disableTwoFactor(),
@@ -58,7 +58,7 @@ class AuthRoute {
         res.json(result);
       },
     );
-    app.post(
+    router.post(
       '/auth/forgot-password',
       AuthValidation.forgotPassword(),
       async (req: GenericRequest, res) => {
@@ -67,7 +67,7 @@ class AuthRoute {
         res.json(result);
       },
     );
-    app.post(
+    router.post(
       '/auth/reset-password',
       AuthValidation.resetPassword(),
       async (req: GenericRequest, res) => {
@@ -82,7 +82,7 @@ class AuthRoute {
         res.json(result);
       },
     );
-    app.post(
+    router.post(
       '/auth/validate-2fa',
       AuthValidation.validate2FA(),
       async (req: GenericRequest, res) => {
@@ -90,7 +90,7 @@ class AuthRoute {
         res.json(result);
       },
     );
-    app.post(
+    router.post(
       '/auth/regenerate-recovery-codes',
       AuthValidation.regenerateRecoveryCodes(),
       async (req: GenericRequest, res) => {
