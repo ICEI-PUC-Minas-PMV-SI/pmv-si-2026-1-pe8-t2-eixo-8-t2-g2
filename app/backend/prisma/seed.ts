@@ -4,12 +4,7 @@ import { addDays } from 'date-fns/addDays';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { faker } from '@faker-js/faker';
-// import {
-//   PrismaClient,
-//   UserRole,
-// } from '../dist/generated/prisma/client.js';
-// import pkg from '@prisma/client';
-// const { PrismaClient, UserRole } = pkg;
+
 import {
   Customer,
   DeliveryType,
@@ -19,7 +14,6 @@ import {
   SchedulerStatus,
   UserRole,
 } from '../src/generated/prisma/client.js';
-// import { PrismaClient, UserRole } from '@prisma/client';
 // ─────────────────────────────────────────────
 // CLI argument parsing
 // ─────────────────────────────────────────────
@@ -283,11 +277,19 @@ const STATUSES = [
   'cancelled',
 ] satisfies SchedulerStatus[];
 
-const ABOUT_TEXT = [{title: 'Título Sobre', subtitle: 'Subtítulo', main: 'Texto principal da tela', complementary: 'Texto Adicional'}]
+const ABOUT_TEXT = [
+  {
+    title: 'Título Sobre',
+    subtitle: 'Subtítulo',
+    main: 'Texto principal da tela',
+    complementary: 'Texto Adicional',
+  },
+];
 
-const ABOUT_ITEMS = [{text: 'Lorem Ipsum', orderIndex: 1},
-  {text: 'Dolor Sit', orderIndex: 2}
-]
+const ABOUT_ITEMS = [
+  { text: 'Lorem Ipsum', orderIndex: 1 },
+  { text: 'Dolor Sit', orderIndex: 2 },
+];
 
 // ─────────────────────────────────────────────
 // Reset
@@ -586,19 +588,13 @@ async function seedAbout() {
         subtitle: about.subtitle,
         main: about.main,
         complementary: about.complementary,
+        items: {
+          create: ABOUT_ITEMS,
+        },
       },
     });
   }
-  
-  for (const aboutItem of ABOUT_ITEMS) {
-    await prisma.aboutItem.create({
-      data: {
-        text: aboutItem.text,
-        orderIndex: aboutItem.orderIndex,
-      },
-    });
-  }
-  
+
   console.log(`Textos Sobre e itens criados`);
 }
 

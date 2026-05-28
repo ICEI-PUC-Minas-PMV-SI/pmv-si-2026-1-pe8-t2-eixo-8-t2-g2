@@ -26,3 +26,8 @@ export * from './LockSimpleThin';
 export * from './CircleCheck';
 export * from './UserShield';
 export * from './Interrogation';
+export * from './Clock';
+export * from './WhatsApp';
+export * from './Envelope';
+export * from './Marker';
+export * from './Instagram';
