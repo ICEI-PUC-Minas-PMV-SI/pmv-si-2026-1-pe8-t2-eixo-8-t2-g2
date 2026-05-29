@@ -283,11 +283,19 @@ const STATUSES = [
   'cancelled',
 ] satisfies SchedulerStatus[];
 
-const ABOUT_TEXT = [{title: 'Título Sobre', subtitle: 'Subtítulo', main: 'Texto principal da tela', complementary: 'Texto Adicional'}]
+const ABOUT_TEXT = [
+  {
+    title: 'Título Sobre',
+    subtitle: 'Subtítulo',
+    main: 'Texto principal da tela',
+    complementary: 'Texto Adicional',
+  },
+];
 
-const ABOUT_ITEMS = [{text: 'Lorem Ipsum', orderIndex: 1},
-  {text: 'Dolor Sit', orderIndex: 2}
-]
+const ABOUT_ITEMS = [
+  { text: 'Lorem Ipsum', orderIndex: 1 },
+  { text: 'Dolor Sit', orderIndex: 2 },
+];
 
 // ─────────────────────────────────────────────
 // Reset
@@ -586,19 +594,13 @@ async function seedAbout() {
         subtitle: about.subtitle,
         main: about.main,
         complementary: about.complementary,
+        items: {
+          create: ABOUT_ITEMS,
+        },
       },
     });
   }
-  
-  for (const aboutItem of ABOUT_ITEMS) {
-    await prisma.aboutItem.create({
-      data: {
-        text: aboutItem.text,
-        orderIndex: aboutItem.orderIndex,
-      },
-    });
-  }
-  
+
   console.log(`Textos Sobre e itens criados`);
 }
 

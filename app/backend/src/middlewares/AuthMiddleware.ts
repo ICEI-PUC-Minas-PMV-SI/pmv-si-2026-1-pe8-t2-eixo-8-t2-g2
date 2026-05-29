@@ -23,6 +23,8 @@ class AuthMiddleware {
       '/gmail/webhook',
       '/google/webhook',
       '/dashboard',
+      '/catalog-categories',
+      '/catalog',
     ];
     const publicRoutesByMethod: Record<string, string[]> = {
       POST: ['/user'],

@@ -1,9 +1,5 @@
-import { CatalogService } from 'services/CatalogService';
-
-type ListPublicParams = {
-  category?: string;
-  search?: string;
-};
+import type { ListPublicParams } from '../@types/catalog.js';
+import { CatalogService } from '../services/CatalogService.js';
 
 class CatalogController {
   async listPublic({ category, search }: ListPublicParams) {

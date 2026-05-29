@@ -57,9 +57,7 @@ export function PublicCatalogLayout() {
                 strokeLinecap="round"
               />
             </svg>
-            <Text style={{ fontWeight: 700, fontSize: 16, color: '#333' }}>
-              Ateliê
-            </Text>
+            <Text style={{ fontWeight: 700, fontSize: 16, color: '#333' }}>Ateliê</Text>
           </Flex>
 
           {/* Botão de login */}

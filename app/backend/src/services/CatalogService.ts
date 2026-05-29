@@ -1,11 +1,7 @@
+import type { ListPublicParams } from '../@types/catalog';
 import { Prisma } from '../db/Prisma';
 import { AppError } from '../error/AppError';
 import { HttpCode } from '../utils/HttpCode';
-
-type ListPublicParams = {
-  category?: string;
-  search?: string;
-};
 
 /**
  * CatalogService
@@ -64,15 +60,19 @@ class CatalogService {
       price: p.price,
       estimatedMinPrice: p.estimatedMinPrice,
       estimatedMaxPrice: p.estimatedMaxPrice,
-      categories: p.categories.map((pc: { category: { id: string; name: string; slug: string } }) => ({
-        id: pc.category.id,
-        name: pc.category.name,
-        slug: pc.category.slug,
-      })),
-      characteristics: p.characteristics.map((pch: { characteristic: { id: string; name: string } }) => ({
-        id: pch.characteristic.id,
-        name: pch.characteristic.name,
-      })),
+      categories: p.categories.map(
+        (pc: { category: { id: string; name: string; slug: string } }) => ({
+          id: pc.category.id,
+          name: pc.category.name,
+          slug: pc.category.slug,
+        }),
+      ),
+      characteristics: p.characteristics.map(
+        (pch: { characteristic: { id: string; name: string } }) => ({
+          id: pch.characteristic.id,
+          name: pch.characteristic.name,
+        }),
+      ),
     }));
 
     return { data: publicProducts, total: publicProducts.length };
@@ -106,15 +106,19 @@ class CatalogService {
       estimatedMinPrice: product.estimatedMinPrice,
       estimatedMaxPrice: product.estimatedMaxPrice,
       bookingLeadDays: product.bookingLeadDays,
-      categories: product.categories.map((pc: { category: { id: string; name: string; slug: string } }) => ({
-        id: pc.category.id,
-        name: pc.category.name,
-        slug: pc.category.slug,
-      })),
-      characteristics: product.characteristics.map((pch: { characteristic: { id: string; name: string } }) => ({
-        id: pch.characteristic.id,
-        name: pch.characteristic.name,
-      })),
+      categories: product.categories.map(
+        (pc: { category: { id: string; name: string; slug: string } }) => ({
+          id: pc.category.id,
+          name: pc.category.name,
+          slug: pc.category.slug,
+        }),
+      ),
+      characteristics: product.characteristics.map(
+        (pch: { characteristic: { id: string; name: string } }) => ({
+          id: pch.characteristic.id,
+          name: pch.characteristic.name,
+        }),
+      ),
     };
   }
 

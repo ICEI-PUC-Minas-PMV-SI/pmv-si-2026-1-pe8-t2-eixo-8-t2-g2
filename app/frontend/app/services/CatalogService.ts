@@ -1,3 +1,5 @@
+import Request from '~/utils/Request';
+
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export type PublicProduct = {
@@ -50,7 +52,13 @@ export const CatalogService = {
   },
 
   /** Lista as categorias ativas para o filtro do catálogo */
-  async listCategories(): Promise<ListResponse<PublicCategory>> {
-    return get<ListResponse<PublicCategory>>('/catalog-categories');
+  async listCategories() {
+    return Request.getTableData<PublicCategory>('/catalog-categories', {
+      filters: [] as any,
+      search: '',
+      page: 1,
+      pageSize: 100,
+      sorters: [],
+    });
   },
 };

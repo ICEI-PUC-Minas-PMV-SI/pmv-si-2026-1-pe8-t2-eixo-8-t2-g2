@@ -8,23 +8,48 @@ import {
   Button,
   Input,
   Tabs,
-  Tag,
   Spin,
   Empty,
   Flex,
 } from 'antd';
-import { SearchOutlined, ShoppingOutlined } from '@ant-design/icons';
-import { CatalogService, type PublicProduct, type PublicCategory } from '~/services/CatalogService';
+import { SearchOutlined } from '@ant-design/icons';
+import {
+  CatalogService,
+  type PublicProduct,
+  type PublicCategory,
+} from '~/services/CatalogService';
 import { Modal } from 'antd';
 
 // Versão alternativa embutida para ProductDetailModal, para evitar dependências circulares e simplificar a estrutura do projeto.
-function ProductDetailModal({ product, open, onClose }: { product: PublicProduct | null; open: boolean; onClose: () => void }) {
+function ProductDetailModal({
+  product,
+  open,
+  onClose,
+}: {
+  product: PublicProduct | null;
+  open: boolean;
+  onClose: () => void;
+}) {
   return (
-    <Modal title={product?.name ?? 'Produto'} open={open} onOk={onClose} onCancel={onClose} okText="Fechar">
+    <Modal
+      title={product?.name ?? 'Produto'}
+      open={open}
+      onOk={onClose}
+      onCancel={onClose}
+      okText="Fechar"
+    >
       {product ? (
         <div>
-          <p><strong>Preço:</strong> {product.price?.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</p>
-          <p><strong>Descrição:</strong></p>
+          <p>
+            <strong>Preço:</strong>{' '}
+            {product.price?.toLocaleString('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            })}
+          </p>
+          <p>
+            <strong>Descrição:</strong>
+          </p>
           <p>{(product as any).description ?? '—'}</p>
         </div>
       ) : (
@@ -81,23 +106,20 @@ export function CatalogPage() {
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  const fetchProducts = useCallback(
-    async (category?: string, searchTerm?: string) => {
-      setLoading(true);
-      try {
-        const params: { category?: string; search?: string } = {};
-        if (category && category !== 'todos') params.category = category;
-        if (searchTerm?.trim()) params.search = searchTerm.trim();
-        const res = await CatalogService.list(params);
-        setProducts(res.data);
-      } catch (err) {
-        console.error('Erro ao carregar catálogo:', err);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const fetchProducts = useCallback(async (category?: string, searchTerm?: string) => {
+    setLoading(true);
+    try {
+      const params: { category?: string; search?: string } = {};
+      if (category && category !== 'todos') params.category = category;
+      if (searchTerm?.trim()) params.search = searchTerm.trim();
+      const res = await CatalogService.list(params);
+      setProducts(res.data);
+    } catch (err) {
+      console.error('Erro ao carregar catálogo:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -135,7 +157,9 @@ export function CatalogPage() {
 
   return (
     <Layout style={{ minHeight: '100vh', background: '#fff' }}>
-      <Content style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 16px', width: '100%' }}>
+      <Content
+        style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 16px', width: '100%' }}
+      >
         {/* Cabeçalho da seção */}
         <Flex justify="space-between" align="flex-start" style={{ marginBottom: 4 }}>
           <div>
@@ -173,10 +197,7 @@ export function CatalogPage() {
             <Spin size="large" />
           </Flex>
         ) : products.length === 0 ? (
-          <Empty
-            description="Nenhum produto encontrado"
-            style={{ padding: '64px 0' }}
-          />
+          <Empty description="Nenhum produto encontrado" style={{ padding: '64px 0' }} />
         ) : (
           <Row gutter={[16, 24]}>
             {products.map((product) => (
@@ -236,7 +257,12 @@ function ProductCard({ product, onViewDetails }: ProductCardProps) {
         </div>
       }
       styles={{ body: { padding: '12px 16px 16px' } }}
-      style={{ borderRadius: 8, height: '100%', display: 'flex', flexDirection: 'column' }}
+      style={{
+        borderRadius: 8,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
     >
       <Flex vertical gap={4} style={{ flex: 1 }}>
         <Text strong style={{ fontSize: 15, lineHeight: '1.3', color: '#222' }}>
@@ -249,9 +275,7 @@ function ProductCard({ product, onViewDetails }: ProductCardProps) {
           </Text>
         )}
 
-        <Text
-          style={{ color: '#E06D5B', fontWeight: 700, fontSize: 15, marginTop: 4 }}
-        >
+        <Text style={{ color: '#E06D5B', fontWeight: 700, fontSize: 15, marginTop: 4 }}>
           {formatPrice(product.price)}
         </Text>
 

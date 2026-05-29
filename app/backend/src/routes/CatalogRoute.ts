@@ -1,7 +1,8 @@
 import { Router, type Application } from 'express';
-import { CatalogController } from 'controllers/CatalogController';
-import type { Response } from '@types';
+import { CatalogController } from '../controllers/CatalogController.js';
+import type { Response } from '../@types/index.js';
 import type { Request } from 'express';
+import { TypeCheck } from '../utils/TypeCheck.js';
 
 class CatalogRoute {
   register(app: Application) {
@@ -9,9 +10,11 @@ class CatalogRoute {
 
     // GET /catalog — lista pública de produtos ativos (sem autenticação)
     router.get('/catalog', async (req: Request, res: Response) => {
-      const category = req.query.category as string | undefined;
-      const search = req.query.search as string | undefined;
-      const result = await CatalogController.listPublic({ category, search });
+      const { category, search } = req.query;
+      const result = await CatalogController.listPublic({
+        category: TypeCheck.isString(category) ? category : '',
+        search: TypeCheck.isString(search) ? search : '',
+      });
       res.json(result);
     });
 
