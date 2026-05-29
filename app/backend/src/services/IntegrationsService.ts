@@ -1,14 +1,14 @@
-import type { IntegrationsPayload } from '../@types';
-import { Prisma } from '../db/Prisma';
-import { GoogleApi } from '../integration/GoogleApi';
+import type { IntegrationsPayload } from '../@types/index.js';
+import { Prisma } from '../db/Prisma.js';
+import { GoogleApi } from '../integration/GoogleApi.js';
 import type {
   GoogleIntegrationUpdateInput,
   GoogleIntegrationWhereInput,
   TransactionClient,
-} from '../generated/prisma/internal/prismaNamespace';
-import { HttpCode } from '../utils/HttpCode';
-import { AppError } from '../error/AppError';
-import { Crypt } from '../utils/Crypt';
+} from '../generated/prisma/internal/prismaNamespace.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { AppError } from '../error/AppError.js';
+import { Crypt } from '../utils/Crypt.js';
 
 type IntegrationType = 'calendar' | 'gmail' | 'all';
 

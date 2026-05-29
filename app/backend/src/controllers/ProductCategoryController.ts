@@ -1,5 +1,5 @@
-import type { ProductCategoryCreatePayload, PaginationParams } from '../@types';
-import { ProductCategoryService } from '../services/ProductCategoryService';
+import type { ProductCategoryCreatePayload, PaginationParams } from '../@types/index.js';
+import { ProductCategoryService } from '../services/ProductCategoryService.js';
 
 class ProductCategoryController {
   async create(category: ProductCategoryCreatePayload) {
@@ -18,11 +18,10 @@ class ProductCategoryController {
   async delete(id: string) {
     return ProductCategoryService.delete(id);
   }
-  
+
   async reorder(categories: { id: string; orderIndex: number }[]) {
     return ProductCategoryService.reorder(categories);
   }
-
 }
 
 const instance = new ProductCategoryController();

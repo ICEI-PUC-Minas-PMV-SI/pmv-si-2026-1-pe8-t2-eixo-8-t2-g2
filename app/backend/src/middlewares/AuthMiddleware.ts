@@ -1,10 +1,15 @@
-import { AppError } from '../error/AppError';
-import type { Response, NextFunction, Application, GenericRequest } from '../@types';
-import { HttpCode } from '../utils/HttpCode';
-import { JWT } from '../utils/JWT';
-import { ResponseUtil } from '../utils/ResponseUtil';
+import { AppError } from '../error/AppError.js';
+import type {
+  Response,
+  NextFunction,
+  Application,
+  GenericRequest,
+} from '../@types/index.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { JWT } from '../utils/JWT.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
 import z from 'zod';
-import { RequestUtil } from '../utils/RequestUtil';
+import { RequestUtil } from '../utils/RequestUtil.js';
 
 class AuthMiddleware {
   priority = 1;

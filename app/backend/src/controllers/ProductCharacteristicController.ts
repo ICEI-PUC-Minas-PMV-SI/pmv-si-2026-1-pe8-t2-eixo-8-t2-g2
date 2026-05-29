@@ -1,5 +1,8 @@
-import type { ProductCharacteristicCreatePayload, PaginationParams } from '../@types';
-import { ProductCharacteristicService } from '../services/ProductCharacteristicService';
+import type {
+  ProductCharacteristicCreatePayload,
+  PaginationParams,
+} from '../@types/index.js';
+import { ProductCharacteristicService } from '../services/ProductCharacteristicService.js';
 
 class ProductCharacteristicController {
   async create(characteristic: ProductCharacteristicCreatePayload) {

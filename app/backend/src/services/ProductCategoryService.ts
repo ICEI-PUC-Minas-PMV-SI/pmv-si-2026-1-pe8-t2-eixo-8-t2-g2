@@ -1,7 +1,7 @@
-import { Prisma } from '../db/Prisma';
-import type { ProductCategoryCreatePayload, PaginationParams } from '../@types';
-import { Text } from '../utils/Text';
-import { ResponseUtil } from '../utils/ResponseUtil';
+import { Prisma } from '../db/Prisma.js';
+import type { ProductCategoryCreatePayload, PaginationParams } from '../@types/index.js';
+import { Text } from '../utils/Text.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
 
 class ProductCategoryService {
   async create(category: ProductCategoryCreatePayload) {

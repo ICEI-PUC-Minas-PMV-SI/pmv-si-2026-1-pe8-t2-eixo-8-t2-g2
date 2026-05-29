@@ -1,12 +1,11 @@
-import { Router, type Application } from 'express';
-import { ProductValidation } from '../validations/ProductValidation';
-import { ProductCharacteristicController } from '../controllers/ProductCharacteristicController';
-import type { GenericRequest, Response } from '../@types';
-import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
+import { type Router } from 'express';
+import { ProductValidation } from '../validations/ProductValidation.js';
+import { ProductCharacteristicController } from '../controllers/ProductCharacteristicController.js';
+import type { GenericRequest, Response } from '../@types/index.js';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 
 class ProductCharacteristicRoute {
-  register(app: Application) {
-    const router = Router();
+  register(router: Router) {
     router.post(
       '/product-characteristic',
       UserScopeMiddleware.adminOnly(),
@@ -60,8 +59,6 @@ class ProductCharacteristicRoute {
         res.status(204).send();
       },
     );
-
-    app.use(router);
   }
 }
 

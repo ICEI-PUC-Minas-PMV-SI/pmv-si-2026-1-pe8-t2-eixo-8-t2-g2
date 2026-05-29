@@ -1,13 +1,13 @@
-import { AppError } from '../error/AppError';
-import type { IntegrationType } from '../generated/prisma/enums';
-import type { GoogleIntegrationUpdateInput } from '../generated/prisma/models';
-import { IntegrationsService } from '../services/IntegrationsService';
-import type { IntegrationsPayload } from '../@types';
-import { GoogleApi } from '../integration/GoogleApi';
-import { Crypt } from '../utils/Crypt';
-import { Logger } from '../logger/Logger';
-import { GoogleCalendarApi } from '../integration/GoogleCalendarApi';
-import { SMTP } from '../utils/SMTP';
+import { AppError } from '../error/AppError.js';
+import type { IntegrationType } from '../generated/prisma/enums.js';
+import type { GoogleIntegrationUpdateInput } from '../generated/prisma/models.js';
+import { IntegrationsService } from '../services/IntegrationsService.js';
+import type { IntegrationsPayload } from '../@types/index.js';
+import { GoogleApi } from '../integration/GoogleApi.js';
+import { Crypt } from '../utils/Crypt.js';
+import { Logger } from '../logger/Logger.js';
+import { GoogleCalendarApi } from '../integration/GoogleCalendarApi.js';
+import { SMTP } from '../utils/SMTP.js';
 
 class IntegrationsController {
   private logger = new Logger('IntegrationsController');

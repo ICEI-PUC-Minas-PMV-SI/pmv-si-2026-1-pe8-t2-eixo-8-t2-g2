@@ -1,6 +1,6 @@
-import { Prisma } from '../db/Prisma';
-import type { AboutCreatePayload } from '../@types';
-import DashboardService from './DashboardService';
+import { Prisma } from '../db/Prisma.js';
+import type { AboutCreatePayload } from '../@types/index.js';
+import DashboardService from './DashboardService.js';
 
 class AboutService {
   async create(about: AboutCreatePayload) {

@@ -1,13 +1,13 @@
-import { Prisma } from '../db/Prisma';
-import type { PaginationParams, ProductCreatePayload } from '../@types';
-import { Text } from '../utils/Text';
-import { ResponseUtil } from '../utils/ResponseUtil';
+import { Prisma } from '../db/Prisma.js';
+import type { PaginationParams, ProductCreatePayload } from '../@types/index.js';
+import { Text } from '../utils/Text.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
 import type {
   ProductOrderByWithRelationInput,
   ProductWhereInput,
-} from '../generated/prisma/models';
-import { HttpCode } from '../utils/HttpCode';
-import { AppError } from '../error/AppError';
+} from '../generated/prisma/models.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { AppError } from '../error/AppError.js';
 
 class ProductService {
   async create(product: ProductCreatePayload) {

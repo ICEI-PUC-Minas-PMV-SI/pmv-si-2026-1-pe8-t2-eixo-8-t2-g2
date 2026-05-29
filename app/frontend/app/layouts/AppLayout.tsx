@@ -7,7 +7,7 @@ export function AppLayout() {
     <Layout style={{ height: '100vh' }}>
       <AppHeader />
 
-      <Layout.Content style={{ flex: 1, display: 'flex' }}>
+      <Layout.Content style={{ flex: 1 }}>
         <Outlet />
       </Layout.Content>
     </Layout>

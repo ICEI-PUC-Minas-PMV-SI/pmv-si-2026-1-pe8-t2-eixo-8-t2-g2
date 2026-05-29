@@ -1,20 +1,20 @@
 import ms from 'ms';
-import { Crypt } from '../utils/Crypt';
-import { HttpCode } from '../utils/HttpCode';
-import { OTPUtil } from '../utils/OTPUtil';
-import { SMTP } from '../utils/SMTP';
-import type { PaginationParams, UserCreatePayload } from '../@types';
-import { Prisma } from '../db/Prisma';
-import type { User } from '../generated/prisma/client';
-import { AppError } from '../error/AppError';
-import { OTPTemplate } from '../templates/email/OTPTemplate';
+import { Crypt } from '../utils/Crypt.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { OTPUtil } from '../utils/OTPUtil.js';
+import { SMTP } from '../utils/SMTP.js';
+import type { PaginationParams, UserCreatePayload } from '../@types/index.js';
+import { Prisma } from '../db/Prisma.js';
+import type { User } from '../generated/prisma/client.js';
+import { AppError } from '../error/AppError.js';
+import { OTPTemplate } from '../templates/email/OTPTemplate.js';
 import type {
   UserOrderByWithRelationInput,
   UserSelect,
   UserWhereInput,
-} from '../generated/prisma/models';
-import { PasswordResetTemplate } from '../templates/email/PasswordResetTemplate';
-import { ResponseUtil } from '../utils/ResponseUtil';
+} from '../generated/prisma/models.js';
+import { PasswordResetTemplate } from '../templates/email/PasswordResetTemplate.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
 
 const userSelect = {
   id: true,

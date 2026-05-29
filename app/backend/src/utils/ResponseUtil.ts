@@ -1,8 +1,8 @@
-import type { Response } from '../@types';
-import { AppError } from '../error/AppError';
-import { Prisma } from '../generated/prisma/client';
-import { PrismaError } from './PrismaError';
-import { Logger } from '../logger/Logger';
+import type { Response } from '../@types/index.js';
+import { AppError } from '../error/AppError.js';
+import { Prisma } from '../generated/prisma/client.js';
+import { PrismaError } from './PrismaError.js';
+import { Logger } from '../logger/Logger.js';
 
 type SuccessResponse = {
   statusCode?: number;

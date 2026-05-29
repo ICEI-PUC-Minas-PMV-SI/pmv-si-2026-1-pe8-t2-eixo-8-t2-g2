@@ -1,4 +1,4 @@
-import { HttpCode } from '../utils/HttpCode';
+import { HttpCode } from '../utils/HttpCode.js';
 
 class PrismaError {
   get(code: string, data?: any) {

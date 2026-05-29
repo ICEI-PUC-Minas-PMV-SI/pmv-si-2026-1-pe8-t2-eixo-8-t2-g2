@@ -1,12 +1,11 @@
-import { Router, type Application } from 'express';
-import { ProductValidation } from '../validations/ProductValidation';
-import type { GenericRequest, Response } from '../@types';
-import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
-import { ProductCategoryController } from '../controllers/ProductCategoryController';
+import { type Router } from 'express';
+import { ProductValidation } from '../validations/ProductValidation.js';
+import type { GenericRequest, Response } from '../@types/index.js';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
+import { ProductCategoryController } from '../controllers/ProductCategoryController.js';
 
 class ProductCategoryRoute {
-  register(app: Application) {
-    const router = Router();
+  register(router: Router) {
     router.post(
       '/product-category',
       UserScopeMiddleware.adminOnly(),
@@ -60,8 +59,6 @@ class ProductCategoryRoute {
       const result = await ProductCategoryController.reorder(categories);
       res.json(result);
     });
-
-    app.use(router);
   }
 }
 

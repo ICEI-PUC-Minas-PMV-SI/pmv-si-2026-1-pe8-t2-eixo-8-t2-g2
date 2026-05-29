@@ -1,9 +1,9 @@
 import z from 'zod';
-import type { Response, NextFunction, GenericRequest } from '../@types';
-import { ErrorValidation } from './ErrorValidation';
-import { AppError } from '../error/AppError';
-import { HttpCode } from '../utils/HttpCode';
-import { UserRole } from './UserValidation';
+import type { Response, NextFunction, GenericRequest } from '../@types/index.js';
+import { ErrorValidation } from './ErrorValidation.js';
+import { AppError } from '../error/AppError.js';
+import { HttpCode } from '../utils/HttpCode.js';
+import { UserRole } from './UserValidation.js';
 
 class SchedulerValidation {
   create = (req: GenericRequest, res: Response, next: NextFunction) => {

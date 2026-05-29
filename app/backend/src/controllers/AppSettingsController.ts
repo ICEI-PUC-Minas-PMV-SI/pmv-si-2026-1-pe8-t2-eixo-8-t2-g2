@@ -1,5 +1,5 @@
-import { AppSettingsService } from '../services/AppSettingsService';
-import type { AppSettingsCreateInput } from '../generated/prisma/models';
+import { AppSettingsService } from '../services/AppSettingsService.js';
+import type { AppSettingsCreateInput } from '../generated/prisma/models.js';
 
 class AppSettingsController {
   async find() {

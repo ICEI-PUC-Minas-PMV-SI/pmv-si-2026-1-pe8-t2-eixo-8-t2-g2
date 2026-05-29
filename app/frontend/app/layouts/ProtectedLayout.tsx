@@ -11,7 +11,8 @@ export function ProtectedLayout() {
   const isMobile = !Grid.useBreakpoint().lg;
   const [open, setOpen] = useState(false);
   if (!user || !user.role) {
-    return <Navigate to={ROUTES.HOME} />;
+    return <Navigate to="/login" replace />;
+    // return <></>; //<Navigate to={ROUTES.HOME} />;
   }
 
   return (

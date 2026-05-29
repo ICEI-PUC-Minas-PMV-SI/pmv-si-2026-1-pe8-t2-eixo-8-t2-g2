@@ -1,15 +1,15 @@
-import type { Application } from 'express';
-import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware';
-import DashboardService from '../services/DashboardService';
+import type { Router } from 'express';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
+import DashboardService from '../services/DashboardService.js';
 
 class DashboardRoute {
-  register(app: Application) {
-    app.get('/dashboard-today', UserScopeMiddleware.adminOnly(), async (_req, res) => {
+  register(router: Router) {
+    router.get('/dashboard-today', UserScopeMiddleware.adminOnly(), async (_req, res) => {
       const data = await DashboardService.overviewToday();
       res.json({ data });
     });
 
-    app.get(
+    router.get(
       '/dashboard-latest-months',
       UserScopeMiddleware.adminOnly(),
       async (_req, res) => {
@@ -18,7 +18,7 @@ class DashboardRoute {
       },
     );
 
-    app.get(
+    router.get(
       '/dashboard-latest-months-revenue',
       UserScopeMiddleware.adminOnly(),
       async (_req, res) => {
@@ -27,7 +27,7 @@ class DashboardRoute {
       },
     );
 
-    app.get(
+    router.get(
       '/dashboard-top-products',
       UserScopeMiddleware.adminOnly(),
       async (_req, res) => {
@@ -36,7 +36,7 @@ class DashboardRoute {
       },
     );
 
-    app.get(
+    router.get(
       '/dashboard-deliveries-today',
       UserScopeMiddleware.adminOnly(),
       async (_req, res) => {

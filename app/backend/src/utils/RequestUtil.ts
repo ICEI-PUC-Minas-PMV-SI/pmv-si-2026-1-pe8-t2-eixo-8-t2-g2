@@ -1,7 +1,7 @@
 import rateLimit from 'express-rate-limit';
 import ms from 'ms';
-import type { GenericRequest } from '../@types';
-import { JWT } from '../utils/JWT';
+import type { GenericRequest } from '../@types/index.js';
+import { JWT } from '../utils/JWT.js';
 import type { AxiosRequestConfig } from 'axios';
 import axios from 'axios';
 

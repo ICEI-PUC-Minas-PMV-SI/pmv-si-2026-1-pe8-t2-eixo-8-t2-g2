@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { LoginPage } from './components/login/LoginPage';
 import { AppLayout } from './layouts/AppLayout';
 import { ProtectedLayout } from './layouts/ProtectedLayout';
-import { PublicCatalogLayout } from './layouts/PublicCatalogLayout';
 import { DashboardPage } from './components/dashboard/DashboardPage';
 import { SchedulerPage } from './components/scheduler/SchedulerPage';
 import { ProductPage } from './components/product/ProductPage';
@@ -21,26 +20,20 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<ProtectedLayout />}>
+        <Route path="/app" element={<ProtectedLayout />}>
           <Route index element={<Navigate to="/scheduler" />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/scheduler" element={<SchedulerPage />} />
-          <Route path="/product" element={<ProductPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/about" element={<AboutUsPage />} />
-          <Route path="/cost-calculator" element={<CostCalculator />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/users" element={<UserPage />} />
-        </Route>
-
-        {/* Catálogo público com layout próprio (sidebar + header com logo/login) */}
-        <Route element={<PublicCatalogLayout />}>
-          <Route path="/" element={<Navigate to="/catalogo" replace />} />
-          <Route path="/home" element={<Navigate to="/catalogo" replace />} />
-          <Route path="/catalogo" element={<CatalogPage />} />
+          <Route path="/app/dashboard" element={<DashboardPage />} />
+          <Route path="/app/scheduler" element={<SchedulerPage />} />
+          <Route path="/app/product" element={<ProductPage />} />
+          <Route path="/app/settings" element={<SettingsPage />} />
+          <Route path="/app/about" element={<AboutUsPage />} />
+          <Route path="/app/cost-calculator" element={<CostCalculator />} />
+          <Route path="/app/cart" element={<CartPage />} />
+          <Route path="/app/users" element={<UserPage />} />
         </Route>
 
         <Route element={<AppLayout />}>
+          <Route path="/" element={<CatalogPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

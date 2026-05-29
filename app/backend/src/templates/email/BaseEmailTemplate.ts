@@ -1,7 +1,7 @@
 import path from 'node:path';
-import { EmailColors } from './EmailColors';
+import { EmailColors } from './EmailColors.js';
 import type { Attachment } from 'nodemailer/lib/mailer/index';
-import { Env } from '../../utils/Env';
+import { Env } from '../../utils/Env.js';
 
 export type BaseTemplateOptions = {
   title: string;

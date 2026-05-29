@@ -1,5 +1,5 @@
-import type { AboutCreatePayload } from '../@types';
-import { AboutService } from '../services/AboutService';
+import type { AboutCreatePayload } from '../@types/index.js';
+import { AboutService } from '../services/AboutService.js';
 
 class AboutController {
   async create(data: AboutCreatePayload) {
