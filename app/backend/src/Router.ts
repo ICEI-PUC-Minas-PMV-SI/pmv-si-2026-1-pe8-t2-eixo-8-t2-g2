@@ -12,13 +12,11 @@ import { AppSettingsRoute } from './routes/AppSettingsRoute.js';
 import { IntegrationsRoute } from './routes/IntegrationsRoute.js';
 import { AboutRoute } from './routes/AboutRoute.js';
 import { Router as RouterExpress } from 'express';
-import { CatalogRoute } from './routes/CatalogRoute.js';
 class Router {
   register(app: Application) {
     const router = RouterExpress();
     AuthRoute.register(router);
     ProductCategoryRoute.register(router);
-    CatalogRoute.register(router);
     ProductCharacteristicRoute.register(router);
     ProductRoute.register(router);
     SchedulerRoute.register(router);

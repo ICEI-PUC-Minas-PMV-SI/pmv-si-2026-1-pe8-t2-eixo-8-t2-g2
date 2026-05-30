@@ -28,8 +28,6 @@ class AuthMiddleware {
       '/gmail/webhook',
       '/google/webhook',
       '/dashboard',
-      '/catalog-categories',
-      '/catalog',
       '/product-list',
       '/product-category-list',
     ];
