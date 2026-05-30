@@ -5,15 +5,13 @@ import { AppFooter } from '~/components/footer';
 import AppHeader from '~/components/header/AppHeader';
 import Menu from '~/components/menu/Menu';
 import { useAuthStore } from '~/hooks/useAuthStore';
-import { ROUTES } from '~/hooks/useNavigation';
 
 export function ProtectedLayout() {
   const user = useAuthStore((state) => state.user);
   const isMobile = !Grid.useBreakpoint().lg;
   const [open, setOpen] = useState(false);
   if (!user || !user.role) {
-    return <Navigate to="/login" replace />;
-    // return <></>; //<Navigate to={ROUTES.HOME} />;
+    return <Navigate to="/" replace />;
   }
 
   return (

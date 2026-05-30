@@ -42,7 +42,7 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
   const [scrolled, setScrolled] = useState(false);
   const { isLogged, logout, user } = useAuthStore();
   const { pathname } = useLocation();
-  const { goToLogin, goToSchedulers, goToSettings } = useNavigation();
+  const { goToLogin, goToSchedulers, goToSettings, goToHome } = useNavigation();
   const menuItems = [
     {
       key: 'orders',
@@ -77,7 +77,7 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
 
       case 'logout':
         logout();
-        // goToLogin();
+        goToHome();
         break;
     }
   };
