@@ -129,13 +129,13 @@ model ProductCharacteristic {
 }
 
 model Product {
-  id                     String  @id @default(uuid())
-  name                   String
-  slug                   String  @unique
-  description            String?
-  price                  Float   @default(0)
-  bookingLeadMinutes     Int     @default(0)
-  isActive               Boolean @default(true)
+  id                 String  @id @default(uuid())
+  name               String
+  slug               String  @unique
+  description        String?
+  price              Float   @default(0)
+  bookingLeadMinutes Int     @default(0)
+  isActive           Boolean @default(true)
 
   categories      ProductCategory[]
   schedulerItems  SchedulerItem[]
@@ -180,6 +180,28 @@ enum IntegrationType {
   all
 }
 
+enum PaymentType {
+  deposit // sinal (ex: 50% antecipado)
+  remainder // restante (pagamento final)
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  schedulerId String
+  scheduler   Scheduler @relation(fields: [schedulerId], references: [id], onDelete: Cascade)
+
+  amount        Float
+  paymentMethod PaymentMethod
+  type          PaymentType
+
+  note String?
+
+  createdAt DateTime @default(now())
+
+  @@index([schedulerId])
+}
+
 enum PaymentMethod {
   credit_card
   debit_card
@@ -206,8 +228,8 @@ model Scheduler {
   cancellationReason String?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @default(now()) @updatedAt
-
-  googleEventId String?
+  payments           Payment[]
+  googleEventId      String?
 }
 
 model GoogleCredentials {

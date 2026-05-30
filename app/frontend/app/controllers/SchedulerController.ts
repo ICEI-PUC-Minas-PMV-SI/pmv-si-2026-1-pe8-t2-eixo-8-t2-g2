@@ -1,4 +1,5 @@
-import type { Scheduler, CreateScheduler } from '~/@types/scheduler';
+import type { Scheduler, CreateScheduler, SchedulerStatus } from '~/@types/scheduler';
+import type { RegisterPaymentPayload } from '~/components/payment/PaymentModal';
 import type { TableParams } from '~/hooks/useTableQuery';
 import Request from '~/utils/Request';
 
@@ -52,6 +53,15 @@ class SchedulerController {
 
   async syncUnsyncedSchedulers() {
     const result = await Request.post(`/scheduler/sync-unsynced-schedulers`);
+    return result;
+  }
+
+  async updateStatus({ id, status }: { id: string; status: SchedulerStatus }) {
+    const result = await Request.patch(`/scheduler-status`, { id, status });
+    return result;
+  }
+  async registerPayment(payment: RegisterPaymentPayload) {
+    const result = await Request.post(`/scheduler-payment`, payment);
     return result;
   }
 }

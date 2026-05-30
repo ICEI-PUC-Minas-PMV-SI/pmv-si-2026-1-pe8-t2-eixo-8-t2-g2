@@ -1,6 +1,26 @@
-import { Button, Input, Space, Table, Tag, Tooltip, Typography } from 'antd';
+import {
+  Button,
+  Input,
+  Space,
+  Table,
+  Tag,
+  Tooltip,
+  Typography,
+  Dropdown,
+  Flex,
+  message,
+  Progress,
+} from 'antd';
 import { useState } from 'react';
-import { CloseCircleOutlined, EditOutlined } from '@ant-design/icons';
+import {
+  CloseCircleOutlined,
+  EditOutlined,
+  DownOutlined,
+  DollarOutlined,
+  PlayCircleOutlined,
+  CheckOutlined,
+  ClockCircleOutlined,
+} from '@ant-design/icons';
 import type { PaymentMethod } from '~/@types/payment';
 import type {
   DeliveryType,
@@ -8,7 +28,6 @@ import type {
   SchedulerItem,
   SchedulerStatus,
 } from '~/@types/scheduler';
-
 import { PaymentMethodMap } from '~/constants/PaymentMethod';
 import DateUtil from '~/utils/DateUtil';
 import { SchedulerStatusTag } from './SchedulerStatusTag';
@@ -19,15 +38,143 @@ import { useTableQuery } from '~/hooks/useTableQuery';
 import { SchedulerCancel } from './SchedulerCancel';
 import NumberUtil from '~/utils/NumberUtil';
 import { useAuthStore } from '~/hooks/useAuthStore';
+import { PaymentModal, type RegisterPaymentPayload } from '../payment/PaymentModal';
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const getOrderTotal = (items: SchedulerItem[]): number =>
+  items.reduce((acc, item) => acc + (item.priceAtBooking ?? 0) * item.quantity, 0);
 
 const getItemColumnText = (items: SchedulerItem[]) => {
-  const itemsCount = items.length;
-  const price = items.reduce((acc, cv) => {
-    acc += cv.quantity * cv.priceAtBooking;
-    return acc;
-  }, 0);
-  return `${itemsCount} ${itemsCount > 1 ? 'itens' : 'item'} - Preço (estimado): ${NumberUtil.currency(price)}`;
+  const count = items.length;
+  const price = getOrderTotal(items);
+  return `${count} ${count > 1 ? 'itens' : 'item'} · ${NumberUtil.currency(price)} est.`;
 };
+
+// Quais status podem ser atingidos manualmente a partir do status atual
+const STATUS_TRANSITIONS: Partial<
+  Record<SchedulerStatus, { value: SchedulerStatus; label: string; color: string }[]>
+> = {
+  pending: [
+    { value: 'confirmed', label: 'Confirmar', color: '#1677FF' },
+    { value: 'in_progress', label: 'Iniciar produção', color: '#722ED1' },
+  ],
+  confirmed: [{ value: 'in_progress', label: 'Iniciar produção', color: '#722ED1' }],
+  in_progress: [{ value: 'completed', label: 'Marcar como concluído', color: '#52C41A' }],
+};
+
+// Ícone por status
+const STATUS_ICON: Partial<Record<SchedulerStatus, React.ReactNode>> = {
+  confirmed: <CheckOutlined />,
+  in_progress: <PlayCircleOutlined />,
+  completed: <CheckOutlined />,
+  pending: <ClockCircleOutlined />,
+};
+
+// ─── PaymentProgressCell ──────────────────────────────────────────────────────
+
+function PaymentProgressCell({
+  scheduler,
+  onPayClick,
+}: {
+  scheduler: Scheduler & { payments?: any[] };
+  onPayClick: () => void;
+}) {
+  const total = getOrderTotal(scheduler.items);
+  const paid = (scheduler.payments ?? []).reduce(
+    (acc: number, p: any) => acc + p.amount,
+    0,
+  );
+  const percent = total > 0 ? Math.round((paid / total) * 100) : 0;
+  const isFullyPaid = paid >= total && total > 0;
+
+  return (
+    <Flex vertical gap={4} style={{ minWidth: 130 }}>
+      <Flex justify="space-between" align="center">
+        <Typography.Text
+          style={{ padding: 2, fontSize: 12, color: isFullyPaid ? '#389E0D' : '#AD6800' }}
+        >
+          {isFullyPaid ? '✓ Quitado' : `${percent}% pago`}
+        </Typography.Text>
+        {!isFullyPaid && (
+          <Button
+            type="primary"
+            size="small"
+            icon={<DollarOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPayClick();
+            }}
+            style={{ padding: 2, height: 'auto', fontSize: 12 }}
+          >
+            Registrar
+          </Button>
+        )}
+      </Flex>
+      <Progress
+        percent={percent}
+        size={[120, 5]}
+        strokeColor={isFullyPaid ? '#52C41A' : '#FAAD14'}
+        railColor="#F0F0F0"
+        showInfo={false}
+      />
+    </Flex>
+  );
+}
+
+// ─── StatusDropdown ───────────────────────────────────────────────────────────
+
+function StatusDropdown({
+  scheduler,
+  onStatusChange,
+}: {
+  scheduler: Scheduler;
+  onStatusChange: (id: string, status: SchedulerStatus) => Promise<void>;
+}) {
+  const transitions = STATUS_TRANSITIONS[scheduler.status] ?? [];
+
+  if (transitions.length === 0) {
+    return <SchedulerStatusTag status={scheduler.status} />;
+  }
+
+  const menuItems = transitions.map((t) => ({
+    key: t.value,
+    label: (
+      <Flex align="center" gap={6}>
+        <span style={{ color: t.color }}>{STATUS_ICON[t.value]}</span>
+        <span style={{ fontSize: 13 }}>{t.label}</span>
+      </Flex>
+    ),
+  }));
+
+  return (
+    <Dropdown
+      menu={{
+        items: menuItems,
+        onClick: ({ key, domEvent }) => {
+          domEvent.stopPropagation();
+          onStatusChange(scheduler.id, key as SchedulerStatus);
+        },
+      }}
+      trigger={['click']}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          cursor: 'pointer',
+        }}
+      >
+        <SchedulerStatusTag status={scheduler.status} />
+        <DownOutlined style={{ fontSize: 9, color: '#8C8C8C' }} />
+      </div>
+    </Dropdown>
+  );
+}
+
+// ─── SchedulerList ────────────────────────────────────────────────────────────
 
 export function SchedulerList({
   schedulerQuery,
@@ -37,7 +184,9 @@ export function SchedulerList({
   onEdit: (scheduler: Scheduler) => void;
 }) {
   const [cancelledSchedulerId, setCancelledSchedulerId] = useState<string | null>(null);
+  const [paymentScheduler, setPaymentScheduler] = useState<Scheduler | null>(null);
   const { isAdmin } = useAuthStore();
+
   const {
     tableProps,
     forceRefetch,
@@ -49,23 +198,59 @@ export function SchedulerList({
     clearSorters,
   } = schedulerQuery;
 
-  // 🔹 Filtros
+  // ── Filtros ──────────────────────────────────────────────────────────────
   const paymentFilters = Object.entries(PaymentMethodMap).map(([value, label]) => ({
     text: label,
     value,
   }));
-
   const deliveryFilters = [
     { text: 'Entrega', value: 'delivery' },
     { text: 'Retirada', value: 'pickup' },
   ];
-
   const statusFilters = [
     { text: 'Pendente', value: 'pending' },
     { text: 'Confirmado', value: 'confirmed' },
+    { text: 'Em produção', value: 'in_progress' },
     { text: 'Cancelado', value: 'cancelled' },
     { text: 'Finalizado', value: 'completed' },
   ];
+
+  // ── Ações ────────────────────────────────────────────────────────────────
+
+  const handleStatusChange = async (id: string, status: SchedulerStatus) => {
+    try {
+      await SchedulerController.updateStatus({ id, status });
+      message.success('Status atualizado com sucesso.');
+      forceRefetch();
+    } catch {
+      message.error('Erro ao atualizar o status.');
+    }
+  };
+
+  const handlePaymentConfirm = async (payload: RegisterPaymentPayload) => {
+    try {
+      // Registra o pagamento
+      await SchedulerController.registerPayment(payload);
+
+      // Determina novo status baseado no tipo de pagamento
+      const newStatus: SchedulerStatus =
+        payload.type === 'deposit' ? 'confirmed' : 'completed';
+
+      await SchedulerController.updateStatus({
+        id: payload.schedulerId,
+        status: newStatus,
+      });
+
+      message.success(
+        payload.type === 'deposit'
+          ? 'Sinal registrado! Pedido confirmado.'
+          : 'Pagamento final registrado! Pedido concluído.',
+      );
+      forceRefetch();
+    } catch {
+      message.error('Erro ao registrar pagamento.');
+    }
+  };
 
   return (
     <>
@@ -84,9 +269,19 @@ export function SchedulerList({
           }
         }}
       />
-      <Space
-        style={{ marginBottom: 8, display: 'flex', justifyContent: 'space-between' }}
-      >
+
+      {/* Modal: pagamento */}
+      {paymentScheduler && (
+        <PaymentModal
+          open={!!paymentScheduler}
+          onClose={() => setPaymentScheduler(null)}
+          onConfirm={handlePaymentConfirm}
+          scheduler={paymentScheduler}
+        />
+      )}
+
+      {/* Barra de ações */}
+      <Flex justify="space-between" align="center" style={{ marginBottom: 12 }} gap={8}>
         <Button
           onClick={() => {
             setSorters([]);
@@ -94,15 +289,17 @@ export function SchedulerList({
             setSearch('');
           }}
         >
-          Limpar filtros/ordenação
+          Limpar filtros
         </Button>
         <Input
           placeholder="Buscar..."
           value={params.search}
           onChange={(e) => setSearch(e.target.value)}
+          style={{ maxWidth: 260 }}
         />
-      </Space>
+      </Flex>
 
+      {/* Tabela */}
       <Table<Scheduler>
         {...tableProps}
         style={{ overflowX: 'auto' }}
@@ -116,27 +313,30 @@ export function SchedulerList({
               rowKey={(item) => item.product.id}
               size="small"
               columns={[
+                { title: 'Qtd.', dataIndex: 'quantity', width: 60 },
+                { title: 'Produto', render: (_, item) => item.product.name },
                 {
-                  title: 'Quantidade',
-                  dataIndex: 'quantity',
-                  width: 80,
+                  title: 'Customização',
+                  render: (_, item) => (
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {item.customization || '—'}
+                    </Typography.Text>
+                  ),
                 },
                 {
-                  title: 'Produto',
-                  render: (_, item) => item.product.name,
-                },
-                {
-                  title: 'Preço (estimado)',
+                  title: 'Preço est.',
                   render: (_, item) =>
-                    NumberUtil.currency(item.quantity * item.priceAtBooking),
+                    NumberUtil.currency((item.priceAtBooking ?? 0) * item.quantity),
                 },
               ]}
             />
           ),
         }}
         columns={[
+          // ── Cliente / Data ──────────────────────────────────────────────
           {
             hidden: !isAdmin(),
+            fixed: true,
             title: (
               <Space>
                 Cliente
@@ -147,9 +347,7 @@ export function SchedulerList({
                   ]}
                   activeSorters={params.sorters}
                   onSelect={updateSorter}
-                  onClear={() => {
-                    clearSorters(['customer_name', 'customer_date']);
-                  }}
+                  onClear={() => clearSorters(['customer_name', 'customer_date'])}
                 />
               </Space>
             ),
@@ -172,92 +370,133 @@ export function SchedulerList({
                   options={[{ key: 'scheduledAt', label: 'Data' }]}
                   activeSorters={params.sorters}
                   onSelect={updateSorter}
-                  onClear={() => {
-                    clearSorters(['scheduledAt']);
-                  }}
+                  onClear={() => clearSorters(['scheduledAt'])}
                 />
               </Space>
             ),
-            render: (value: Scheduler) => {
-              return new Date(value.scheduledAt).toLocaleString().replace(', ', ' às ');
-            },
+            render: (value: Scheduler) =>
+              new Date(value.scheduledAt).toLocaleString().replace(', ', ' às '),
             key: 'scheduledAt',
           },
+
           Table.EXPAND_COLUMN,
+
+          // ── Itens ───────────────────────────────────────────────────────
           {
             title: 'Itens',
             key: 'items',
             minWidth: 130,
-            responsive: ['xl', 'xxl', 'xxxl'],
+            responsive: ['xl', 'xxl'],
             render: (_, record) => (
-              <Typography.Text type="secondary">
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                 {getItemColumnText(record.items)}
               </Typography.Text>
             ),
           },
+
+          // ── Pagamento (método) ──────────────────────────────────────────
           {
             title: 'Pagamento',
             dataIndex: 'paymentMethod',
             filters: paymentFilters,
             filterMode: 'tree',
             filteredValue: (params.filters['paymentMethod'] as string[]) || [],
-            onFilter: (paymentMethod, record) => {
-              return record.paymentMethod === paymentMethod;
-            },
-            render: (v?: PaymentMethod) => (v ? <Tag>{PaymentMethodMap[v]}</Tag> : '—'),
+            onFilter: (v, record) => record.paymentMethod === v,
+            render: (v?: PaymentMethod) =>
+              v ? <Tag style={{ borderRadius: 20 }}>{PaymentMethodMap[v]}</Tag> : '—',
           },
 
+          // ── Progresso financeiro (novo) ──────────────────────────────────
+          {
+            title: 'Recebimento',
+            key: 'payment_progress',
+            hidden: !isAdmin(),
+            width: 160,
+            render: (_, record) => (
+              <PaymentProgressCell
+                scheduler={record as any}
+                onPayClick={() => setPaymentScheduler(record)}
+              />
+            ),
+          },
+
+          // ── Modalidade ──────────────────────────────────────────────────
           {
             title: 'Modalidade',
             dataIndex: 'deliveryType',
             filters: deliveryFilters,
             filterMode: 'tree',
             filteredValue: (params.filters['deliveryType'] as string[]) || [],
-            onFilter: (deliveryType, record) => {
-              return record.deliveryType === deliveryType;
-            },
+            onFilter: (v, record) => record.deliveryType === v,
             render: (v?: DeliveryType) => <DeliveryTag type={v} />,
           },
 
+          // ── Status (com dropdown de transição) ─────────────────────────
           {
             title: 'Status',
             dataIndex: 'status',
             filters: statusFilters,
             filterMode: 'tree',
             filteredValue: (params.filters['status'] as string[]) || [],
-            onFilter: (status, record) => {
-              return record.status === status;
-            },
-            render: (v: SchedulerStatus) => <SchedulerStatusTag status={v} />,
+            onFilter: (v, record) => record.status === v,
+            render: (_, record) =>
+              isAdmin() ? (
+                <StatusDropdown scheduler={record} onStatusChange={handleStatusChange} />
+              ) : (
+                <SchedulerStatusTag status={record.status} />
+              ),
           },
 
+          // ── Ações ───────────────────────────────────────────────────────
           {
             title: 'Ações',
-            width: 120,
-            render: (_, record) =>
-              record.status !== 'cancelled' && record.status !== 'completed' ? (
-                <Space>
-                  {(isAdmin() || record.status === 'pending') && (
-                    <Button icon={<EditOutlined />} onClick={() => onEdit(record)}>
-                      Editar
-                    </Button>
+            width: 100,
+            render: (_, record) => {
+              const canEdit =
+                record.status !== 'cancelled' && record.status !== 'completed';
+              const canCancel = canEdit;
+              const showEdit = isAdmin() || record.status === 'pending';
+
+              if (record.status === 'cancelled' && record.cancellationReason) {
+                return (
+                  <Tooltip title={`Motivo: ${record.cancellationReason}`}>
+                    <Tag color="red" style={{ borderRadius: 20 }}>
+                      Cancelado
+                    </Tag>
+                  </Tooltip>
+                );
+              }
+
+              return (
+                <Space size={4}>
+                  {canEdit && showEdit && (
+                    <Tooltip title="Editar pedido">
+                      <Button
+                        size="small"
+                        icon={<EditOutlined />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(record);
+                        }}
+                      />
+                    </Tooltip>
                   )}
-                  <Button
-                    danger
-                    size="small"
-                    icon={<CloseCircleOutlined />}
-                    onClick={() => {
-                      setCancelledSchedulerId(record.id);
-                    }}
-                  >
-                    Cancelar
-                  </Button>
+                  {canCancel && (
+                    <Tooltip title="Cancelar pedido">
+                      <Button
+                        danger
+                        size="small"
+                        icon={<CloseCircleOutlined />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCancelledSchedulerId(record.id);
+                        }}
+                      />
+                    </Tooltip>
+                  )}
                 </Space>
-              ) : record.status === 'cancelled' && record.cancellationReason ? (
-                <Tooltip title={`Motivo: ${record.cancellationReason}`}>
-                  <Tag color="red">Cancelado</Tag>
-                </Tooltip>
-              ) : null,
+              );
+            },
           },
         ]}
       />
