@@ -18,6 +18,7 @@ export type SchedulerSort =
 export type ProductFilter = {
   isActive: boolean;
   characteristics: string[];
+  categoryId: string;
 };
 
 export type ProductFilterKey = keyof ProductFilter;

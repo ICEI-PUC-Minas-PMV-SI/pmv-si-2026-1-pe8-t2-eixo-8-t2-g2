@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
-  DASHBOARD: '/dashboard',
-  CART: '/cart',
+  DASHBOARD: '/app/dashboard',
+  CART: '/app/cart',
   VALIDATE2FA: '/validate-2fa',
   RESET_PASSWORD: '/reset-password',
+  SCHEDULERS: '/app/scheduler',
+  SETTINGS: '/app/settings',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
@@ -27,8 +29,19 @@ export type LoginParams = {
 export function useNavigation() {
   const navigate = useNavigate();
 
-  const { LOGIN, DASHBOARD, HOME, CART, VALIDATE2FA, RESET_PASSWORD } = ROUTES;
+  const {
+    LOGIN,
+    DASHBOARD,
+    HOME,
+    CART,
+    VALIDATE2FA,
+    RESET_PASSWORD,
+    SCHEDULERS,
+    SETTINGS,
+  } = ROUTES;
   return {
+    goToSchedulers: () => navigate(SCHEDULERS),
+    goToSettings: () => navigate(SETTINGS),
     goToHome: () => navigate(HOME),
     goToLogin: (state?: LoginParams) => navigate(LOGIN, { state: state || null }),
     goToDashboard: () => navigate(DASHBOARD),

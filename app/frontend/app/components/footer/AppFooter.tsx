@@ -1,6 +1,5 @@
 import { HeartOutlined } from '@ant-design/icons';
-
-import { Divider, Flex, Layout, Row, Col, Space, Typography, theme } from 'antd';
+import { Divider, Flex, Layout, Row, Col, Space, Typography } from 'antd';
 
 import logoIsabellaCaster from './assets/logo-isabella-caster.png';
 import { Clock, Envelope, Instagram, Marker, WhatsApp } from '../icon/components';
@@ -23,13 +22,13 @@ export type AppFooterProps = {
 };
 
 const DEFAULTS = {
-  phone: '(31) 99822-6620',
-  phoneHref: 'https://wa.me/5531998226620',
-  email: 'contato@isabellacaster.com.br',
+  phone: '(31) 92222-22222',
+  phoneHref: 'https://wa.me/553122222222222',
+  email: 'contato@doceecia.com.br',
   businessHours: 'Seg a Sáb: 8h às 18h',
   locationLabel: 'Feito em casa, com amor.',
-  instagramHandle: '@isabella_caster',
-  instagramUrl: 'https://www.instagram.com/isabella_caster',
+  instagramHandle: '@doceecia',
+  instagramUrl: 'https://www.instagram.com/doceecia',
   badgeText: 'Feito com amor em cada detalhe.',
   copyrightYear: new Date().getFullYear(),
 } as const;
@@ -46,167 +45,210 @@ export function AppFooter({
   copyrightYear = DEFAULTS.copyrightYear,
   useFullFooter = false,
 }: AppFooterProps) {
-  const { token } = theme.useToken();
-
   return (
     <Footer
       style={{
-        padding: 6,
-        background: '#e9e9e1',
+        padding: 0,
+        background: '#F5EDE9',
+        borderTop: '1px solid #E8D5CF',
       }}
     >
       <div
         style={{
           maxWidth: 1100,
           margin: '0 auto',
+          padding: useFullFooter ? '48px 24px 24px' : '6px 24px',
         }}
       >
         {useFullFooter && (
-          <Row gutter={[32, 32]}>
-            <Col xs={24} md={8} style={{ margin: 'auto' }}>
-              <Flex justify="center">
+          <Row gutter={[40, 40]} style={{ marginBottom: 0 }}>
+            {/* Logo + badge */}
+            <Col xs={24} md={7}>
+              <Flex vertical gap={20} align="flex-start">
                 <img
                   src={logoIsabellaCaster}
-                  alt="Isabella Cáster Confeitaria"
+                  alt="Doce & Cia"
                   style={{
-                    width: 160,
+                    width: 140,
                     height: 'auto',
                   }}
                 />
+                <Text
+                  style={{
+                    color: '#7A5C56',
+                    fontSize: 14,
+                    lineHeight: 1.7,
+                    maxWidth: 240,
+                  }}
+                >
+                  Confeitaria artesanal com ingredientes selecionados e muito carinho em
+                  cada detalhe.
+                </Text>
+                <Flex
+                  align="center"
+                  gap={8}
+                  style={{
+                    border: '1px solid rgba(192,90,72,0.4)',
+                    borderRadius: 999,
+                    padding: '6px 14px',
+                    display: 'inline-flex',
+                  }}
+                >
+                  <HeartOutlined
+                    style={{ fontSize: 13, lineHeight: 1, color: '#C05A48' }}
+                  />
+                  <Text style={{ color: '#C05A48', fontSize: 13 }}>{badgeText}</Text>
+                </Flex>
               </Flex>
             </Col>
 
-            <Col xs={24} md={8}>
-              <Flex
-                vertical
-                gap={16}
-                align="flex-start"
+            {/* Divider vertical — só desktop */}
+            <Col xs={0} md={1} style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
                 style={{
-                  width: 'fit-content',
+                  width: 1,
+                  background: '#E0CECA',
                   margin: '0 auto',
+                  height: '100%',
                 }}
-              >
+              />
+            </Col>
+
+            {/* Atendimento */}
+            <Col xs={24} md={7}>
+              <Flex vertical gap={16} align="flex-start">
                 <Title
                   level={5}
                   style={{
                     margin: 0,
                     textTransform: 'uppercase',
-                    letterSpacing: 1.5,
-                    color: '#e06d5b',
+                    letterSpacing: 2,
+                    color: '#C05A48',
+                    fontSize: 11,
                   }}
                 >
                   Atendimento
                 </Title>
 
-                <Space orientation="vertical" size={6}>
-                  <Link href={phoneHref} target="_blank">
+                <Flex vertical gap={12}>
+                  <Link href={phoneHref} target="_blank" style={styles.link}>
                     <Space size={10} align="center" style={styles.iconContainer}>
                       <WhatsApp style={styles.icon} />
-                      {phone}
+                      <Text style={{ color: '#5C3D38', fontSize: 14 }}>{phone}</Text>
                     </Space>
                   </Link>
 
-                  <Link href={`mailto:${email}`}>
+                  <Link href={`mailto:${email}`} style={styles.link}>
                     <Space size={10} align="center" style={styles.iconContainer}>
                       <Envelope style={styles.icon} />
-                      {email}
+                      <Text style={{ color: '#5C3D38', fontSize: 14 }}>{email}</Text>
                     </Space>
                   </Link>
 
                   <Space size={10} align="center" style={styles.iconContainer}>
                     <Clock style={styles.icon} />
-                    <Text>{businessHours}</Text>
+                    <Text style={{ color: '#5C3D38', fontSize: 14 }}>
+                      {businessHours}
+                    </Text>
                   </Space>
 
                   <Space size={10} align="center" style={styles.iconContainer}>
                     <Marker style={styles.icon} />
-                    <Text>{locationLabel}</Text>
+                    <Text style={{ color: '#5C3D38', fontSize: 14 }}>
+                      {locationLabel}
+                    </Text>
                   </Space>
-                </Space>
+                </Flex>
               </Flex>
             </Col>
 
-            <Col xs={24} md={8}>
-              <Flex
-                vertical
-                gap={16}
-                align="flex-start"
+            {/* Divider vertical — só desktop */}
+            <Col xs={0} md={1} style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
                 style={{
-                  width: 'fit-content',
+                  width: 1,
+                  background: '#E0CECA',
                   margin: '0 auto',
+                  height: '100%',
                 }}
-              >
+              />
+            </Col>
+
+            {/* Redes sociais */}
+            <Col xs={24} md={7}>
+              <Flex vertical gap={16} align="flex-start">
                 <Title
                   level={5}
                   style={{
                     margin: 0,
                     textTransform: 'uppercase',
-                    letterSpacing: 1.5,
-                    color: '#e06d5b',
+                    letterSpacing: 2,
+                    color: '#C05A48',
+                    fontSize: 11,
                   }}
                 >
                   Siga-me
                 </Title>
 
-                <Link href={instagramUrl} target="_blank">
+                <Link href={instagramUrl} target="_blank" style={styles.link}>
                   <Space size={10} align="center" style={styles.iconContainer}>
                     <Instagram style={styles.icon} />
-                    {instagramHandle}
+                    <Text style={{ color: '#5C3D38', fontSize: 14 }}>
+                      {instagramHandle}
+                    </Text>
                   </Space>
                 </Link>
 
-                <Flex
-                  align="center"
-                  gap={8}
+                <Text
                   style={{
-                    border: '1px solid #e06d5b',
-                    borderRadius: 999,
-                    padding: '8px 16px',
-                    color: '#e06d5b',
+                    color: '#7A5C56',
+                    fontSize: 13,
+                    lineHeight: 1.6,
+                    maxWidth: 200,
                   }}
                 >
-                  <HeartOutlined
-                    style={{
-                      lineHeight: 1,
-                    }}
-                  />
-
-                  <Text style={{ color: 'inherit' }}>{badgeText}</Text>
-                </Flex>
+                  Acompanhe as novidades, bastidores e criações especiais no Instagram.
+                </Text>
               </Flex>
             </Col>
           </Row>
         )}
 
         {useFullFooter && (
-          <Divider
-            style={{
-              borderColor: token.colorBorderSecondary,
-              margin: '10px 0',
-            }}
-          />
+          <Divider style={{ borderColor: '#E0CECA', margin: '32px 0 20px' }} />
         )}
 
-        <Text
-          type="secondary"
-          style={{
-            display: 'block',
-            textAlign: 'center',
-            fontSize: 12,
-          }}
+        {/* Copyright */}
+        <Flex
+          justify={useFullFooter ? 'space-between' : 'center'}
+          align="center"
+          wrap="wrap"
+          gap={8}
         >
-          © {copyrightYear} Isabella Cáster Confeitaria. Todos os direitos reservados.
-        </Text>
+          <Text style={{ color: '#9C7A74', fontSize: 12 }}>
+            © {copyrightYear} Doce & Cia. Todos os direitos reservados.
+          </Text>
+          {useFullFooter && (
+            <Text style={{ color: '#B89990', fontSize: 12 }}>
+              Confeitaria artesanal · Belo Horizonte, MG
+            </Text>
+          )}
+        </Flex>
       </div>
     </Footer>
   );
 }
 
 const styles = StyleSheet.create({
+  link: {
+    color: 'inherit',
+    transition: 'opacity 0.15s',
+  },
   iconContainer: {
-    alignItems: 'normal',
+    alignItems: 'center',
   },
   icon: {
-    fontSize: 22,
+    fontSize: 18,
+    color: '#C05A48',
   },
 });
