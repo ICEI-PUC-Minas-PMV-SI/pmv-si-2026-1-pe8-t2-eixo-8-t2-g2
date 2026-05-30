@@ -49,8 +49,8 @@ class ProductRoute {
       UserScopeMiddleware.adminOnly(),
       async (req: GenericRequest, res: Response) => {
         const ids = req.body.data.ids as string[];
-        await ProductController.deleteMany(ids);
-        res.status(204).send();
+        const result = await ProductController.deleteMany(ids);
+        res.status(200).send(result);
       },
     );
 

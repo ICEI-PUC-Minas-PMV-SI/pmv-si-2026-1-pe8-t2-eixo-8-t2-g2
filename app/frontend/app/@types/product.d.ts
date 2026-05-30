@@ -18,10 +18,7 @@ export type Product = {
   slug: string;
   description?: string;
   price: number;
-  estimatedMinPrice: number;
-  estimatedMaxPrice: number;
-  bookingLeadTimeMinutes: number;
-  bookingLeadDays: number;
+  bookingLeadMinutes: number;
   isActive: boolean;
   characteristics: ProductCharacteristicType[];
   imageUrl?: string;

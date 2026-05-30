@@ -19,7 +19,10 @@ class ProductController {
   }
 
   async deleteMany(ids: string[]) {
-    const result = await Request.delete(`/product`, { data: { ids } });
+    const result = await Request.delete<{
+      message: string;
+      status: 'success' | 'partial' | 'failed';
+    }>(`/product`, { data: { ids } });
     return result;
   }
 

@@ -1,7 +1,11 @@
 import type {
   ProductCharacteristicCreatePayload,
-  PaginationParams,
+  CharacteristicRequest,
 } from '../@types/index.js';
+import type {
+  CharacteristicOrderByWithRelationInput,
+  CharacteristicWhereInput,
+} from '../generated/prisma/models.js';
 import { ProductCharacteristicService } from '../services/ProductCharacteristicService.js';
 
 class ProductCharacteristicController {
@@ -9,8 +13,30 @@ class ProductCharacteristicController {
     const result = await ProductCharacteristicService.create(characteristic);
     return result;
   }
-  list(pagination?: PaginationParams | null) {
-    return ProductCharacteristicService.list(pagination);
+  list(req: CharacteristicRequest) {
+    const orderBy = [] as CharacteristicOrderByWithRelationInput[];
+    const sorters = req.sort;
+    const filter = {} as CharacteristicWhereInput;
+    const search = req.search?.trim();
+    if (sorters) {
+      sorters.forEach((sort) => {
+        const { key, order } = sort;
+        switch (key) {
+          case 'name':
+            orderBy.push({
+              name: order === 'ascend' ? 'asc' : 'desc',
+            });
+            break;
+        }
+      });
+    }
+
+    if (search) {
+      filter.name = {
+        contains: search,
+      };
+    }
+    return ProductCharacteristicService.list(filter, orderBy, req.pagination);
   }
   async find(id: string) {
     return ProductCharacteristicService.find(id);

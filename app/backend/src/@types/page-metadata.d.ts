@@ -32,3 +32,11 @@ export type UserFilter = {
 export type UserFilterKey = keyof UserFilter;
 
 export type UserSort = 'name' | 'createdAt';
+
+export type CharacteristicFilter = {
+  name: string;
+};
+
+export type CharacteristicFilterKey = keyof CharacteristicFilter;
+
+export type CharacteristicSort = 'name';

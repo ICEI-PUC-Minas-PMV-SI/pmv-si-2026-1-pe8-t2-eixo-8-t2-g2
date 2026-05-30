@@ -4,6 +4,10 @@ import type {
   ProductCharacteristicCreatePayload,
   PaginationParams,
 } from '../@types/index.js';
+import type {
+  CharacteristicOrderByWithRelationInput,
+  CharacteristicWhereInput,
+} from '../generated/prisma/models.js';
 
 class ProductCharacteristicService {
   async create(characteristic: ProductCharacteristicCreatePayload) {
@@ -23,11 +27,20 @@ class ProductCharacteristicService {
     return characteristic;
   }
 
-  async list(pagination?: PaginationParams | null) {
+  async list(
+    filter?: CharacteristicWhereInput,
+    orderBy?: CharacteristicOrderByWithRelationInput[],
+    pagination?: PaginationParams,
+  ) {
     const prisma = await Prisma.getClient();
     const pageParams = pagination || {};
+    const where = filter ? filter : {};
     const [characteristics, total] = await Promise.all([
-      prisma.characteristic.findMany({ ...pageParams }),
+      prisma.characteristic.findMany({
+        ...pageParams,
+        where,
+        orderBy: orderBy && orderBy.length > 0 ? orderBy : { name: 'asc' },
+      }),
       prisma.characteristic.count(),
     ]);
     return {

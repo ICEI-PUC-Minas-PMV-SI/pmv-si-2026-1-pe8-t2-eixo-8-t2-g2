@@ -17,11 +17,6 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import type { ProductCategory } from '~/@types/product';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
 import { useTableQuery } from '~/hooks/useTableQuery';
-// import { ref } from 'process';
-
-interface Props {
-
-}
 
 interface RowContextProps {
   setActivatorNodeRef?: (el: HTMLElement | null) => void;
@@ -94,11 +89,11 @@ export function ProductCategoryList() {
 
   const [localData, setLocalData] = useState<ProductCategory[]>([]);
 
-    useEffect(() => {
-        if (tableProps.dataSource) {
-        setLocalData([...tableProps.dataSource]);
-        }
-    }, [tableProps.dataSource]);
+  useEffect(() => {
+    if (tableProps.dataSource) {
+      setLocalData([...tableProps.dataSource]);
+    }
+  }, [tableProps.dataSource]);
 
   // 🔥 Drag end
   const onDragEnd = async ({ active, over }: DragEndEvent) => {
@@ -108,15 +103,17 @@ export function ProductCategoryList() {
     const overIndex = localData.findIndex((i) => i.id === over?.id);
 
     const reordered = arrayMove([...localData], activeIndex, overIndex).map(
-        (category, index) => ({ ...category, orderIndex: index + 1 })
+      (category, index) => ({ ...category, orderIndex: index + 1 }),
     );
 
     setLocalData(reordered);
 
-    await ProductCategoryController.reorder(reordered.map((category) => ({
+    await ProductCategoryController.reorder(
+      reordered.map((category) => ({
         id: category.id,
         orderIndex: category.orderIndex,
-    })));
+      })),
+    );
 
     forceRefetch();
   };
@@ -140,10 +137,6 @@ export function ProductCategoryList() {
     {
       title: 'Status',
       dataIndex: 'status',
-    },
-    {
-      title: 'Ordem',
-      dataIndex: 'orderIndex',
     },
     {
       title: 'Ações',
@@ -175,7 +168,7 @@ export function ProductCategoryList() {
     },
   ];
 
-return (
+  return (
     <>
       <Card
         title="Categorias"

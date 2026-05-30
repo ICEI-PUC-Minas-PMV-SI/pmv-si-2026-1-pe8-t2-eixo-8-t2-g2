@@ -404,8 +404,6 @@ async function seedProducts(characteristics: any[], categories: any[]) {
     );
 
     const price = parseFloat((Math.random() * 100).toFixed(2));
-    const estimatedMinPrice = parseFloat((price * 0.8).toFixed(2));
-    const estimatedMaxPrice = parseFloat((price * 1.2).toFixed(2));
 
     const created = await prisma.product.create({
       data: {
@@ -413,10 +411,7 @@ async function seedProducts(characteristics: any[], categories: any[]) {
         description: p.productDescription,
         slug,
         price,
-        estimatedMinPrice,
-        estimatedMaxPrice,
-        bookingLeadTimeMinutes: faker.number.int({ min: 0, max: 120 }),
-        bookingLeadDays: faker.number.int({ min: 0, max: 7 }),
+        bookingLeadMinutes: faker.number.int({ min: 0, max: 60 * 24 * 5 }),
         isActive: true,
         characteristics: {
           create: selectedCharacteristics.map((ch) => ({
@@ -545,16 +540,11 @@ async function seedSchedulers(allCustomers: Customer[], products: Product[]) {
     );
 
     const scheduledAt = randomFutureDate(60);
-    const estimatedStart = addDays(scheduledAt, 0); // same day
-    const totalDuration = selectedProducts.reduce(() => randomInt(30, 120), 0);
-    const estimatedEnd = new Date(estimatedStart.getTime() + totalDuration * 60_000);
 
     await prisma.scheduler.create({
       data: {
         customerId: customer.id,
         scheduledAt,
-        estimatedStartAt: estimatedStart,
-        estimatedEndAt: estimatedEnd,
         status: faker.helpers.arrayElement(STATUSES),
         paymentMethod: faker.helpers.arrayElement(PAYMENT_METHODS),
         deliveryType: faker.helpers.arrayElement(DELIVERY_TYPES),

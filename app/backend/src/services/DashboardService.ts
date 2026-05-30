@@ -8,6 +8,7 @@ import { endOfDay } from 'date-fns/endOfDay';
 import { fromZonedTime } from 'date-fns-tz';
 import { Prisma } from '../db/Prisma.js';
 import NumberUtil from '../utils/NumberUtil.js';
+import { addDays } from 'date-fns';
 
 class DashboardService {
   getStartAndEndDay(date: Date | string) {
@@ -292,6 +293,30 @@ class DashboardService {
     return Object.values(revenueByMonth).sort((a, b) => a.timestamp - b.timestamp);
   }
 
+  async unconfirmedSchedulersForTomorrow() {
+    const prisma = await Prisma.getClient();
+    const { startOfDay, endOfDay } = this.getStartAndEndDay(addDays(new Date(), 1));
+
+    return await prisma.scheduler.findMany({
+      where: {
+        status: 'pending',
+        scheduledTo: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+          },
+        },
+      },
+    });
+  }
+
   async topProducts(count: number = 10) {
     const prisma = await Prisma.getClient();
     const result = await prisma.$queryRaw<
@@ -334,6 +359,75 @@ class DashboardService {
     }));
   }
 
+  async getPendingConfirmations() {
+    const prisma = await Prisma.getClient();
+
+    return await prisma.scheduler.findMany({
+      where: {
+        status: 'pending',
+        scheduledAt: {
+          lte: this.getStartAndEndDay(subDays(new Date(), 2)).startOfDay,
+        },
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+          },
+        },
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async getDelayedOrders() {
+    const prisma = await Prisma.getClient();
+    return prisma.scheduler.findMany({
+      where: {
+        status: {
+          in: ['pending', 'confirmed', 'in_progress'],
+        },
+        scheduledTo: {
+          lt: fromZonedTime(new Date(), 'America/Sao_Paulo'),
+        },
+      },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            phone: true,
+          },
+        },
+      },
+    });
+  }
+
+  async dashboardAlerts() {
+    const [pendingConfirmationsTwoDays, pendingConfirmationsTomorrow, delayedOrders] =
+      await Promise.all([
+        this.getPendingConfirmations(),
+        this.unconfirmedSchedulersForTomorrow(),
+        this.getDelayedOrders(),
+      ]);
+    return {
+      pendingConfirmationsTomorrow,
+      pendingConfirmationsTwoDays,
+      delayedOrders,
+    };
+  }
+
   async deliveriesToday() {
     const prisma = await Prisma.getClient();
     const { startOfDay, endOfDay } = this.getStartAndEndDay(new Date());
@@ -360,6 +454,25 @@ class DashboardService {
         scheduledTo: {
           gte: startOfDay,
           lte: endOfDay,
+        },
+      },
+    });
+    return result;
+  }
+  async bookingLeadTime() {
+    const prisma = await Prisma.getClient();
+    const result = await prisma.product.findMany({
+      take: 10,
+      select: {
+        name: true,
+        bookingLeadMinutes: true,
+      },
+      orderBy: {
+        bookingLeadMinutes: 'desc',
+      },
+      where: {
+        bookingLeadMinutes: {
+          gte: 0,
         },
       },
     });

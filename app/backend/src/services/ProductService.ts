@@ -104,9 +104,44 @@ class ProductService {
 
   async deleteMany(ids: string[]) {
     const prisma = await Prisma.getClient();
-    await prisma.product.deleteMany({
-      where: { id: { in: ids } },
+    const productsInSchedulers = await prisma.schedulerItem.findMany({
+      distinct: 'productId',
+      where: {
+        productId: {
+          in: ids,
+        },
+      },
+      select: {
+        productId: true,
+      },
     });
+    const fkProducts = productsInSchedulers.map((prod) => prod.productId);
+    const idsToRemove = ids.filter((id) => !fkProducts.includes(id));
+    if (idsToRemove.length) {
+      await prisma.product.deleteMany({
+        where: { id: { in: idsToRemove } },
+      });
+    }
+    const alternativeMsg = idsToRemove.length
+      ? 'Alguns produtos não foram removidos por estarem relacionados a pedidos'
+      : 'Não foi possível remover estes produtos por estarem associados a pedidos';
+    let status = 'success';
+
+    if (idsToRemove.length !== ids.length) {
+      status = 'partial';
+    }
+
+    if (!idsToRemove.length) {
+      status = 'failed';
+    }
+
+    return {
+      status,
+      message:
+        idsToRemove.length === ids.length
+          ? 'Produtos removidos com sucesso'
+          : alternativeMsg,
+    };
   }
 
   async update(id: string, data: Partial<ProductCreatePayload>) {

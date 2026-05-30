@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Product } from '~/@types/product';
-import { MockedData } from '~/constants/MockedData';
 
 export type CartItem = {
   product: Product;
@@ -17,21 +16,12 @@ type CartStore = {
   decrementItem: (productId: string) => void;
   setItemQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
-  resetMockCart: () => void;
-};
-
-const createMockCartItems = (): CartItem[] => {
-  return MockedData.products.slice(0, 2).map((product, index) => ({
-    product,
-    quantity: index === 0 ? 2 : 1,
-    addedAt: new Date(Date.now() - index * 60_000).toISOString(),
-  }));
 };
 
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
-      items: createMockCartItems(),
+      items: [],
 
       addItem: (product: Product) => {
         const exists = get().items.some((item) => item.product.id === product.id);
@@ -100,8 +90,6 @@ export const useCartStore = create<CartStore>()(
       },
 
       clearCart: () => set({ items: [] }),
-
-      resetMockCart: () => set({ items: createMockCartItems() }),
     }),
     {
       name: 'cart-storage',

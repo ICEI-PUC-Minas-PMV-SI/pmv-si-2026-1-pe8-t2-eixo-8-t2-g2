@@ -10,6 +10,7 @@ import {
   Select,
   Space,
   Switch,
+  TimePicker,
   Upload,
   type UploadFile,
 } from 'antd';
@@ -27,6 +28,7 @@ import ProductCharacteristicController from '~/controllers/ProductCharacteristic
 import { useEffect, useState } from 'react';
 import TypeCheck from '~/utils/TypeCheck';
 import ProductController from '~/controllers/ProductController';
+import { Duration } from '~/utils/Duration';
 
 type ComponentProps = {
   product?: Product | null;
@@ -50,15 +52,15 @@ export function ProductDrawer(props: ComponentProps) {
   );
   useEffect(() => {
     if (product) {
+      const { days, hours, minutes } = Duration.parse(product.bookingLeadMinutes);
+      const time = Duration.toTimePickerValue(hours * 60 + minutes);
       productForm.setFieldsValue({
         name: product.name,
         slug: product.slug,
         description: product.description,
         price: product.price,
-        estimatedMinPrice: product.estimatedMinPrice,
-        estimatedMaxPrice: product.estimatedMaxPrice,
-        bookingLeadTimeMinutes: product.bookingLeadTimeMinutes,
-        bookingLeadDays: product.bookingLeadDays,
+        bookingLeadDays: days,
+        bookingLeadTime: time,
         isActive: product.isActive,
         characteristics: product.characteristics.map((char) => {
           const {
@@ -97,19 +99,19 @@ export function ProductDrawer(props: ComponentProps) {
   }, [product]);
 
   const saveProduct = () => {
+    console.log(productForm.getFieldsValue());
     productForm.validateFields().then(async (values) => {
       const file = productImages[0];
       const imageUrl = file?.thumbUrl || file?.url || product?.imageUrl;
+      const minutes = Duration.fromTimePickerValue(values.bookingLeadTime);
+      const days = values.bookingLeadDays;
       const nextProduct: Product | CreateProduct = {
-        id: product?.id,
+        id: product?.id || '',
         name: values.name,
         slug: values.slug || TextUtil.createSlug(values.name),
         description: values.description,
         price: values.price,
-        estimatedMinPrice: values.estimatedMinPrice,
-        estimatedMaxPrice: values.estimatedMaxPrice,
-        bookingLeadTimeMinutes: values.bookingLeadTimeMinutes,
-        bookingLeadDays: values.bookingLeadDays,
+        bookingLeadMinutes: Duration.toMinutes({ days, minutes }),
         isActive: values.isActive,
         characteristics: values.characteristics ?? [],
         categories: values.categories ?? [],
@@ -185,34 +187,24 @@ export function ProductDrawer(props: ComponentProps) {
           </Col>
         </Row>
 
-        {/* <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item label="Preço estimado mínimo" name="estimatedMinPrice">
-              <InputNumber min={0} step={1} style={{ width: '100%' }} prefix="R$" />
+        <Form.Item label="Antecedência mínima">
+          <Space>
+            <Form.Item name="bookingLeadDays" noStyle initialValue={0}>
+              <InputNumber min={0} />
             </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="Preço estimado máximo" name="estimatedMaxPrice">
-              <InputNumber min={0} step={1} style={{ width: '100%' }} prefix="R$" />
-            </Form.Item>
-          </Col>
-        </Row> */}
 
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="Antecedência mínima (minutos)"
-              name="bookingLeadTimeMinutes"
-            >
-              <InputNumber min={0} step={5} style={{ width: '100%' }} />
+            <span>dias</span>
+
+            <Form.Item name="bookingLeadTime" noStyle>
+              <TimePicker
+                format="HH:mm"
+                minuteStep={5}
+                needConfirm={false}
+                showNow={false}
+              />
             </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="Antecedência mínima (dias)" name="bookingLeadDays">
-              <InputNumber min={0} step={1} style={{ width: '100%' }} />
-            </Form.Item>
-          </Col>
-        </Row>
+          </Space>
+        </Form.Item>
 
         <Form.Item label="Categorias" name="categories">
           <Select

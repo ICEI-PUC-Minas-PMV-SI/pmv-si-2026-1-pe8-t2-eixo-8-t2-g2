@@ -37,6 +37,24 @@ class DashboardRoute {
     );
 
     router.get(
+      '/dashboard-alerts',
+      UserScopeMiddleware.adminOnly(),
+      async (_req, res) => {
+        const data = await DashboardService.dashboardAlerts();
+        res.json({ data });
+      },
+    );
+
+    router.get(
+      '/dashboard-booking-lead-time',
+      UserScopeMiddleware.adminOnly(),
+      async (_req, res) => {
+        const data = await DashboardService.bookingLeadTime();
+        res.json({ data });
+      },
+    );
+
+    router.get(
       '/dashboard-deliveries-today',
       UserScopeMiddleware.adminOnly(),
       async (_req, res) => {

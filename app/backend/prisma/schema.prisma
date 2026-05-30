@@ -99,10 +99,10 @@ model ProductCategory {
   id String @id @default(uuid())
 
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -122,8 +122,8 @@ model ProductCharacteristic {
   productId        String
   characteristicId String
 
-  product        Product        @relation(fields: [productId], references: [id])
-  characteristic Characteristic @relation(fields: [characteristicId], references: [id])
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  characteristic Characteristic @relation(fields: [characteristicId], references: [id], onDelete: Cascade)
 
   @@id([productId, characteristicId])
 }
@@ -134,10 +134,7 @@ model Product {
   slug                   String  @unique
   description            String?
   price                  Float   @default(0)
-  estimatedMinPrice      Float   @default(0)
-  estimatedMaxPrice      Float   @default(0)
-  bookingLeadTimeMinutes Int     @default(0)
-  bookingLeadDays        Int     @default(0)
+  bookingLeadMinutes     Int     @default(0)
   isActive               Boolean @default(true)
 
   categories      ProductCategory[]
@@ -202,8 +199,6 @@ model Scheduler {
   customer           Customer        @relation(fields: [customerId], references: [id])
   scheduledAt        DateTime
   scheduledTo        DateTime?
-  estimatedStartAt   DateTime?
-  estimatedEndAt     DateTime?
   items              SchedulerItem[] @relation("SchedulerItems")
   status             SchedulerStatus @default(pending)
   paymentMethod      PaymentMethod

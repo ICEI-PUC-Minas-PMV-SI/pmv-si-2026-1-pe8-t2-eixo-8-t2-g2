@@ -168,15 +168,27 @@ export function ProductList() {
               title="Remover produtos selecionados"
               description="Tem certeza que deseja remover os produtos selecionados? Esta ação não pode ser desfeita."
               onConfirm={() => {
-                ProductController.deleteMany(deleteProductState.selectedRows).then(() => {
-                  productQuery.refetch();
-                  setDeleteProductState({
-                    openModal: false,
-                    showButton: false,
-                    selectedRows: [],
-                  });
-                  message.success('Produtos removidos.');
-                });
+                ProductController.deleteMany(deleteProductState.selectedRows).then(
+                  (result) => {
+                    productQuery.refetch();
+                    setDeleteProductState({
+                      openModal: false,
+                      showButton: false,
+                      selectedRows: [],
+                    });
+                    switch (result.status) {
+                      case 'success':
+                        message.success(result.message);
+                        break;
+                      case 'failed':
+                        message.error(result.message);
+                        break;
+                      case 'partial':
+                        message.warning(result.message);
+                        break;
+                    }
+                  },
+                );
               }}
               onCancel={() => {
                 setDeleteProductState((prevState) => {
