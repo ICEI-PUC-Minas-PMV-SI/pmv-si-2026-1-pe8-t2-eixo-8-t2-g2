@@ -30,6 +30,8 @@ class AuthMiddleware {
       '/dashboard',
       '/catalog-categories',
       '/catalog',
+      '/product-list',
+      '/product-category-list',
     ];
     const publicRoutesByMethod: Record<string, string[]> = {
       POST: ['/user'],
@@ -44,7 +46,6 @@ class AuthMiddleware {
       { uuid },
     );
     if (methodPublicRoutes.includes(cleanedPath)) {
-      console.log('Public route matched by method:', cleanedPath);
       return true;
     }
     return publicRoutes.some((publicRoute) => {
@@ -57,9 +58,27 @@ class AuthMiddleware {
       return isEqualSimpleRoute || isEqualDynamicRoute;
     });
   }
+  setFiltersAndPagination(req: GenericRequest) {
+    const paginationParams = RequestUtil.getPaginationParams(req);
+    if (paginationParams) {
+      req.pagination = paginationParams;
+    }
+    if (req.body) {
+      if (req.body.sort) {
+        req.sort = req.body.sort;
+      }
+      if (req.body.filters) {
+        req.filters = req.body.filters;
+      }
+      if (req.body.search) {
+        req.search = req.body.search;
+      }
+    }
+  }
   async register(app: Application) {
     app.use((req: GenericRequest, res: Response, next: NextFunction) => {
       if (this.isPublicRoute(req)) {
+        this.setFiltersAndPagination(req);
         next();
         return;
       }
@@ -81,27 +100,13 @@ class AuthMiddleware {
 
       try {
         const decoded = JWT.validate(token);
-        const paginationParams = RequestUtil.getPaginationParams(req);
         if (!decoded) {
           return ResponseUtil.handleError(
             res,
             new AppError('Token not provided or expired', HttpCode.UNAUTHORIZED),
           );
         }
-        if (paginationParams) {
-          req.pagination = paginationParams;
-        }
-        if (req.body) {
-          if (req.body.sort) {
-            req.sort = req.body.sort;
-          }
-          if (req.body.filters) {
-            req.filters = req.body.filters;
-          }
-          if (req.body.search) {
-            req.search = req.body.search;
-          }
-        }
+        this.setFiltersAndPagination(req);
         req.user = decoded.user;
         if (decoded.operation) {
           req.operation = decoded.operation;

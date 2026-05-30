@@ -34,7 +34,7 @@ export default function LoginForm() {
           );
           queryClient.clear();
           if (token) {
-            navigation.goToHome();
+            navigation.goToSchedulers();
           } else if (required2FACode) {
             navigation.goToLogin({ required2FA: true, email: formData.email });
           }

@@ -1,6 +1,7 @@
 import { Drawer, Grid, Layout } from 'antd';
 import { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
+import { AppFooter } from '~/components/footer';
 import AppHeader from '~/components/header/AppHeader';
 import Menu from '~/components/menu/Menu';
 import { useAuthStore } from '~/hooks/useAuthStore';
@@ -17,7 +18,7 @@ export function ProtectedLayout() {
 
   return (
     <Layout style={{ height: '100vh' }}>
-      <AppHeader onMenuClick={() => setOpen(true)} />
+      <AppHeader /*onMenuClick={() => setOpen(true)}*/ />
 
       <Layout>
         {/* Desktop */}
@@ -44,6 +45,7 @@ export function ProtectedLayout() {
           <Menu onNavigate={() => setOpen(false)} />
         </Drawer>
       )}
+      <AppFooter useFullFooter={false} />
     </Layout>
   );
 }

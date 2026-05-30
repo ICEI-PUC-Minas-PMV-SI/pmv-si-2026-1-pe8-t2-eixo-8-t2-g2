@@ -15,7 +15,7 @@ const iconStyle: React.CSSProperties = {
 
 const menu = [
   {
-    key: '/scheduler',
+    key: '/app/scheduler',
     label: 'Pedidos',
     IconComponent: AppIcon.DailyCalendar,
   },
@@ -25,30 +25,30 @@ const menu = [
   //   IconComponent: ShoppingCartOutlined,
   // },
   {
-    key: '/dashboard',
+    key: '/app/dashboard',
     label: 'Dashboard',
     role: UserRole.ADMIN,
     IconComponent: AppIcon.DashboardMonitor,
   },
   {
-    key: '/product',
+    key: '/app/product',
     label: 'Produtos',
     role: UserRole.ADMIN,
     IconComponent: AppIcon.ApplePie,
   },
   {
-    key: '/users',
+    key: '/app/users',
     label: 'Usuários',
     role: UserRole.ADMIN,
     IconComponent: AppIcon.UserShield,
   },
   {
-    key: '/settings',
+    key: '/app/settings',
     label: 'Configurações',
     IconComponent: AppIcon.Settings,
   },
   {
-    key: '/about',
+    key: '/app/about',
     label: 'Quem Somos',
     IconComponent: AppIcon.Interrogation,
   },

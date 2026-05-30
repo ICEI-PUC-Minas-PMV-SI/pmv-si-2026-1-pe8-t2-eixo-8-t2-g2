@@ -4,12 +4,7 @@ import { addDays } from 'date-fns/addDays';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { faker } from '@faker-js/faker';
-// import {
-//   PrismaClient,
-//   UserRole,
-// } from '../dist/generated/prisma/client.js';
-// import pkg from '@prisma/client';
-// const { PrismaClient, UserRole } = pkg;
+
 import {
   Customer,
   DeliveryType,
@@ -19,7 +14,6 @@ import {
   SchedulerStatus,
   UserRole,
 } from '../src/generated/prisma/client.js';
-// import { PrismaClient, UserRole } from '@prisma/client';
 // ─────────────────────────────────────────────
 // CLI argument parsing
 // ─────────────────────────────────────────────

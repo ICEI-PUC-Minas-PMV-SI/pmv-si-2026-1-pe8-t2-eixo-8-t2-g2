@@ -81,6 +81,8 @@ export function CreateUserForm() {
         width: '100%',
         height: '100%',
         minHeight: 0,
+        paddingRight: 16,
+        paddingLeft: 16,
       }}
     >
       <PostalCodeSearchModal

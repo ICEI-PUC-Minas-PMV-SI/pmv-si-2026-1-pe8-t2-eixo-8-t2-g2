@@ -85,7 +85,6 @@ class UserService {
       }
       return newUser;
     });
-    console.log('Created user:', createdUser);
     return createdUser;
   }
 

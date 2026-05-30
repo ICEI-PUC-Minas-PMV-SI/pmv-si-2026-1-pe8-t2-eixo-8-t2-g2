@@ -26,6 +26,13 @@ class ProductController {
       Object.keys(filters).forEach((key) => {
         const value = filters[key as ProductFilterKey];
         switch (key as ProductFilterKey) {
+          case 'categoryId':
+            filter.categories = {
+              some: {
+                categoryId: value as string,
+              },
+            };
+            break;
           case 'isActive':
             if (isAdmin) {
               filter.isActive = value as boolean;
