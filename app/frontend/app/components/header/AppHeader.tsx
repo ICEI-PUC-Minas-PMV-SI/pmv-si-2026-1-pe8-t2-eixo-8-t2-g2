@@ -1,4 +1,14 @@
-import { Button, Flex, Space, Typography, Avatar, Dropdown } from 'antd';
+import {
+  Button,
+  Flex,
+  Space,
+  Typography,
+  Avatar,
+  Dropdown,
+  Drawer,
+  Menu,
+  Grid,
+} from 'antd';
 
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -12,8 +22,9 @@ import {
   LogoutOutlined,
   SettingOutlined,
   ShoppingOutlined,
-  UserOutlined,
+  MenuOutlined,
 } from '@ant-design/icons';
+import { iconStyle, menu, type MenuItem } from '../menu/Menu';
 
 type AppSettings = {
   siteName?: string;
@@ -40,9 +51,33 @@ type HeaderProps = { settings?: AppSettings };
 export default function AppHeader(props: HeaderProps = DEFAULT) {
   const { settings = DEFAULT.settings } = props;
   const [scrolled, setScrolled] = useState(false);
-  const { isLogged, logout, user } = useAuthStore();
+  const { isLogged, logout, user, isAdmin } = useAuthStore();
   const { pathname } = useLocation();
-  const { goToLogin, goToSchedulers, goToSettings, goToHome } = useNavigation();
+  const selectedKey = location.pathname;
+  const [mobileMenuIsOpen, setMobileMenuIsOpen] = useState(false);
+  const isMobile = !Grid.useBreakpoint().lg;
+  const { goToLogin, goToSchedulers, goToSettings, goToHome, goTo } = useNavigation();
+  const filtredMenu = isAdmin()
+    ? menu
+    : menu.filter((currentMenu) => {
+        return !currentMenu.role;
+      });
+  const sidebarMenu: MenuItem[] = filtredMenu.map((item) => {
+    const { key, label, IconComponent } = item;
+    const isSelected = selectedKey === key;
+
+    return {
+      key,
+      label,
+      icon: <IconComponent style={iconStyle} />,
+      style: {
+        display: 'flex',
+        backgroundColor: isSelected ? '#E06D5B' : 'transparent',
+        color: isSelected ? '#fff' : undefined,
+        fontWeight: isSelected ? 600 : 400,
+      },
+    };
+  });
   const menuItems = [
     {
       key: 'orders',
@@ -104,14 +139,21 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
     >
       <div
         style={{
-          maxWidth: 1100,
-          margin: '0 auto',
+          maxWidth: isMobile ? 1100 : 'unset',
+          margin: isMobile ? '0 auto' : 'unset',
           height: 64,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
       >
+        {isMobile && (
+          <Button
+            type="text"
+            icon={<MenuOutlined />}
+            onClick={() => setMobileMenuIsOpen(true)}
+          />
+        )}
         <Typography.Title
           level={4}
           style={{ margin: 0, color: '#E06D5B', fontSize: 20, fontWeight: 700 }}
@@ -199,6 +241,22 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
           </Space>
         </nav>
       </div>
+      <Drawer
+        title="Menu"
+        placement="left"
+        open={mobileMenuIsOpen}
+        onClose={() => setMobileMenuIsOpen(false)}
+      >
+        <Menu
+          mode="inline"
+          selectedKeys={[pathname]}
+          items={sidebarMenu}
+          onClick={({ key }) => {
+            goTo(key as any);
+            setMobileMenuIsOpen(false);
+          }}
+        />
+      </Drawer>
     </header>
   );
 }
@@ -363,23 +421,25 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
 //         </Flex>
 //       </Header>
 
-//       {/* MENU MOBILE */}
-//       <Drawer
-//         title="Menu"
-//         placement="left"
-//         open={mobileMenuOpen}
-//         onClose={() => setMobileMenuOpen(false)}
-//       >
-//         <Menu
-//           mode="inline"
-//           selectedKeys={[pathname]}
-//           items={menuItems}
-//           onClick={({ key }) => {
-//             navigate(key as any);
-//             setMobileMenuOpen(false);
-//           }}
-//         />
-//       </Drawer>
+{
+  /* MENU MOBILE */
+}
+// <Drawer
+//   title="Menu"
+//   placement="left"
+//   open={mobileMenuOpen}
+//   onClose={() => setMobileMenuOpen(false)}
+// >
+//   <Menu
+//     mode="inline"
+//     selectedKeys={[pathname]}
+//     items={menuItems}
+//     onClick={({ key }) => {
+//       navigate(key as any);
+//       setMobileMenuOpen(false);
+//     }}
+//   />
+// </Drawer>
 //     </>
 //   );
 // }

@@ -455,6 +455,9 @@ class DashboardService {
           gte: startOfDay,
           lte: endOfDay,
         },
+        status: {
+          in: ['confirmed', 'pending', 'in_progress'],
+        },
       },
     });
     return result;
@@ -462,7 +465,7 @@ class DashboardService {
   async bookingLeadTime() {
     const prisma = await Prisma.getClient();
     const result = await prisma.product.findMany({
-      take: 10,
+      take: 5,
       select: {
         name: true,
         bookingLeadMinutes: true,

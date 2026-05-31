@@ -1062,6 +1062,7 @@ function CatalogSection({
         padding: screens.md ? '72px 24px' : '48px 20px',
         background: '#FDFAF9',
         borderBottom: '1px solid #F0E8E5',
+        maxWidth: '100vw',
       }}
     >
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
