@@ -31,3 +31,11 @@ export type AboutItem = {
 };
 
 export type CreateAboutItem = Omit<AboutItem, 'id'>;
+
+export type AboutInfo = {
+  title: string;
+  subtitle: string;
+  main: string;
+  complementary: string;
+  items: { id: string; text: string; orderIndex: number }[];
+};

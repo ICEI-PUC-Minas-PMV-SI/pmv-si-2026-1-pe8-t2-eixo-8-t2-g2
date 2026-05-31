@@ -49,6 +49,14 @@ class TextUtil {
   unformatPostalCode(value: string) {
     return value.replace(/\D/g, '');
   }
+
+  whatsappLink(
+    phone?: string,
+    msg = 'Olá! Vim pelo site e gostaria de fazer um pedido.',
+  ) {
+    if (!phone) return '#';
+    return `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
+  }
 }
 
 export default new TextUtil();

@@ -10,6 +10,7 @@ import {
   Flex,
   message,
   Progress,
+  Rate,
 } from 'antd';
 import { useState } from 'react';
 import {
@@ -20,6 +21,7 @@ import {
   PlayCircleOutlined,
   CheckOutlined,
   ClockCircleOutlined,
+  StarOutlined,
 } from '@ant-design/icons';
 import type { PaymentMethod } from '~/@types/payment';
 import type {
@@ -39,6 +41,15 @@ import { SchedulerCancel } from './SchedulerCancel';
 import NumberUtil from '~/utils/NumberUtil';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { PaymentModal, type RegisterPaymentPayload } from '../payment/PaymentModal';
+import { ReviewModal, type ReviewPayload } from '../review/ReviewModal';
+import ReviewController from '~/controllers/ReviewController';
+
+// ─── Types estendidos ─────────────────────────────────────────────────────────
+
+type SchedulerWithRelations = Scheduler & {
+  payments?: any[];
+  review?: { rating: number; comment?: string | null } | null;
+};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -51,7 +62,6 @@ const getItemColumnText = (items: SchedulerItem[]) => {
   return `${count} ${count > 1 ? 'itens' : 'item'} · ${NumberUtil.currency(price)} est.`;
 };
 
-// Quais status podem ser atingidos manualmente a partir do status atual
 const STATUS_TRANSITIONS: Partial<
   Record<SchedulerStatus, { value: SchedulerStatus; label: string; color: string }[]>
 > = {
@@ -63,7 +73,6 @@ const STATUS_TRANSITIONS: Partial<
   in_progress: [{ value: 'completed', label: 'Marcar como concluído', color: '#52C41A' }],
 };
 
-// Ícone por status
 const STATUS_ICON: Partial<Record<SchedulerStatus, React.ReactNode>> = {
   confirmed: <CheckOutlined />,
   in_progress: <PlayCircleOutlined />,
@@ -77,7 +86,7 @@ function PaymentProgressCell({
   scheduler,
   onPayClick,
 }: {
-  scheduler: Scheduler & { payments?: any[] };
+  scheduler: SchedulerWithRelations;
   onPayClick: () => void;
 }) {
   const total = getOrderTotal(scheduler.items);
@@ -115,10 +124,58 @@ function PaymentProgressCell({
         percent={percent}
         size={[120, 5]}
         strokeColor={isFullyPaid ? '#52C41A' : '#FAAD14'}
-        railColor="#F0F0F0"
         showInfo={false}
       />
     </Flex>
+  );
+}
+
+// ─── ReviewCell ───────────────────────────────────────────────────────────────
+
+function ReviewCell({
+  scheduler,
+  onReviewClick,
+}: {
+  scheduler: SchedulerWithRelations;
+  onReviewClick: () => void;
+}) {
+  const review = scheduler.review;
+
+  if (review) {
+    return (
+      <Tooltip title={review.comment || 'Clique para editar'}>
+        <Flex
+          align="center"
+          gap={6}
+          style={{ cursor: 'pointer' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onReviewClick();
+          }}
+        >
+          <Rate disabled value={review.rating} style={{ fontSize: 13 }} />
+        </Flex>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Button
+      size="small"
+      icon={<StarOutlined />}
+      onClick={(e) => {
+        e.stopPropagation();
+        onReviewClick();
+      }}
+      style={{
+        borderColor: '#E06D5B',
+        color: '#E06D5B',
+        borderRadius: 20,
+        fontSize: 12,
+      }}
+    >
+      Avaliar
+    </Button>
   );
 }
 
@@ -184,7 +241,12 @@ export function SchedulerList({
   onEdit: (scheduler: Scheduler) => void;
 }) {
   const [cancelledSchedulerId, setCancelledSchedulerId] = useState<string | null>(null);
-  const [paymentScheduler, setPaymentScheduler] = useState<Scheduler | null>(null);
+  const [paymentScheduler, setPaymentScheduler] = useState<SchedulerWithRelations | null>(
+    null,
+  );
+  const [reviewScheduler, setReviewScheduler] = useState<SchedulerWithRelations | null>(
+    null,
+  );
   const { isAdmin } = useAuthStore();
 
   const {
@@ -198,7 +260,6 @@ export function SchedulerList({
     clearSorters,
   } = schedulerQuery;
 
-  // ── Filtros ──────────────────────────────────────────────────────────────
   const paymentFilters = Object.entries(PaymentMethodMap).map(([value, label]) => ({
     text: label,
     value,
@@ -215,8 +276,6 @@ export function SchedulerList({
     { text: 'Finalizado', value: 'completed' },
   ];
 
-  // ── Ações ────────────────────────────────────────────────────────────────
-
   const handleStatusChange = async (id: string, status: SchedulerStatus) => {
     try {
       await SchedulerController.updateStatus({ id, status });
@@ -229,18 +288,13 @@ export function SchedulerList({
 
   const handlePaymentConfirm = async (payload: RegisterPaymentPayload) => {
     try {
-      // Registra o pagamento
       await SchedulerController.registerPayment(payload);
-
-      // Determina novo status baseado no tipo de pagamento
       const newStatus: SchedulerStatus =
         payload.type === 'deposit' ? 'confirmed' : 'completed';
-
       await SchedulerController.updateStatus({
         id: payload.schedulerId,
         status: newStatus,
       });
-
       message.success(
         payload.type === 'deposit'
           ? 'Sinal registrado! Pedido confirmado.'
@@ -252,9 +306,18 @@ export function SchedulerList({
     }
   };
 
+  const handleReviewSubmit = async (payload: ReviewPayload) => {
+    try {
+      await ReviewController.submitReview(payload);
+      message.success('Avaliação enviada! Obrigado pelo feedback.');
+      forceRefetch();
+    } catch {
+      message.error('Erro ao enviar avaliação.');
+    }
+  };
+
   return (
     <>
-      {/* Modal: cancelamento */}
       <SchedulerCancel
         open={!!cancelledSchedulerId}
         onCancel={() => setCancelledSchedulerId(null)}
@@ -270,7 +333,6 @@ export function SchedulerList({
         }}
       />
 
-      {/* Modal: pagamento */}
       {paymentScheduler && (
         <PaymentModal
           open={!!paymentScheduler}
@@ -280,7 +342,17 @@ export function SchedulerList({
         />
       )}
 
-      {/* Barra de ações */}
+      {reviewScheduler && (
+        <ReviewModal
+          mode="single"
+          open={!!reviewScheduler}
+          scheduler={reviewScheduler}
+          existingReview={reviewScheduler.review ?? undefined}
+          onClose={() => setReviewScheduler(null)}
+          onSubmitReview={handleReviewSubmit}
+        />
+      )}
+
       <Flex justify="space-between" align="center" style={{ marginBottom: 12 }} gap={8}>
         <Button
           onClick={() => {
@@ -299,7 +371,6 @@ export function SchedulerList({
         />
       </Flex>
 
-      {/* Tabela */}
       <Table<Scheduler>
         {...tableProps}
         style={{ overflowX: 'auto' }}
@@ -333,7 +404,6 @@ export function SchedulerList({
           ),
         }}
         columns={[
-          // ── Cliente / Data ──────────────────────────────────────────────
           {
             hidden: !isAdmin(),
             fixed: true,
@@ -353,7 +423,7 @@ export function SchedulerList({
             ),
             key: 'customer',
             render: (_, record) => (
-              <Space orientation="vertical" size={2}>
+              <Space direction="vertical" size={2}>
                 <Typography.Text strong>{record.customer.name}</Typography.Text>
                 <Typography.Text type="secondary" style={{ fontSize: 12 }}>
                   {DateUtil.format(record.scheduledAt)}
@@ -378,10 +448,7 @@ export function SchedulerList({
               new Date(value.scheduledAt).toLocaleString().replace(', ', ' às '),
             key: 'scheduledAt',
           },
-
           Table.EXPAND_COLUMN,
-
-          // ── Itens ───────────────────────────────────────────────────────
           {
             title: 'Itens',
             key: 'items',
@@ -393,8 +460,6 @@ export function SchedulerList({
               </Typography.Text>
             ),
           },
-
-          // ── Pagamento (método) ──────────────────────────────────────────
           {
             title: 'Pagamento',
             dataIndex: 'paymentMethod',
@@ -405,8 +470,6 @@ export function SchedulerList({
             render: (v?: PaymentMethod) =>
               v ? <Tag style={{ borderRadius: 20 }}>{PaymentMethodMap[v]}</Tag> : '—',
           },
-
-          // ── Progresso financeiro (novo) ──────────────────────────────────
           {
             title: 'Recebimento',
             key: 'payment_progress',
@@ -414,13 +477,11 @@ export function SchedulerList({
             width: 160,
             render: (_, record) => (
               <PaymentProgressCell
-                scheduler={record as any}
-                onPayClick={() => setPaymentScheduler(record)}
+                scheduler={record as SchedulerWithRelations}
+                onPayClick={() => setPaymentScheduler(record as SchedulerWithRelations)}
               />
             ),
           },
-
-          // ── Modalidade ──────────────────────────────────────────────────
           {
             title: 'Modalidade',
             dataIndex: 'deliveryType',
@@ -430,8 +491,6 @@ export function SchedulerList({
             onFilter: (v, record) => record.deliveryType === v,
             render: (v?: DeliveryType) => <DeliveryTag type={v} />,
           },
-
-          // ── Status (com dropdown de transição) ─────────────────────────
           {
             title: 'Status',
             dataIndex: 'status',
@@ -446,15 +505,30 @@ export function SchedulerList({
                 <SchedulerStatusTag status={record.status} />
               ),
           },
-
-          // ── Ações ───────────────────────────────────────────────────────
+          // Coluna de avaliação — apenas para clientes, apenas em completed
+          {
+            title: 'Avaliação',
+            key: 'review',
+            hidden: isAdmin(),
+            width: 150,
+            render: (_, record) => {
+              if (record.status !== 'completed') return null;
+              return (
+                <ReviewCell
+                  scheduler={record as SchedulerWithRelations}
+                  onReviewClick={() =>
+                    setReviewScheduler(record as SchedulerWithRelations)
+                  }
+                />
+              );
+            },
+          },
           {
             title: 'Ações',
             width: 100,
             render: (_, record) => {
               const canEdit =
                 record.status !== 'cancelled' && record.status !== 'completed';
-              const canCancel = canEdit;
               const showEdit = isAdmin() || record.status === 'pending';
 
               if (record.status === 'cancelled' && record.cancellationReason) {
@@ -481,7 +555,7 @@ export function SchedulerList({
                       />
                     </Tooltip>
                   )}
-                  {canCancel && (
+                  {canEdit && (
                     <Tooltip title="Cancelar pedido">
                       <Button
                         danger

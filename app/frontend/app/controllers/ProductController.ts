@@ -1,4 +1,5 @@
-import type { CreateProduct, Product } from '~/@types/product';
+import type { PublicCharacteristic } from '~/@types/characteristic';
+import type { CreateProduct, Product, PublicProduct } from '~/@types/product';
 import type { TableParams } from '~/hooks/useTableQuery';
 import Request from '~/utils/Request';
 
@@ -31,6 +32,18 @@ class ProductController {
       return Request.getTableData<T>('/product-list', params);
     }
     return Request.post<{ data: T[]; total: number }>('/product-list');
+  }
+  getCategories(product: PublicProduct): { id: string; name: string }[] {
+    return (product.categories ?? [])
+      .map((c: any) => ({
+        id: c?.category?.id ?? c?.id ?? c?.name ?? '',
+        name: c?.category?.name ?? c?.name ?? '',
+      }))
+      .filter((c) => c.name);
+  }
+
+  getCharacteristics(product: PublicProduct): PublicCharacteristic[] {
+    return (product.characteristics ?? []).map((c: any) => c?.characteristic ?? c);
   }
 }
 

@@ -29,7 +29,7 @@ export function SettingsPage() {
   const filtredTabs = tabs.filter((tab) => !tab.onlyAdmin || isAdmin());
   return (
     <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
-      <TabbedPage defaultTab="profile" items={filtredTabs} />;
+      <TabbedPage defaultTab="profile" items={filtredTabs} />
     </Space>
   );
 }

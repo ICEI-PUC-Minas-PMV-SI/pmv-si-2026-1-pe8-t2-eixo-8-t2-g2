@@ -3,6 +3,11 @@ import { ProductValidation } from '../validations/ProductValidation.js';
 import { ProductController } from '../controllers/ProductController.js';
 import type { GenericRequest, ProductRequest, Response } from '../@types/index.js';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
+import multer from 'multer';
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
 
 class ProductRoute {
   register(router: Router) {
@@ -10,6 +15,7 @@ class ProductRoute {
       '/product',
       UserScopeMiddleware.adminOnly(),
       ProductValidation.create(),
+      upload.single('file'),
       async (req, res) => {
         const result = await ProductController.create(req.body);
         res.status(201).json(result);

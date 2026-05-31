@@ -14,3 +14,11 @@ export const Colors = {
   cash: '#52C41A',
   bank_transfer: '#722ED1',
 };
+
+export const RATING_COLOR: Record<number, string> = {
+  1: '#D32F2F', // vermelho forte
+  2: '#F57C00', // laranja
+  3: '#FBC02D', // amarelo
+  4: '#7CB342', // verde claro
+  5: '#2E7D32', // verde escuro
+} as const;

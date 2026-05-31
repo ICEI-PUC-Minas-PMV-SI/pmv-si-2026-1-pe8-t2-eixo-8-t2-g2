@@ -38,6 +38,12 @@ export const menu = [
     IconComponent: AppIcon.UserShield,
   },
   {
+    key: '/app/review',
+    label: 'Avaliações',
+    role: UserRole.ADMIN,
+    IconComponent: AppIcon.CommentDots,
+  },
+  {
     key: '/app/settings',
     label: 'Configurações',
     IconComponent: AppIcon.Settings,

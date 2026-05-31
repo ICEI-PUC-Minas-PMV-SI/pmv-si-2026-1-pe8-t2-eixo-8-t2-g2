@@ -253,6 +253,7 @@ class SchedulerService {
         ...pageParams,
         include: {
           payments: true,
+          review: true,
           items: {
             select: {
               id: true,

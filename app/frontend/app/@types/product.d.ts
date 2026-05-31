@@ -1,3 +1,5 @@
+import type { PublicCharacteristic } from './characteristic';
+
 export type ProductCategory = {
   id: string;
   name: string;
@@ -34,3 +36,7 @@ export type ProductCharacteristic = {
 };
 
 export type CreateProductCharacteristic = Omit<ProductCharacteristic, 'id'>;
+
+export type PublicProduct = Product & {
+  characteristics?: { characteristic: PublicCharacteristic }[];
+};
