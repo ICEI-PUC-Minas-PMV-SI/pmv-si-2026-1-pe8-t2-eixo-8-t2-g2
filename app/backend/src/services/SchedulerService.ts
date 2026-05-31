@@ -2,6 +2,7 @@ import type {
   PaginationParams,
   ProductItem,
   SchedulerCreatePayload,
+  SchedulerPayment,
   SchedulerUpdatePayload,
 } from '../@types/index.js';
 import { Prisma } from '../db/Prisma.js';
@@ -251,6 +252,7 @@ class SchedulerService {
       prisma.scheduler.findMany({
         ...pageParams,
         include: {
+          payments: true,
           items: {
             select: {
               id: true,
@@ -307,6 +309,23 @@ class SchedulerService {
       data: {
         googleEventId: externalId,
       },
+    });
+  }
+
+  async updateStatus(id: string, status: SchedulerStatus) {
+    const prisma = await Prisma.getClient();
+    return prisma.scheduler.update({
+      where: { id },
+      data: {
+        status,
+      },
+    });
+  }
+
+  async createPayment(data: SchedulerPayment) {
+    const prisma = await Prisma.getClient();
+    return prisma.payment.create({
+      data,
     });
   }
 

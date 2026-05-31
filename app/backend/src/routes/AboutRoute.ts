@@ -9,7 +9,7 @@ class AboutRoute {
     router.post(
       '/about',
       UserScopeMiddleware.adminOnly(),
-      AboutValidation.create,
+      AboutValidation.create(),
       async (req, res) => {
         const result = await AboutController.create(req.body);
         res.json(result);

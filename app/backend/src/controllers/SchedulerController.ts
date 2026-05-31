@@ -1,6 +1,7 @@
 import type {
   SchedulerCreatePayload,
   SchedulerFilterKey,
+  SchedulerPayment,
   SchedulerRequest,
   SchedulerUpdatePayload,
 } from '../@types/index.js';
@@ -140,6 +141,12 @@ class SchedulerController {
   }
   async update(id: string, data: SchedulerUpdatePayload) {
     return SchedulerService.update(id, data);
+  }
+  async updateStatus(id: string, status: SchedulerStatus) {
+    return SchedulerService.updateStatus(id, status);
+  }
+  async createPayment(data: SchedulerPayment) {
+    return SchedulerService.createPayment(data);
   }
   async cancel(id: string, cancellationReason: string) {
     return SchedulerService.cancel(id, cancellationReason);

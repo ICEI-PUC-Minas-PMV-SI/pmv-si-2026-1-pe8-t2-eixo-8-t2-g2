@@ -3,6 +3,7 @@ import { type Router } from 'express';
 import { SchedulerValidation } from '../validations/SchedulerValidation.js';
 import type { Response, SchedulerRequest } from '../@types/index.js';
 import { UserRole } from '../validations/UserValidation.js';
+import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 
 class SchedulerRoute {
   register(router: Router) {
@@ -23,7 +24,7 @@ class SchedulerRoute {
 
     router.post(
       '/scheduler',
-      SchedulerValidation.create,
+      SchedulerValidation.create(),
       async (req: SchedulerRequest, res) => {
         const isCustomer = req.user?.role === UserRole.CUSTOMER;
         const customerId =
@@ -66,6 +67,28 @@ class SchedulerRoute {
       const result = await SchedulerController.update(id, data);
       res.json(result);
     });
+
+    router.patch(
+      '/scheduler-status',
+      UserScopeMiddleware.adminOnly(),
+      SchedulerValidation.updateStatus(),
+      async (req: SchedulerRequest, res: Response) => {
+        const data = req.body;
+        const result = await SchedulerController.updateStatus(data.id, data.status);
+        res.json(result);
+      },
+    );
+
+    router.post(
+      '/scheduler-payment',
+      UserScopeMiddleware.adminOnly(),
+      SchedulerValidation.createPayment(),
+      async (req: SchedulerRequest, res: Response) => {
+        const data = req.body;
+        const result = await SchedulerController.createPayment(data);
+        res.json(result);
+      },
+    );
 
     router.patch(
       '/scheduler-cancellation/:id',

@@ -209,7 +209,7 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
   const depositPayment = payments.find((p) => p.type === 'deposit');
   const remainderPayment = payments.find((p) => p.type === 'remainder');
   const paidTotal = payments.reduce((acc, p) => acc + p.amount, 0);
-  const remaining = Math.max(orderTotal - paidTotal, 0);
+  const remaining = Math.round(Math.max(orderTotal - paidTotal, 0) * 100) / 100;
 
   // Qual tipo de pagamento está disponível agora
   const paymentType: PaymentType = depositPayment ? 'remainder' : 'deposit';
@@ -414,6 +414,7 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
               ]}
             >
               <InputNumber
+                disabled={paymentType !== 'deposit'}
                 style={{ width: '100%' }}
                 min={0.01}
                 max={orderTotal}

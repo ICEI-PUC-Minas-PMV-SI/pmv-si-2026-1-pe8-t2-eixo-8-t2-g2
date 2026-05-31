@@ -1,4 +1,8 @@
-import type { DeliveryType, PaymentMethod } from '../generated/prisma/enums.ts';
+import type {
+  DeliveryType,
+  PaymentMethod,
+  PaymentType,
+} from '../generated/prisma/enums.ts';
 import type { SchedulerFilter, SchedulerSort } from './page-metadata.js';
 import type { Product } from './product';
 import type { Request } from './server';
@@ -54,4 +58,12 @@ export type SchedulerEvent = {
   endDate?: string;
   startDateTime?: string;
   endDateTime?: string;
+};
+
+export type SchedulerPayment = {
+  schedulerId: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  type: PaymentType;
+  note?: string;
 };
