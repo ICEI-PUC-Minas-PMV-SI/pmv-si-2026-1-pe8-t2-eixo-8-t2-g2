@@ -1,5 +1,9 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
+export const BUCKETS = {
+  PRODUCT_IMAGES: 'product-images',
+};
+
 class SupabaseStorage {
   private client: SupabaseClient;
 
@@ -91,11 +95,7 @@ class SupabaseStorage {
       upsert,
     });
 
-    if (error) {
-      throw error;
-    }
-
-    return data;
+    return { data, error };
   }
 
   async removeFile(bucketId: string, paths: string[]) {
@@ -134,7 +134,5 @@ class SupabaseStorage {
     return data;
   }
 }
-
-new SupabaseStorage().listBuckets().then(console.log).catch(console.error);
 
 export default new SupabaseStorage();

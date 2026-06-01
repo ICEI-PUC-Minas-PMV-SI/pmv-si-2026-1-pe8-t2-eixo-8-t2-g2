@@ -10,23 +10,24 @@ import {
   Select,
   Space,
   Switch,
-  Upload,
-  type UploadFile,
+  TimePicker,
 } from 'antd';
 import type {
   CreateProduct,
   Product,
   ProductCategory,
   ProductCharacteristic,
+  PublicProduct,
 } from '~/@types/product';
 import TextUtil from '~/utils/TextUtil';
-import { PlusOutlined } from '@ant-design/icons';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
 import ProductCharacteristicController from '~/controllers/ProductCharacteristicController';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import TypeCheck from '~/utils/TypeCheck';
 import ProductController from '~/controllers/ProductController';
+import { Duration } from '~/utils/Duration';
+import { ProductImageUpload } from './ProductImageUpload';
 
 type ComponentProps = {
   product?: Product | null;
@@ -34,10 +35,59 @@ type ComponentProps = {
   onClose: (reason: 'cancel' | 'save', product?: Product | null) => void;
 };
 
+export function ProductFormImageSection({
+  form,
+  product,
+  onCrop,
+  categories,
+  characteristics,
+}: {
+  form: any;
+  product?: PublicProduct | null;
+  onCrop: (blob: Blob | null) => void;
+  categories: readonly ProductCategory[];
+  characteristics: readonly ProductCharacteristic[];
+}) {
+  const watchedName = Form.useWatch('name', form);
+  const watchedPrice = Form.useWatch('price', form);
+  const watchedCategories = Form.useWatch('categories', form);
+  const watchedCharacteristics = Form.useWatch('characteristics', form);
+  const previewCategoryNames =
+    watchedCategories?.map((item: string | { value: string }) => {
+      const id = typeof item === 'object' ? item.value : item;
+      return categories.find((c) => c.id === id)?.name;
+    }) ?? [];
+
+  const previewCharacteristicNames =
+    watchedCharacteristics?.map((item: string | { value: string }) => {
+      const id = typeof item === 'object' ? item.value : item;
+      return characteristics.find((c) => c.id === id)?.name;
+    }) ?? [];
+  console.log('product', product);
+  console.log('watchedCategories', watchedCategories);
+  console.log('watchedCharacteristics', watchedCharacteristics);
+  const productPreview: Partial<PublicProduct> = {
+    name: watchedName ?? product?.name,
+    price: watchedPrice ?? product?.price,
+    categories: previewCategoryNames,
+    characteristics: previewCharacteristicNames,
+  };
+
+  return (
+    <Form.Item label="Imagem do produto">
+      <ProductImageUpload
+        currentImageUrl={product?.imageUrl}
+        productPreview={productPreview}
+        onCrop={onCrop}
+      />
+    </Form.Item>
+  );
+}
+
 export function ProductDrawer(props: ComponentProps) {
   const { product, drawerOpened, onClose } = props;
   const [productForm] = Form.useForm();
-  const [productImages, setProductImages] = useState<UploadFile[]>([]);
+  const croppedImageRef = useRef<Blob | null>(null);
   const {
     tableProps: { dataSource: categories = [] },
   } = useTableQuery<ProductCategory>('categories', (params) =>
@@ -50,15 +100,15 @@ export function ProductDrawer(props: ComponentProps) {
   );
   useEffect(() => {
     if (product) {
+      const { days, hours, minutes } = Duration.parse(product.bookingLeadMinutes);
+      const time = Duration.toTimePickerValue(hours * 60 + minutes);
       productForm.setFieldsValue({
         name: product.name,
         slug: product.slug,
         description: product.description,
         price: product.price,
-        estimatedMinPrice: product.estimatedMinPrice,
-        estimatedMaxPrice: product.estimatedMaxPrice,
-        bookingLeadTimeMinutes: product.bookingLeadTimeMinutes,
-        bookingLeadDays: product.bookingLeadDays,
+        bookingLeadDays: days,
+        bookingLeadTime: time,
         isActive: product.isActive,
         characteristics: product.characteristics.map((char) => {
           const {
@@ -73,18 +123,6 @@ export function ProductDrawer(props: ComponentProps) {
           return { label: name, value: id };
         }),
       });
-      setProductImages(
-        product.imageUrl
-          ? [
-              {
-                uid: product.id,
-                name: product.name,
-                status: 'done',
-                url: product.imageUrl,
-              },
-            ]
-          : [],
-      );
     } else {
       productForm.resetFields();
       productForm.setFieldsValue({
@@ -92,53 +130,61 @@ export function ProductDrawer(props: ComponentProps) {
         characteristics: [],
         categories: [],
       });
-      setProductImages([]);
     }
-  }, [product]);
+  }, [product, productForm]);
 
   const saveProduct = () => {
     productForm.validateFields().then(async (values) => {
-      const file = productImages[0];
-      const imageUrl = file?.thumbUrl || file?.url || product?.imageUrl;
+      const minutes = Duration.fromTimePickerValue(values.bookingLeadTime);
+      const days = values.bookingLeadDays;
       const nextProduct: Product | CreateProduct = {
-        id: product?.id,
+        id: product?.id || '',
         name: values.name,
         slug: values.slug || TextUtil.createSlug(values.name),
         description: values.description,
         price: values.price,
-        estimatedMinPrice: values.estimatedMinPrice,
-        estimatedMaxPrice: values.estimatedMaxPrice,
-        bookingLeadTimeMinutes: values.bookingLeadTimeMinutes,
-        bookingLeadDays: values.bookingLeadDays,
+        bookingLeadMinutes: Duration.toMinutes({ days, minutes }),
         isActive: values.isActive,
         characteristics: values.characteristics ?? [],
         categories: values.categories ?? [],
-        imageUrl,
       };
 
       let result = null;
       if (TypeCheck.isNewProduct(nextProduct)) {
-        result = await ProductController.create(nextProduct);
+        result = await ProductController.create(nextProduct, croppedImageRef.current);
       } else {
-        result = await ProductController.update(nextProduct);
+        result = await ProductController.update(nextProduct, croppedImageRef.current);
       }
 
+      croppedImageRef.current = null;
       message.success('Produto salvo com sucesso.');
       productForm.resetFields();
-      setProductImages([]);
       onClose('save', result);
     });
   };
 
   return (
     <Drawer
+      destroyOnHidden
       size="large"
       title={props.product ? 'Editar produto' : 'Novo produto'}
       open={drawerOpened}
-      onClose={() => onClose('cancel')}
+      onClose={() => {
+        productForm.resetFields();
+        croppedImageRef.current = null;
+        onClose('cancel');
+      }}
       extra={
         <Space>
-          <Button onClick={() => onClose('cancel')}>Cancelar</Button>
+          <Button
+            onClick={() => {
+              productForm.resetFields();
+              croppedImageRef.current = null;
+              onClose('cancel');
+            }}
+          >
+            Cancelar
+          </Button>
           <Button type="primary" onClick={saveProduct}>
             Salvar
           </Button>
@@ -185,34 +231,24 @@ export function ProductDrawer(props: ComponentProps) {
           </Col>
         </Row>
 
-        {/* <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item label="Preço estimado mínimo" name="estimatedMinPrice">
-              <InputNumber min={0} step={1} style={{ width: '100%' }} prefix="R$" />
+        <Form.Item label="Antecedência mínima">
+          <Space>
+            <Form.Item name="bookingLeadDays" noStyle initialValue={0}>
+              <InputNumber min={0} />
             </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="Preço estimado máximo" name="estimatedMaxPrice">
-              <InputNumber min={0} step={1} style={{ width: '100%' }} prefix="R$" />
-            </Form.Item>
-          </Col>
-        </Row> */}
 
-        <Row gutter={16}>
-          <Col span={12}>
-            <Form.Item
-              label="Antecedência mínima (minutos)"
-              name="bookingLeadTimeMinutes"
-            >
-              <InputNumber min={0} step={5} style={{ width: '100%' }} />
+            <span>dias</span>
+
+            <Form.Item name="bookingLeadTime" noStyle>
+              <TimePicker
+                format="HH:mm"
+                minuteStep={5}
+                needConfirm={false}
+                showNow={false}
+              />
             </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="Antecedência mínima (dias)" name="bookingLeadDays">
-              <InputNumber min={0} step={1} style={{ width: '100%' }} />
-            </Form.Item>
-          </Col>
-        </Row>
+          </Space>
+        </Form.Item>
 
         <Form.Item label="Categorias" name="categories">
           <Select
@@ -230,22 +266,15 @@ export function ProductDrawer(props: ComponentProps) {
           />
         </Form.Item>
 
-        <Form.Item label="Imagem do produto">
-          <Upload
-            listType="picture-card"
-            fileList={productImages}
-            onChange={({ fileList }) => setProductImages(fileList)}
-            beforeUpload={() => false}
-            maxCount={1}
-          >
-            {productImages.length >= 1 ? null : (
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>
-            )}
-          </Upload>
-        </Form.Item>
+        <ProductFormImageSection
+          form={productForm}
+          product={product}
+          categories={categories}
+          characteristics={characteristics}
+          onCrop={(blob) => {
+            croppedImageRef.current = blob;
+          }}
+        />
       </Form>
     </Drawer>
   );

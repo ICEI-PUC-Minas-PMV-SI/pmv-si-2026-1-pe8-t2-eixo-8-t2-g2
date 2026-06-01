@@ -12,6 +12,7 @@ import { AppSettingsRoute } from './routes/AppSettingsRoute.js';
 import { IntegrationsRoute } from './routes/IntegrationsRoute.js';
 import { AboutRoute } from './routes/AboutRoute.js';
 import { Router as RouterExpress } from 'express';
+import { ReviewRoute } from './routes/ReviewRoute.js';
 class Router {
   register(app: Application) {
     const router = RouterExpress();
@@ -26,6 +27,7 @@ class Router {
     AppSettingsRoute.register(router);
     IntegrationsRoute.register(router);
     AboutRoute.register(router);
+    ReviewRoute.register(router);
     app.use('/', router);
     // const { ...allRoutes } = routes;
     // Object.values(allRoutes).forEach((route) => {

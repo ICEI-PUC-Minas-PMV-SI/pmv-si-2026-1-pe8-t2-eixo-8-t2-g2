@@ -38,6 +38,27 @@ model Address {
   updatedAt DateTime @updatedAt
 }
 
+model Review {
+  id          String    @id @default(uuid())
+
+  schedulerId String    @unique
+  scheduler   Scheduler @relation(fields: [schedulerId], references: [id], onDelete: Cascade)
+  customerId  String
+  customer    Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  rating      Int       // 1–5 estrelas
+  comment     String?   // comentário opcional
+
+  featured    Boolean   @default(false)  // admin pode destacar para a homepage
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+
+  @@index([customerId])
+  @@index([featured])
+}
+
+
 model Customer {
   id String @id @default(uuid())
 
@@ -52,6 +73,7 @@ model Customer {
   addresses Address[]
 
   schedulers Scheduler[]
+  reviews    Review[]
 
   createdAt DateTime @default(now())
 
@@ -99,10 +121,10 @@ model ProductCategory {
   id String @id @default(uuid())
 
   productId String
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -122,23 +144,21 @@ model ProductCharacteristic {
   productId        String
   characteristicId String
 
-  product        Product        @relation(fields: [productId], references: [id])
-  characteristic Characteristic @relation(fields: [characteristicId], references: [id])
+  product        Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  characteristic Characteristic @relation(fields: [characteristicId], references: [id], onDelete: Cascade)
 
   @@id([productId, characteristicId])
 }
 
 model Product {
-  id                     String  @id @default(uuid())
-  name                   String
-  slug                   String  @unique
-  description            String?
-  price                  Float   @default(0)
-  estimatedMinPrice      Float   @default(0)
-  estimatedMaxPrice      Float   @default(0)
-  bookingLeadTimeMinutes Int     @default(0)
-  bookingLeadDays        Int     @default(0)
-  isActive               Boolean @default(true)
+  id                 String  @id @default(uuid())
+  name               String
+  slug               String  @unique
+  description        String?
+  price              Float   @default(0)
+  bookingLeadMinutes Int     @default(0)
+  isActive           Boolean @default(true)
+  hasImage           Boolean @default(false)
 
   categories      ProductCategory[]
   schedulerItems  SchedulerItem[]
@@ -183,6 +203,28 @@ enum IntegrationType {
   all
 }
 
+enum PaymentType {
+  deposit // sinal (ex: 50% antecipado)
+  remainder // restante (pagamento final)
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  schedulerId String
+  scheduler   Scheduler @relation(fields: [schedulerId], references: [id], onDelete: Cascade)
+
+  amount        Float
+  paymentMethod PaymentMethod
+  type          PaymentType
+
+  note String?
+
+  createdAt DateTime @default(now())
+
+  @@index([schedulerId])
+}
+
 enum PaymentMethod {
   credit_card
   debit_card
@@ -202,8 +244,6 @@ model Scheduler {
   customer           Customer        @relation(fields: [customerId], references: [id])
   scheduledAt        DateTime
   scheduledTo        DateTime?
-  estimatedStartAt   DateTime?
-  estimatedEndAt     DateTime?
   items              SchedulerItem[] @relation("SchedulerItems")
   status             SchedulerStatus @default(pending)
   paymentMethod      PaymentMethod
@@ -211,8 +251,10 @@ model Scheduler {
   cancellationReason String?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @default(now()) @updatedAt
-
-  googleEventId String?
+  payments           Payment[]
+  googleEventId      String?
+  review             Review?
+  ignoredReview      Boolean         @default(false)
 }
 
 model GoogleCredentials {

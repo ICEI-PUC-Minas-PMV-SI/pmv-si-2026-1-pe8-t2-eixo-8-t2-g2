@@ -8,6 +8,7 @@ import type {
 } from '../generated/prisma/models.js';
 import { HttpCode } from '../utils/HttpCode.js';
 import { AppError } from '../error/AppError.js';
+import SupabaseStorage, { BUCKETS } from '../integration/SupabaseStorage.js';
 
 class ProductService {
   async create(product: ProductCreatePayload) {
@@ -15,14 +16,15 @@ class ProductService {
     const { characteristics = [], categories = [], ...productProps } = product;
     const categoriesToCreate = categories.length
       ? {
-          create: categories.map((id) => ({ categoryId: id })),
+          create: categories.map((id) => ({ category: { connect: { id } } })),
         }
       : {};
     const characteristicsToCreate = characteristics.length
       ? {
-          create: characteristics.map((id) => ({ characteristicId: id })),
+          create: characteristics.map((id) => ({ characteristic: { connect: { id } } })),
         }
       : {};
+
     const createdProduct = await prisma.product.create({
       data: {
         ...productProps,
@@ -81,7 +83,19 @@ class ProductService {
       }),
       prisma.product.count({ where }),
     ]);
-    return { data: products, total, ...ResponseUtil.handlePageParams(pageParams, total) };
+    return {
+      data: products.map((product) => {
+        return {
+          ...product,
+          imageUrl: product.hasImage
+            ? SupabaseStorage.getPublicUrl(BUCKETS.PRODUCT_IMAGES, `${product.id}.webp`)
+                .data.publicUrl
+            : null,
+        };
+      }),
+      total,
+      ...ResponseUtil.handlePageParams(pageParams, total),
+    };
   }
 
   async delete(id: string) {
@@ -104,9 +118,44 @@ class ProductService {
 
   async deleteMany(ids: string[]) {
     const prisma = await Prisma.getClient();
-    await prisma.product.deleteMany({
-      where: { id: { in: ids } },
+    const productsInSchedulers = await prisma.schedulerItem.findMany({
+      distinct: 'productId',
+      where: {
+        productId: {
+          in: ids,
+        },
+      },
+      select: {
+        productId: true,
+      },
     });
+    const fkProducts = productsInSchedulers.map((prod) => prod.productId);
+    const idsToRemove = ids.filter((id) => !fkProducts.includes(id));
+    if (idsToRemove.length) {
+      await prisma.product.deleteMany({
+        where: { id: { in: idsToRemove } },
+      });
+    }
+    const alternativeMsg = idsToRemove.length
+      ? 'Alguns produtos não foram removidos por estarem relacionados a pedidos'
+      : 'Não foi possível remover estes produtos por estarem associados a pedidos';
+    let status = 'success';
+
+    if (idsToRemove.length !== ids.length) {
+      status = 'partial';
+    }
+
+    if (!idsToRemove.length) {
+      status = 'failed';
+    }
+
+    return {
+      status,
+      message:
+        idsToRemove.length === ids.length
+          ? 'Produtos removidos com sucesso'
+          : alternativeMsg,
+    };
   }
 
   async update(id: string, data: Partial<ProductCreatePayload>) {
@@ -118,6 +167,14 @@ class ProductService {
       data: dataToUpdate,
     });
     return updatedProduct;
+  }
+
+  async toggleHasImage(id: string, hasImage: boolean) {
+    const prisma = await Prisma.getClient();
+    return prisma.product.update({
+      where: { id },
+      data: { hasImage },
+    });
   }
 }
 

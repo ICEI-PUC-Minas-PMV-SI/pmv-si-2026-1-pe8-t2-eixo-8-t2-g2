@@ -6,10 +6,7 @@ export type Product = {
   name: string;
   description?: string;
   price?: number;
-  estimatedMinPrice?: number;
-  estimatedMaxPrice?: number;
-  bookingLeadTimeMinutes?: number;
-  bookingLeadDays?: number;
+  bookingLeadMinutes?: number;
   characteristics?: string[];
   categories?: string[];
 };

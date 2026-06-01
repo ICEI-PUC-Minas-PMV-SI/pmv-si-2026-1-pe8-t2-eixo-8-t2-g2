@@ -114,6 +114,9 @@ class ProductController {
   async deleteMany(ids: string[]) {
     return ProductService.deleteMany(ids);
   }
+  async toggleHasImage(id: string, hasImage: boolean) {
+    return ProductService.toggleHasImage(id, hasImage);
+  }
 }
 
 const instance = new ProductController();

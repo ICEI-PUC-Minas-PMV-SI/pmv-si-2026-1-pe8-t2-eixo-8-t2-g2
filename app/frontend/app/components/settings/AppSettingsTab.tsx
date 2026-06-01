@@ -8,13 +8,11 @@ import {
   Row,
   Space,
   Typography,
-  Upload,
   message,
 } from 'antd';
 import {
   CheckCircleOutlined,
   InstagramOutlined,
-  UploadOutlined,
   WhatsAppOutlined,
 } from '@ant-design/icons';
 import TextUtil from '~/utils/TextUtil';

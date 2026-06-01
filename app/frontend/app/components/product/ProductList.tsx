@@ -21,6 +21,7 @@ import ProductCharacteristicController from '~/controllers/ProductCharacteristic
 import { CharacteristicBadge } from './CharacteristicBadge';
 import { ProductDrawer } from './ProductDrawer';
 import { useCartStore } from '~/hooks/useCartStore';
+import { ProductImage } from './ProductImage';
 
 export function ProductList() {
   const [deleteProductState, setDeleteProductState] = useState({
@@ -60,32 +61,15 @@ export function ProductList() {
         <Space>
           <div
             style={{
-              width: 42,
-              height: 42,
+              // width: 42,
+              // height: 42,
               borderRadius: 12,
               overflow: 'hidden',
               background: '#f5f5f5',
               flexShrink: 0,
             }}
           >
-            {record.imageUrl ? (
-              <img
-                src={record.imageUrl}
-                alt={record.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'grid',
-                  placeItems: 'center',
-                }}
-              >
-                <PictureOutlined />
-              </div>
-            )}
+            <ProductImage src={record.imageUrl ?? undefined} alt={record.name} />
           </div>
           <div>
             <div style={{ fontWeight: 600 }}>{record.name}</div>
@@ -168,15 +152,27 @@ export function ProductList() {
               title="Remover produtos selecionados"
               description="Tem certeza que deseja remover os produtos selecionados? Esta ação não pode ser desfeita."
               onConfirm={() => {
-                ProductController.deleteMany(deleteProductState.selectedRows).then(() => {
-                  productQuery.refetch();
-                  setDeleteProductState({
-                    openModal: false,
-                    showButton: false,
-                    selectedRows: [],
-                  });
-                  message.success('Produtos removidos.');
-                });
+                ProductController.deleteMany(deleteProductState.selectedRows).then(
+                  (result) => {
+                    productQuery.refetch();
+                    setDeleteProductState({
+                      openModal: false,
+                      showButton: false,
+                      selectedRows: [],
+                    });
+                    switch (result.status) {
+                      case 'success':
+                        message.success(result.message);
+                        break;
+                      case 'failed':
+                        message.error(result.message);
+                        break;
+                      case 'partial':
+                        message.warning(result.message);
+                        break;
+                    }
+                  },
+                );
               }}
               onCancel={() => {
                 setDeleteProductState((prevState) => {
@@ -226,7 +222,6 @@ export function ProductList() {
           rowSelection={{
             type: 'checkbox',
             onChange: (selectedRowKeys) => {
-              console.log('Selected row keys: ', selectedRowKeys);
               setDeleteProductState((state) => ({
                 ...state,
                 showButton: selectedRowKeys.length > 0,

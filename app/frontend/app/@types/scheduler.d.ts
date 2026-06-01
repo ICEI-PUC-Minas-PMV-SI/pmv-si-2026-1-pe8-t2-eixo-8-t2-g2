@@ -30,6 +30,10 @@ export type Scheduler = {
   integrationStatus?: 'success' | 'failure';
 };
 
+export type PendingScheduler = Scheduler & {
+  review: null;
+};
+
 export type CreateScheduler = Omit<Scheduler, 'id' | 'status' | 'customer'> & {
   customerId?: string;
   customerName?: string;

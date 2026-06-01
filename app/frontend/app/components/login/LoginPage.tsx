@@ -5,6 +5,8 @@ import { Content } from 'antd/es/layout/layout';
 import { useLocation } from 'react-router-dom';
 import LoginForm from '~/components/login/LoginForm';
 import { Login2FA } from './Login2FA';
+import { useAuthStore } from '~/hooks/useAuthStore';
+import { Navigate } from 'react-router-dom';
 
 export function WaveSvg() {
   return (
@@ -34,7 +36,10 @@ M0 720L19.9441 689.917C39.7611 659.833 79.6492 599.667 101.626 539.5C123.602 479
 export function LoginPage() {
   const { lg } = Grid.useBreakpoint();
   const { state } = useLocation();
-
+  const { isLogged } = useAuthStore();
+  if (isLogged()) {
+    return <Navigate to="/" replace />;
+  }
   return (
     <Layout
       style={{

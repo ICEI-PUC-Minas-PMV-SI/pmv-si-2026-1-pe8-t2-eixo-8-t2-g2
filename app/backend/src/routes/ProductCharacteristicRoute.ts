@@ -1,7 +1,7 @@
 import { type Router } from 'express';
 import { ProductValidation } from '../validations/ProductValidation.js';
 import { ProductCharacteristicController } from '../controllers/ProductCharacteristicController.js';
-import type { GenericRequest, Response } from '../@types/index.js';
+import type { CharacteristicRequest, GenericRequest, Response } from '../@types/index.js';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 
 class ProductCharacteristicRoute {
@@ -16,15 +16,18 @@ class ProductCharacteristicRoute {
       },
     );
 
-    router.get('/product-characteristic', async (req: GenericRequest, res: Response) => {
-      const result = await ProductCharacteristicController.list(req.pagination);
-      res.json(result);
-    });
+    router.get(
+      '/product-characteristic',
+      async (req: CharacteristicRequest, res: Response) => {
+        const result = await ProductCharacteristicController.list(req);
+        res.json(result);
+      },
+    );
 
     router.post(
       '/product-characteristic-list',
-      async (req: GenericRequest, res: Response) => {
-        const result = await ProductCharacteristicController.list(req.pagination);
+      async (req: CharacteristicRequest, res: Response) => {
+        const result = await ProductCharacteristicController.list(req);
         res.json(result);
       },
     );

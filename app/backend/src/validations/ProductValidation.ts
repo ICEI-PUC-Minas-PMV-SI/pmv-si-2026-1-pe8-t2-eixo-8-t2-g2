@@ -6,18 +6,33 @@ class ProductValidation {
   create = () => {
     return (req: GenericRequest, res: Response, next: NextFunction) => {
       try {
+        const jsonStringArray = z.preprocess((value) => {
+          if (typeof value === 'string') {
+            try {
+              return JSON.parse(value);
+            } catch {
+              return value;
+            }
+          }
+
+          return value;
+        }, z.array(z.uuid()));
         const schema = {
+          id: z.string().optional(),
           name: z.string().min(3).max(255),
-          description: z.optional(z.string().min(5).max(1024)),
-          price: z.optional(z.number().min(0)),
-          estimatedMinPrice: z.optional(z.number().min(0)),
-          estimatedMaxPrice: z.optional(z.number().min(0)),
-          bookingLeadTimeMinutes: z.optional(z.number().int().min(0)),
-          bookingLeadDays: z.optional(z.number().int().min(0)),
+          slug: z.string().min(3).max(255),
+          description: z.string().max(255).optional(),
+          price: z.coerce.number().min(0),
+          bookingLeadMinutes: z.coerce.number().int().min(0),
+          isActive: z.coerce.boolean(),
+          categories: jsonStringArray.optional(),
+          characteristics: jsonStringArray.optional(),
         };
+        console.log('body', req.body);
         z.object(schema).parse(req.body);
         next();
       } catch (err) {
+        console.log(err);
         ErrorValidation.handleZodError(err, res);
       }
     };
@@ -29,9 +44,7 @@ class ProductValidation {
           name: z.string().min(3).max(255),
           description: z.optional(z.string().min(5).max(1024)),
           price: z.optional(z.number().min(0)),
-          estimatedMinPrice: z.optional(z.number().min(0)),
-          estimatedMaxPrice: z.optional(z.number().min(0)),
-          bookingLeadTimeMinutes: z.optional(z.number().int().min(0)),
+          bookingLeadMinutes: z.optional(z.number().int().min(0)),
           bookingLeadDays: z.optional(z.number().int().min(0)),
         };
         z.object(schema).parse(req.body);

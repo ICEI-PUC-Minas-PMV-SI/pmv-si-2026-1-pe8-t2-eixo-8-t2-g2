@@ -6,24 +6,19 @@ import { useAuthStore } from '~/hooks/useAuthStore';
 import { UserRole } from '~/constants/Auth';
 // import { ShoppingCartOutlined } from '@ant-design/icons';
 
-type MenuItem = Required<MenuProps>['items'][number];
+export type MenuItem = Required<MenuProps>['items'][number];
 
-const iconStyle: React.CSSProperties = {
+export const iconStyle: React.CSSProperties = {
   fontSize: 18,
   // paddingLeft: 24,
 };
 
-const menu = [
+export const menu = [
   {
     key: '/app/scheduler',
     label: 'Pedidos',
     IconComponent: AppIcon.DailyCalendar,
   },
-  // {
-  //   key: '/cart',
-  //   label: 'Meu Carrinho',
-  //   IconComponent: ShoppingCartOutlined,
-  // },
   {
     key: '/app/dashboard',
     label: 'Dashboard',
@@ -41,6 +36,12 @@ const menu = [
     label: 'Usuários',
     role: UserRole.ADMIN,
     IconComponent: AppIcon.UserShield,
+  },
+  {
+    key: '/app/review',
+    label: 'Avaliações',
+    role: UserRole.ADMIN,
+    IconComponent: AppIcon.CommentDots,
   },
   {
     key: '/app/settings',
@@ -84,14 +85,9 @@ export default function Menu({ onNavigate }: Props) {
       icon: <IconComponent style={iconStyle} />,
       style: {
         display: 'flex',
-        // alignItems: 'center',
-        // borderRadius: 0,
-        // margin: 0,
-        // paddingLeft: isSelected ? 'calc(16px - 3px)' : '16px',
         backgroundColor: isSelected ? '#E06D5B' : 'transparent',
         color: isSelected ? '#fff' : undefined,
         fontWeight: isSelected ? 600 : 400,
-        // transition: 'all 0.2s ease',
       },
     };
   });

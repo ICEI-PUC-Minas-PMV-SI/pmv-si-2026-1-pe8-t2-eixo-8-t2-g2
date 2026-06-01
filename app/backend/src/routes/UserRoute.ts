@@ -4,6 +4,8 @@ import { UserValidation } from '../validations/UserValidation.js';
 import type { GenericRequest, Response, UserRequest } from '../@types/index.js';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 import { JWT } from '../utils/JWT.js';
+import { AppError } from '../error/AppError.js';
+import { HttpCode } from '../utils/HttpCode.js';
 
 class UserRoute {
   register(router: Router) {
@@ -53,9 +55,16 @@ class UserRoute {
 
     router.delete(
       '/user/:id',
-      UserScopeMiddleware.onlyAdminOrSameUser(),
+      UserScopeMiddleware.adminOnly(),
       async (req: GenericRequest, res: Response) => {
         const id = req.params.id as string;
+        const userId = req.user?.id || '';
+        if (id === userId) {
+          throw new AppError(
+            'Não é possível remover o próprio usuário',
+            HttpCode.CONFLICT,
+          );
+        }
         await UserController.delete(id);
         res.status(204).send();
       },

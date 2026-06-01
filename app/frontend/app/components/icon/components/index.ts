@@ -31,3 +31,4 @@ export * from './WhatsApp';
 export * from './Envelope';
 export * from './Marker';
 export * from './Instagram';
+export * from './CommentDots';

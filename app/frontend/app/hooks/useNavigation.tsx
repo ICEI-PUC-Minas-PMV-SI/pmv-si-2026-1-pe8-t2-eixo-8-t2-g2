@@ -9,6 +9,7 @@ export const ROUTES = {
   RESET_PASSWORD: '/reset-password',
   SCHEDULERS: '/app/scheduler',
   SETTINGS: '/app/settings',
+  REVIEW: '/app/review',
 } as const;
 
 export type RoutePath = (typeof ROUTES)[keyof typeof ROUTES];
@@ -38,6 +39,7 @@ export function useNavigation() {
     RESET_PASSWORD,
     SCHEDULERS,
     SETTINGS,
+    REVIEW,
   } = ROUTES;
   return {
     goToSchedulers: () => navigate(SCHEDULERS),
@@ -46,6 +48,7 @@ export function useNavigation() {
     goToLogin: (state?: LoginParams) => navigate(LOGIN, { state: state || null }),
     goToDashboard: () => navigate(DASHBOARD),
     goToCart: () => navigate(CART),
+    goToReview: () => navigate(REVIEW),
     goToResetPassword: (state: ResetPasswordParams) =>
       navigate(RESET_PASSWORD, { state }),
     goToValidate2FA: (state: Validate2FAParams) => navigate(VALIDATE2FA, { state }),

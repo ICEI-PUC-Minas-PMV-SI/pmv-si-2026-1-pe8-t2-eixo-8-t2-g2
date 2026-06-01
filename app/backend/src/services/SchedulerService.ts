@@ -2,6 +2,7 @@ import type {
   PaginationParams,
   ProductItem,
   SchedulerCreatePayload,
+  SchedulerPayment,
   SchedulerUpdatePayload,
 } from '../@types/index.js';
 import { Prisma } from '../db/Prisma.js';
@@ -33,8 +34,6 @@ export type CreatedScheduler = {
       id: string;
       name: string;
       description: string | null;
-      estimatedMinPrice: number;
-      estimatedMaxPrice: number;
     } | null;
   } & {
     id: string;
@@ -48,8 +47,6 @@ export type CreatedScheduler = {
   id: string;
   scheduledAt: Date;
   scheduledTo: Date | null;
-  estimatedStartAt: Date | null;
-  estimatedEndAt: Date | null;
   status: SchedulerStatus;
   createdAt: Date;
 };
@@ -77,14 +74,12 @@ class SchedulerService {
   isValidItemsByLeadTime(
     scheduledAt: Date,
     schedulerItems: {
-      bookingLeadTimeMinutes?: number | undefined;
-      bookingLeadDays?: number | undefined;
+      bookingLeadMinutes?: number | undefined;
     }[],
   ) {
     const invalidItems = schedulerItems.filter((item) => {
       return !BookingLeadTimeHelper.isValidLeadTime(scheduledAt, {
-        leadTimeInMinutes: item.bookingLeadTimeMinutes,
-        leadTimeInDays: item.bookingLeadDays,
+        leadTimeInMinutes: item.bookingLeadMinutes,
       });
     });
     return invalidItems;
@@ -139,8 +134,7 @@ class SchedulerService {
           invalidItems: invalidItems.map((item) => ({
             id: 'id' in item ? item.id : null,
             name: 'name' in item ? item.name : null,
-            bookingLeadTimeMinutes: item.bookingLeadTimeMinutes,
-            bookingLeadDays: item.bookingLeadDays,
+            bookingLeadMinutes: item.bookingLeadMinutes,
           })),
         },
       );
@@ -193,8 +187,6 @@ class SchedulerService {
                 id: true,
                 name: true,
                 description: true,
-                estimatedMinPrice: true,
-                estimatedMaxPrice: true,
               },
             },
           },
@@ -260,6 +252,8 @@ class SchedulerService {
       prisma.scheduler.findMany({
         ...pageParams,
         include: {
+          payments: true,
+          review: true,
           items: {
             select: {
               id: true,
@@ -274,8 +268,6 @@ class SchedulerService {
                   name: true,
                   description: true,
                   price: true,
-                  estimatedMinPrice: true,
-                  estimatedMaxPrice: true,
                 },
               },
             },
@@ -318,6 +310,23 @@ class SchedulerService {
       data: {
         googleEventId: externalId,
       },
+    });
+  }
+
+  async updateStatus(id: string, status: SchedulerStatus) {
+    const prisma = await Prisma.getClient();
+    return prisma.scheduler.update({
+      where: { id },
+      data: {
+        status,
+      },
+    });
+  }
+
+  async createPayment(data: SchedulerPayment) {
+    const prisma = await Prisma.getClient();
+    return prisma.payment.create({
+      data,
     });
   }
 

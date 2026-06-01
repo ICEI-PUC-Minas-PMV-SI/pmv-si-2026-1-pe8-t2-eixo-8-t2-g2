@@ -11,10 +11,11 @@ import { SignUp } from './components/login/SignUp';
 import { ForgotPassword } from './components/login/ForgotPassword';
 import { ResetPassword } from './components/login/ResetPassword';
 import { Validate2FA } from './components/login/Validate2FA';
-import { CatalogPage } from './components/catalog/CatalogPage';
+import { HomePage } from './components/homepage/HomePage';
 import { CartPage } from './components/cart/CartPage';
 import { UserPage } from './components/user/UserPage';
 import { AboutUsPage } from './components/about-us/AboutUsPage';
+import { ReviewsPage } from './components/review/ReviewsPage';
 
 export default function App() {
   return (
@@ -30,10 +31,11 @@ export default function App() {
           <Route path="/app/cost-calculator" element={<CostCalculator />} />
           <Route path="/app/cart" element={<CartPage />} />
           <Route path="/app/users" element={<UserPage />} />
+          <Route path="/app/review" element={<ReviewsPage />} />
         </Route>
 
         <Route element={<AppLayout />}>
-          <Route path="/" element={<CatalogPage />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

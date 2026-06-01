@@ -19,43 +19,6 @@ export function ProductCharacteristicList() {
   // 🔥 Colunas
   const columns = [
     {
-      title: 'Ícone',
-      dataIndex: 'name',
-      render: (_: any, record: ProductCharacteristic) => (
-        <Space>
-          <div
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 12,
-              overflow: 'hidden',
-              background: '#f5f5f5',
-              flexShrink: 0,
-            }}
-          >
-            {record.iconUrl ? (
-              <img
-                src={record.iconUrl}
-                alt={record.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'grid',
-                  placeItems: 'center',
-                }}
-              >
-                <PictureOutlined />
-              </div>
-            )}
-          </div>
-        </Space>
-      ),
-    },
-    {
       title: (
         <Space>
           Nome
@@ -135,6 +98,5 @@ export function ProductCharacteristicList() {
         }}
       />
     </>
-    
   );
 }
