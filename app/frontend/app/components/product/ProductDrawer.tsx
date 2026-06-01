@@ -11,24 +11,23 @@ import {
   Space,
   Switch,
   TimePicker,
-  Upload,
-  type UploadFile,
 } from 'antd';
 import type {
   CreateProduct,
   Product,
   ProductCategory,
   ProductCharacteristic,
+  PublicProduct,
 } from '~/@types/product';
 import TextUtil from '~/utils/TextUtil';
-import { PlusOutlined } from '@ant-design/icons';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
 import ProductCharacteristicController from '~/controllers/ProductCharacteristicController';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import TypeCheck from '~/utils/TypeCheck';
 import ProductController from '~/controllers/ProductController';
 import { Duration } from '~/utils/Duration';
+import { ProductImageUpload } from './ProductImageUpload';
 
 type ComponentProps = {
   product?: Product | null;
@@ -36,10 +35,55 @@ type ComponentProps = {
   onClose: (reason: 'cancel' | 'save', product?: Product | null) => void;
 };
 
+export function ProductFormImageSection({
+  form,
+  product,
+  onCrop,
+  categories,
+  characteristics,
+}: {
+  form: any;
+  product?: PublicProduct | null;
+  onCrop: (blob: Blob | null) => void;
+  categories: readonly ProductCategory[];
+  characteristics: readonly ProductCharacteristic[];
+}) {
+  const watchedName = Form.useWatch('name', form);
+  const watchedPrice = Form.useWatch('price', form);
+  const watchedCategories = Form.useWatch('categories', form);
+  const watchedCharacteristics = Form.useWatch('characteristics', form);
+  const previewCategoryNames =
+    watchedCategories?.map(
+      (id: string) => categories.find((c: { id: string }) => c.id === id)?.name,
+    ) ?? [];
+
+  const previewCharacteristicNames =
+    watchedCharacteristics?.map(
+      (id: string) => characteristics.find((c: { id: string }) => c.id === id)?.name,
+    ) ?? [];
+
+  const productPreview: Partial<PublicProduct> = {
+    name: watchedName ?? product?.name,
+    price: watchedPrice ?? product?.price,
+    categories: previewCategoryNames,
+    characteristics: previewCharacteristicNames,
+  };
+
+  return (
+    <Form.Item label="Imagem do produto">
+      <ProductImageUpload
+        currentImageUrl={product?.imageUrl}
+        productPreview={productPreview}
+        onCrop={onCrop}
+      />
+    </Form.Item>
+  );
+}
+
 export function ProductDrawer(props: ComponentProps) {
   const { product, drawerOpened, onClose } = props;
   const [productForm] = Form.useForm();
-  const [productImages, setProductImages] = useState<UploadFile[]>([]);
+  const croppedImageRef = useRef<Blob | null>(null);
   const {
     tableProps: { dataSource: categories = [] },
   } = useTableQuery<ProductCategory>('categories', (params) =>
@@ -75,18 +119,6 @@ export function ProductDrawer(props: ComponentProps) {
           return { label: name, value: id };
         }),
       });
-      setProductImages(
-        product.imageUrl
-          ? [
-              {
-                uid: product.id,
-                name: product.name,
-                status: 'done',
-                url: product.imageUrl,
-              },
-            ]
-          : [],
-      );
     } else {
       productForm.resetFields();
       productForm.setFieldsValue({
@@ -94,15 +126,11 @@ export function ProductDrawer(props: ComponentProps) {
         characteristics: [],
         categories: [],
       });
-      setProductImages([]);
     }
-  }, [product]);
+  }, [product, productForm]);
 
   const saveProduct = () => {
-    console.log(productForm.getFieldsValue());
     productForm.validateFields().then(async (values) => {
-      const file = productImages[0];
-      const imageUrl = file?.thumbUrl || file?.url || product?.imageUrl;
       const minutes = Duration.fromTimePickerValue(values.bookingLeadTime);
       const days = values.bookingLeadDays;
       const nextProduct: Product | CreateProduct = {
@@ -115,32 +143,44 @@ export function ProductDrawer(props: ComponentProps) {
         isActive: values.isActive,
         characteristics: values.characteristics ?? [],
         categories: values.categories ?? [],
-        imageUrl,
       };
 
       let result = null;
       if (TypeCheck.isNewProduct(nextProduct)) {
-        result = await ProductController.create(nextProduct);
+        result = await ProductController.create(nextProduct, croppedImageRef.current);
       } else {
-        result = await ProductController.update(nextProduct);
+        result = await ProductController.update(nextProduct, croppedImageRef.current);
       }
 
+      croppedImageRef.current = null;
       message.success('Produto salvo com sucesso.');
       productForm.resetFields();
-      setProductImages([]);
       onClose('save', result);
     });
   };
 
   return (
     <Drawer
+      destroyOnHidden
       size="large"
       title={props.product ? 'Editar produto' : 'Novo produto'}
       open={drawerOpened}
-      onClose={() => onClose('cancel')}
+      onClose={() => {
+        productForm.resetFields();
+        croppedImageRef.current = null;
+        onClose('cancel');
+      }}
       extra={
         <Space>
-          <Button onClick={() => onClose('cancel')}>Cancelar</Button>
+          <Button
+            onClick={() => {
+              productForm.resetFields();
+              croppedImageRef.current = null;
+              onClose('cancel');
+            }}
+          >
+            Cancelar
+          </Button>
           <Button type="primary" onClick={saveProduct}>
             Salvar
           </Button>
@@ -222,22 +262,15 @@ export function ProductDrawer(props: ComponentProps) {
           />
         </Form.Item>
 
-        <Form.Item label="Imagem do produto">
-          <Upload
-            listType="picture-card"
-            fileList={productImages}
-            onChange={({ fileList }) => setProductImages(fileList)}
-            beforeUpload={() => false}
-            maxCount={1}
-          >
-            {productImages.length >= 1 ? null : (
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>
-            )}
-          </Upload>
-        </Form.Item>
+        <ProductFormImageSection
+          form={productForm}
+          product={product}
+          categories={categories}
+          characteristics={characteristics}
+          onCrop={(blob) => {
+            croppedImageRef.current = blob;
+          }}
+        />
       </Form>
     </Drawer>
   );

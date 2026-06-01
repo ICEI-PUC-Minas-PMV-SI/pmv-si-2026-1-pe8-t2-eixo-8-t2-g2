@@ -238,7 +238,6 @@ export function ProductList() {
           rowSelection={{
             type: 'checkbox',
             onChange: (selectedRowKeys) => {
-              console.log('Selected row keys: ', selectedRowKeys);
               setDeleteProductState((state) => ({
                 ...state,
                 showButton: selectedRowKeys.length > 0,

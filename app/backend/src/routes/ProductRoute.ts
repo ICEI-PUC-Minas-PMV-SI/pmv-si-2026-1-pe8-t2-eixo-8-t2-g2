@@ -3,20 +3,25 @@ import { ProductValidation } from '../validations/ProductValidation.js';
 import { ProductController } from '../controllers/ProductController.js';
 import type { GenericRequest, ProductRequest, Response } from '../@types/index.js';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
-import multer from 'multer';
+import { ImageMiddleware } from '../middlewares/ImageMiddleware.js';
+import { AppError } from '../error/AppError.js';
+import { HttpCode } from '../utils/HttpCode.js';
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-});
+const upload = ImageMiddleware.getUpload();
 
 class ProductRoute {
   register(router: Router) {
     router.post(
       '/product',
       UserScopeMiddleware.adminOnly(),
-      ProductValidation.create(),
       upload.single('file'),
-      async (req, res) => {
+      ProductValidation.create(),
+      ImageMiddleware.imageDimensions(),
+      ImageMiddleware.resizeImage(),
+      async (req: any, res) => {
+        console.log('body', req.body);
+        console.log('file', req.file, req.imageMeta, req.imageInfo);
+        throw new AppError('ErrorTeste', HttpCode.INTERNAL_SERVER_ERROR);
         const result = await ProductController.create(req.body);
         res.status(201).json(result);
       },

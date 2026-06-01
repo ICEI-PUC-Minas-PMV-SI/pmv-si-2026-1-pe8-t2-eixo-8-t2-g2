@@ -39,9 +39,6 @@ export default function LoginForm() {
             navigation.goToLogin({ required2FA: true, email: formData.email });
           }
         }}
-        onFinishFailed={() => {
-          console.log('onFinishFailed');
-        }}
         autoComplete="off"
       >
         <div style={{ textAlign: 'center' }}>

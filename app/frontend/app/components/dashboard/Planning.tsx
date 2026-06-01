@@ -69,7 +69,6 @@ export function Planning({ onClick }: ComponentProps) {
     queryFn: () => {
       return DashboardController.bookingLeadTime().then((result) => {
         return result.map((product) => {
-          console.log(Duration.minutesToHours(product.bookingLeadMinutes));
           return {
             name: product.name,
             horas: Duration.minutesToHours(product.bookingLeadMinutes),

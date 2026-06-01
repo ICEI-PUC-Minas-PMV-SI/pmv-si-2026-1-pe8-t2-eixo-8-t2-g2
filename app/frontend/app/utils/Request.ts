@@ -20,7 +20,7 @@ export interface RequestOptions extends Omit<
   'method' | 'data' | 'headers'
 > {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-  data?: RequestData;
+  data?: RequestData | FormData;
   headers?: Record<string, string>;
 }
 
@@ -144,7 +144,7 @@ class Request {
 
   static async post<T = unknown>(
     endPoint: string,
-    data: RequestData = {},
+    data: RequestData | FormData = {},
     options: RequestOptions = {},
   ): Promise<T> {
     return Request.send<T>(endPoint, {
@@ -167,7 +167,7 @@ class Request {
   }
   static async patch<T = unknown>(
     endPoint: string,
-    data: RequestData = {},
+    data: RequestData | FormData = {},
     options: RequestOptions = {},
   ): Promise<T> {
     return Request.send<T>(endPoint, {
