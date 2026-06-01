@@ -33,7 +33,7 @@ export function CartPage() {
   );
 
   return (
-    <Space orientation="vertical" size="large" style={{ width: '100%' }}>
+    <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
       <Card>
         <Flex justify="space-between" align="center" gap="middle" wrap>
           <div>

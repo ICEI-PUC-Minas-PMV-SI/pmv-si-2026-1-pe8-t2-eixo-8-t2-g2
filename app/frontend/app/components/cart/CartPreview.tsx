@@ -5,15 +5,15 @@ import {
   PlusOutlined,
   ShoppingCartOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import NumberUtil from '~/utils/NumberUtil';
 import { useCartStore } from '~/hooks/useCartStore';
+import { useNavigation } from '~/hooks/useNavigation';
 
 const { Text } = Typography;
 
 export function CartPreview() {
-  const navigate = useNavigate();
+  const { goToCart } = useNavigation();
   const [open, setOpen] = useState(false);
   const items = useCartStore((state) => state.items);
   const incrementItem = useCartStore((state) => state.incrementItem);
@@ -82,7 +82,7 @@ export function CartPreview() {
         />
       )}
 
-      <Space direction="vertical" style={{ width: '100%', marginTop: 12 }}>
+      <Space orientation="vertical" style={{ width: '100%', marginTop: 12 }}>
         {items.length > 3 && (
           <Text type="secondary">+ {items.length - 3} item(ns) no carrinho</Text>
         )}
@@ -92,7 +92,7 @@ export function CartPreview() {
           icon={<ShoppingCartOutlined />}
           onClick={() => {
             setOpen(false);
-            navigate('/cart');
+            goToCart();
           }}
         >
           Ver carrinho completo

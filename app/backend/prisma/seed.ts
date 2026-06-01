@@ -109,8 +109,8 @@ function pickRandom(arr: any[], count: number) {
 // Static seed data
 // ─────────────────────────────────────────────
 const FIXED_USERS = [
-  { name: 'Admin User', email: 'admin@example.com', role: UserRole.admin },
-  { name: 'Customer User', email: 'customer@example.com', role: UserRole.customer },
+  { name: 'Usuário Admin', email: 'admin@example.com', role: UserRole.admin },
+  { name: 'Usuário Cliente', email: 'customer@example.com', role: UserRole.customer },
 ];
 
 const CATEGORIES = [
