@@ -297,6 +297,10 @@ const ABOUT_ITEMS = [
 async function resetDatabase() {
   console.log('🗑️  Resetando base de dados…');
 
+  await prisma.review.deleteMany();
+  await prisma.payment.deleteMany();
+  await prisma.address.deleteMany();
+
   // Delete in dependency order
   await prisma.schedulerItem.deleteMany();
   await prisma.scheduler.deleteMany();
@@ -484,6 +488,8 @@ async function seedUsers() {
       },
     });
 
+    await createAddress(customer.id);
+
     createdUsers.push(user);
     createdCustomers.push(customer);
 
@@ -512,6 +518,7 @@ async function seedStandaloneCustomers() {
         // userId intentionally omitted → standalone customer
       },
     });
+    await createAddress(customer.id);
 
     result.push(customer);
   }
@@ -540,8 +547,14 @@ async function seedSchedulers(allCustomers: Customer[], products: Product[]) {
     );
 
     const scheduledAt = randomFutureDate(60);
-
-    await prisma.scheduler.create({
+    const schedulerItems = selectedProducts.map((product, index) => ({
+      productId: product.id,
+      quantity: randomInt(1, 5),
+      orderIndex: index + 1,
+      priceAtBooking: product.price,
+      durationMinutes: faker.number.int({ min: 30, max: 120 }),
+    }));
+    const schedulerCreated = await prisma.scheduler.create({
       data: {
         customerId: customer.id,
         scheduledAt,
@@ -550,16 +563,52 @@ async function seedSchedulers(allCustomers: Customer[], products: Product[]) {
         deliveryType: faker.helpers.arrayElement(DELIVERY_TYPES),
         cancellationReason: null,
         items: {
-          create: selectedProducts.map((product, index) => ({
-            productId: product.id,
-            quantity: randomInt(1, 5),
-            orderIndex: index + 1,
-            priceAtBooking: product.price,
-            durationMinutes: faker.number.int({ min: 30, max: 120 }),
-          })),
+          create: schedulerItems,
         },
       },
     });
+
+    const totalValue = schedulerItems.reduce(
+      (acc, p) => acc + p.priceAtBooking * p.quantity,
+      0,
+    );
+
+    const hasDeposit = faker.datatype.boolean();
+    const hasReminder = faker.datatype.boolean();
+
+    if (hasDeposit) {
+      const depositAmount = Number((totalValue * 0.5).toFixed(2));
+      const remainderAmount = Number((totalValue - depositAmount).toFixed(2));
+      await prisma.payment.create({
+        data: {
+          schedulerId: schedulerCreated.id,
+          amount: depositAmount,
+          paymentMethod: schedulerCreated.paymentMethod,
+          type: 'deposit',
+          note: 'Pagamento de sinal',
+        },
+      });
+      if (hasReminder) {
+        await prisma.payment.create({
+          data: {
+            schedulerId: schedulerCreated.id,
+            amount: remainderAmount,
+            paymentMethod: schedulerCreated.paymentMethod,
+            type: 'remainder',
+            note: 'Pagamento restante',
+          },
+        });
+      }
+    } else {
+      await prisma.payment.create({
+        data: {
+          schedulerId: schedulerCreated.id,
+          amount: totalValue,
+          paymentMethod: schedulerCreated.paymentMethod,
+          type: 'remainder',
+        },
+      });
+    }
 
     created++;
   }
@@ -588,6 +637,56 @@ async function seedAbout() {
   console.log(`Textos Sobre e itens criados`);
 }
 
+async function createAddress(customerId: string) {
+  return prisma.address.create({
+    data: {
+      customerId,
+      street: faker.location.street(),
+      number: faker.location.buildingNumber(),
+      neighborhood: faker.location.county(),
+      city: faker.location.city(),
+      state: faker.location.state(),
+      postalCode: faker.location.zipCode('########'),
+      country: 'Brasil',
+      isPrimary: true,
+    },
+  });
+}
+
+async function seedReviews() {
+  const completedSchedulers = await prisma.scheduler.findMany({
+    where: {
+      status: 'completed',
+      ignoredReview: false,
+    },
+  });
+
+  for (const scheduler of completedSchedulers) {
+    if (faker.number.int({ min: 1, max: 100 }) > 60) {
+      await prisma.review.create({
+        data: {
+          schedulerId: scheduler.id,
+          customerId: scheduler.customerId,
+          rating: faker.number.int({
+            min: 3,
+            max: 5,
+          }),
+          comment: faker.helpers.arrayElement([
+            'Excelente atendimento',
+            'Muito saboroso',
+            'Entrega perfeita',
+            'Super recomendo',
+            'Ótima experiência',
+          ]),
+          featured: faker.datatype.boolean({
+            probability: 0.2,
+          }),
+        },
+      });
+    }
+  }
+}
+
 // ─────────────────────────────────────────────
 // Main
 // ─────────────────────────────────────────────
@@ -608,6 +707,7 @@ async function main() {
   const allCustomers = [...linkedCustomers, ...standaloneCustomers];
 
   await seedSchedulers(allCustomers, products);
+  await seedReviews();
 
   console.log('\n🎉 Seed finalizado com sucesso!');
   console.log(`   Produtos:     ${products.length}`);

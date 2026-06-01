@@ -31,11 +31,7 @@ export function ReviewTab() {
 
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ['admin-reviews'],
-    queryFn: () =>
-      ReviewController.listAll().then((r) => {
-        console.log(r);
-        return r;
-      }),
+    queryFn: () => ReviewController.listAll(),
   });
 
   const toggleFeatured = useMutation({

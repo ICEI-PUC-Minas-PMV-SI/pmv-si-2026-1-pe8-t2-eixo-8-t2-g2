@@ -53,8 +53,13 @@ type SchedulerWithRelations = Scheduler & {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const getOrderTotal = (items: SchedulerItem[]): number =>
-  items.reduce((acc, item) => acc + (item.priceAtBooking ?? 0) * item.quantity, 0);
+const getOrderTotal = (items: SchedulerItem[]): number => {
+  const total = items.reduce(
+    (acc, item) => acc + (item.priceAtBooking ?? 0) * item.quantity,
+    0,
+  );
+  return Math.round(total * 100) / 100;
+};
 
 const getItemColumnText = (items: SchedulerItem[]) => {
   const count = items.length;
@@ -90,10 +95,10 @@ function PaymentProgressCell({
   onPayClick: () => void;
 }) {
   const total = getOrderTotal(scheduler.items);
-  const paid = (scheduler.payments ?? []).reduce(
-    (acc: number, p: any) => acc + p.amount,
-    0,
-  );
+  const paid =
+    Math.round(
+      (scheduler.payments ?? []).reduce((acc: number, p: any) => acc + p.amount, 0) * 100,
+    ) / 100;
   const percent = total > 0 ? Math.round((paid / total) * 100) : 0;
   const isFullyPaid = paid >= total && total > 0;
 
