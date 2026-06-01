@@ -28,7 +28,7 @@ class ReviewRoute {
 
     router.get('/review', async (_req: AboutRequest, res: Response) => {
       const result = await ReviewController.list();
-      res.json(result);
+      res.json({ data: result });
     });
 
     router.get('/review/pending', async (req: AboutRequest, res: Response) => {

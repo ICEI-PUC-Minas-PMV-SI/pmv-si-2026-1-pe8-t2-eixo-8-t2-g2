@@ -31,7 +31,11 @@ export function ReviewTab() {
 
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ['admin-reviews'],
-    queryFn: () => ReviewController.listAll(),
+    queryFn: () =>
+      ReviewController.listAll().then((r) => {
+        console.log(r);
+        return r;
+      }),
   });
 
   const toggleFeatured = useMutation({
@@ -85,7 +89,7 @@ export function ReviewTab() {
     {
       title: 'Avaliação',
       key: 'rating',
-      width: 180,
+      width: 190,
       sorter: (a, b) => a.rating - b.rating,
       render: (_, r) => (
         <Flex vertical gap={4}>
@@ -158,25 +162,6 @@ export function ReviewTab() {
           />
         </Tooltip>
       ),
-    },
-    {
-      title: 'Situação',
-      key: 'status',
-      width: 100,
-      render: (_, r) => {
-        if (r.ignored) {
-          return (
-            <Tag style={{ borderRadius: 20, fontSize: 11 }} color="default">
-              Ignorado
-            </Tag>
-          );
-        }
-        return (
-          <Tag style={{ borderRadius: 20, fontSize: 11 }} color="success">
-            Avaliado
-          </Tag>
-        );
-      },
     },
   ];
   return (

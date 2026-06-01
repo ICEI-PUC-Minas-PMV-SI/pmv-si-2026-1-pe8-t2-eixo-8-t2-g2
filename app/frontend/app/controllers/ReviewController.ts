@@ -41,7 +41,7 @@ class ReviewController {
   }
 
   async listAll(): Promise<ReviewRecord[]> {
-    return Request.get<{ data: ReviewRecord[] }>('/review/admin').then((r) => r.data);
+    return Request.get<{ data: ReviewRecord[] }>('/review').then((r) => r.data);
   }
 
   /**

@@ -76,25 +76,17 @@ class ReviewService {
   }
   async list() {
     const prisma = await Prisma.getClient();
-    return prisma.scheduler.findMany({
-      where: {
-        review: {
-          isNot: null,
-        },
-      },
+    return prisma.review.findMany({
       include: {
-        customer: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-        review: {
-          select: {
-            id: true,
-            rating: true,
-            featured: true,
-            comment: true,
+        customer: true,
+        scheduler: {
+          include: {
+            items: {
+              include: {
+                product: true,
+              },
+            },
+            customer: false,
           },
         },
       },
