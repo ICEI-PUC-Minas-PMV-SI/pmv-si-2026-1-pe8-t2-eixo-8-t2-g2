@@ -21,6 +21,7 @@ import ProductCharacteristicController from '~/controllers/ProductCharacteristic
 import { CharacteristicBadge } from './CharacteristicBadge';
 import { ProductDrawer } from './ProductDrawer';
 import { useCartStore } from '~/hooks/useCartStore';
+import { ProductImage } from './ProductImage';
 
 export function ProductList() {
   const [deleteProductState, setDeleteProductState] = useState({
@@ -60,32 +61,15 @@ export function ProductList() {
         <Space>
           <div
             style={{
-              width: 42,
-              height: 42,
+              // width: 42,
+              // height: 42,
               borderRadius: 12,
               overflow: 'hidden',
               background: '#f5f5f5',
               flexShrink: 0,
             }}
           >
-            {record.imageUrl ? (
-              <img
-                src={record.imageUrl}
-                alt={record.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'grid',
-                  placeItems: 'center',
-                }}
-              >
-                <PictureOutlined />
-              </div>
-            )}
+            <ProductImage src={record.imageUrl ?? undefined} alt={record.name} />
           </div>
           <div>
             <div style={{ fontWeight: 600 }}>{record.name}</div>

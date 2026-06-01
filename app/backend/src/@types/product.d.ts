@@ -6,8 +6,7 @@ export type Product = {
   name: string;
   description?: string;
   price?: number;
-  bookingLeadTimeMinutes?: number;
-  bookingLeadDays?: number;
+  bookingLeadMinutes?: number;
   characteristics?: string[];
   categories?: string[];
 };

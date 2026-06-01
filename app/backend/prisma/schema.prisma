@@ -158,6 +158,7 @@ model Product {
   price              Float   @default(0)
   bookingLeadMinutes Int     @default(0)
   isActive           Boolean @default(true)
+  hasImage           Boolean @default(false)
 
   categories      ProductCategory[]
   schedulerItems  SchedulerItem[]

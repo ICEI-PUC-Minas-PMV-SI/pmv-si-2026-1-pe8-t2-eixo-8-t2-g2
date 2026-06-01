@@ -53,15 +53,19 @@ export function ProductFormImageSection({
   const watchedCategories = Form.useWatch('categories', form);
   const watchedCharacteristics = Form.useWatch('characteristics', form);
   const previewCategoryNames =
-    watchedCategories?.map(
-      (id: string) => categories.find((c: { id: string }) => c.id === id)?.name,
-    ) ?? [];
+    watchedCategories?.map((item: string | { value: string }) => {
+      const id = typeof item === 'object' ? item.value : item;
+      return categories.find((c) => c.id === id)?.name;
+    }) ?? [];
 
   const previewCharacteristicNames =
-    watchedCharacteristics?.map(
-      (id: string) => characteristics.find((c: { id: string }) => c.id === id)?.name,
-    ) ?? [];
-
+    watchedCharacteristics?.map((item: string | { value: string }) => {
+      const id = typeof item === 'object' ? item.value : item;
+      return characteristics.find((c) => c.id === id)?.name;
+    }) ?? [];
+  console.log('product', product);
+  console.log('watchedCategories', watchedCategories);
+  console.log('watchedCharacteristics', watchedCharacteristics);
   const productPreview: Partial<PublicProduct> = {
     name: watchedName ?? product?.name,
     price: watchedPrice ?? product?.price,

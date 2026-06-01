@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 import { Button, Typography, Flex, Tooltip, message } from 'antd';
 import { UploadOutlined, DeleteOutlined, ScissorOutlined } from '@ant-design/icons';
@@ -17,7 +17,7 @@ export function ProductImageUpload({ currentImageUrl, onCrop, productPreview }: 
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl ?? null);
   const [cropOpen, setCropOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
+  console.log('productPreview', productPreview);
   const handleFileSelect = (file: File) => {
     const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif'];
     if (!allowed.includes(file.type)) {

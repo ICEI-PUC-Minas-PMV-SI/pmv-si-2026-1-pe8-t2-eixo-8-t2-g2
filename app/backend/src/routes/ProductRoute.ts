@@ -4,8 +4,7 @@ import { ProductController } from '../controllers/ProductController.js';
 import type { GenericRequest, ProductRequest, Response } from '../@types/index.js';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 import { ImageMiddleware } from '../middlewares/ImageMiddleware.js';
-import { AppError } from '../error/AppError.js';
-import { HttpCode } from '../utils/HttpCode.js';
+import SupabaseStorage, { BUCKETS } from '../integration/SupabaseStorage.js';
 
 const upload = ImageMiddleware.getUpload();
 
@@ -19,11 +18,36 @@ class ProductRoute {
       ImageMiddleware.imageDimensions(),
       ImageMiddleware.resizeImage(),
       async (req: any, res) => {
-        console.log('body', req.body);
-        console.log('file', req.file, req.imageMeta, req.imageInfo);
-        throw new AppError('ErrorTeste', HttpCode.INTERNAL_SERVER_ERROR);
-        const result = await ProductController.create(req.body);
-        res.status(201).json(result);
+        const payload = { ...req.body };
+        delete payload.id;
+        if (typeof payload.categories === 'string') {
+          payload.categories = JSON.parse(payload.categories);
+        }
+        if (typeof payload.characteristics === 'string') {
+          payload.characteristics = JSON.parse(payload.characteristics);
+        }
+        payload.isActive = payload.isActive === 'true' || payload.isActive === true;
+        payload.price = parseFloat(payload.price);
+        payload.bookingLeadMinutes = parseInt(payload.bookingLeadMinutes, 10);
+        const result = await ProductController.create(payload);
+        const storageResult = await SupabaseStorage.saveFile(
+          BUCKETS.PRODUCT_IMAGES,
+          `${result.id}.webp`,
+          req.file.buffer,
+          {
+            contentType: req.file.mimetype,
+            upsert: true,
+          },
+        );
+        const response = { data: result, warning: null as null | string };
+        if (storageResult.error) {
+          console.error('Error uploading file to Supabase Storage:', storageResult.error);
+          response.warning =
+            'Produto criado porem houve um problema ao salvar a imagem. Tente enviar a imagem novamente.';
+        } else {
+          await ProductController.toggleHasImage(result.id, true);
+        }
+        res.status(201).json(response);
       },
     );
 
@@ -46,7 +70,10 @@ class ProductRoute {
     router.patch(
       '/product/:id',
       UserScopeMiddleware.adminOnly(),
+      upload.single('file'),
       ProductValidation.update(),
+      ImageMiddleware.imageDimensions(),
+      ImageMiddleware.resizeImage(),
       async (req: GenericRequest, res: Response) => {
         const id = req.params.id as string;
         const result = await ProductController.update(id, req.body);

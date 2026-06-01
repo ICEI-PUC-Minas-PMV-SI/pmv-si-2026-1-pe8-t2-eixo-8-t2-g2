@@ -8,6 +8,7 @@ import type {
 } from '../generated/prisma/models.js';
 import { HttpCode } from '../utils/HttpCode.js';
 import { AppError } from '../error/AppError.js';
+import SupabaseStorage, { BUCKETS } from '../integration/SupabaseStorage.js';
 
 class ProductService {
   async create(product: ProductCreatePayload) {
@@ -15,14 +16,15 @@ class ProductService {
     const { characteristics = [], categories = [], ...productProps } = product;
     const categoriesToCreate = categories.length
       ? {
-          create: categories.map((id) => ({ categoryId: id })),
+          create: categories.map((id) => ({ category: { connect: { id } } })),
         }
       : {};
     const characteristicsToCreate = characteristics.length
       ? {
-          create: characteristics.map((id) => ({ characteristicId: id })),
+          create: characteristics.map((id) => ({ characteristic: { connect: { id } } })),
         }
       : {};
+
     const createdProduct = await prisma.product.create({
       data: {
         ...productProps,
@@ -81,7 +83,19 @@ class ProductService {
       }),
       prisma.product.count({ where }),
     ]);
-    return { data: products, total, ...ResponseUtil.handlePageParams(pageParams, total) };
+    return {
+      data: products.map((product) => {
+        return {
+          ...product,
+          imageUrl: product.hasImage
+            ? SupabaseStorage.getPublicUrl(BUCKETS.PRODUCT_IMAGES, `${product.id}.webp`)
+                .data.publicUrl
+            : null,
+        };
+      }),
+      total,
+      ...ResponseUtil.handlePageParams(pageParams, total),
+    };
   }
 
   async delete(id: string) {
@@ -153,6 +167,14 @@ class ProductService {
       data: dataToUpdate,
     });
     return updatedProduct;
+  }
+
+  async toggleHasImage(id: string, hasImage: boolean) {
+    const prisma = await Prisma.getClient();
+    return prisma.product.update({
+      where: { id },
+      data: { hasImage },
+    });
   }
 }
 
