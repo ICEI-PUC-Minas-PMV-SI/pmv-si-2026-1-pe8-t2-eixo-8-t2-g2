@@ -25,6 +25,7 @@ import {
   MenuOutlined,
 } from '@ant-design/icons';
 import { iconStyle, menu, type MenuItem } from '../menu/Menu';
+import { useCartStore } from '~/hooks/useCartStore';
 
 type AppSettings = {
   siteName?: string;
@@ -52,6 +53,7 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
   const { settings = DEFAULT.settings } = props;
   const [scrolled, setScrolled] = useState(false);
   const { isLogged, logout, user, isAdmin } = useAuthStore();
+  const { clearCart } = useCartStore();
   const { pathname } = useLocation();
   const selectedKey = location.pathname;
   const [mobileMenuIsOpen, setMobileMenuIsOpen] = useState(false);
@@ -112,6 +114,7 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
 
       case 'logout':
         logout();
+        clearCart();
         goToHome();
         break;
     }
@@ -156,7 +159,15 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
         )}
         <Typography.Title
           level={4}
-          style={{ margin: 0, color: '#E06D5B', fontSize: 20, fontWeight: 700 }}
+          style={{
+            margin: 0,
+            color: '#E06D5B',
+            fontSize: 20,
+            fontWeight: 700,
+            padding: 12,
+            cursor: 'pointer',
+          }}
+          onClick={goToHome}
         >
           {settings.siteName ?? 'Confeitaria'}
         </Typography.Title>
