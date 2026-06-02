@@ -63,9 +63,7 @@ export function ProductFormImageSection({
       const id = typeof item === 'object' ? item.value : item;
       return characteristics.find((c) => c.id === id)?.name;
     }) ?? [];
-  console.log('product', product);
-  console.log('watchedCategories', watchedCategories);
-  console.log('watchedCharacteristics', watchedCharacteristics);
+
   const productPreview: Partial<PublicProduct> = {
     name: watchedName ?? product?.name,
     price: watchedPrice ?? product?.price,
@@ -135,31 +133,48 @@ export function ProductDrawer(props: ComponentProps) {
 
   const saveProduct = () => {
     productForm.validateFields().then(async (values) => {
-      const minutes = Duration.fromTimePickerValue(values.bookingLeadTime);
-      const days = values.bookingLeadDays;
-      const nextProduct: Product | CreateProduct = {
-        id: product?.id || '',
-        name: values.name,
-        slug: values.slug || TextUtil.createSlug(values.name),
-        description: values.description,
-        price: values.price,
-        bookingLeadMinutes: Duration.toMinutes({ days, minutes }),
-        isActive: values.isActive,
-        characteristics: values.characteristics ?? [],
-        categories: values.categories ?? [],
-      };
+      try {
+        const minutes = Duration.fromTimePickerValue(values.bookingLeadTime);
+        const days = values.bookingLeadDays;
+        const nextProduct: Product | CreateProduct = {
+          id: product?.id || '',
+          name: values.name,
+          slug: values.slug || TextUtil.createSlug(values.name),
+          description: values.description,
+          price: values.price,
+          bookingLeadMinutes: Duration.toMinutes({ days, minutes }),
+          isActive: values.isActive,
+          characteristics: values.characteristics ?? [],
+          categories: values.categories ?? [],
+        };
 
-      let result = null;
-      if (TypeCheck.isNewProduct(nextProduct)) {
-        result = await ProductController.create(nextProduct, croppedImageRef.current);
-      } else {
-        result = await ProductController.update(nextProduct, croppedImageRef.current);
+        let result = null;
+        const hasImage = !!croppedImageRef.current || !!product?.imageUrl;
+        if (TypeCheck.isNewProduct(nextProduct)) {
+          result = await ProductController.create(
+            nextProduct,
+            croppedImageRef.current,
+            hasImage,
+          );
+        } else {
+          result = await ProductController.update(
+            nextProduct,
+            croppedImageRef.current,
+            hasImage,
+          );
+        }
+
+        croppedImageRef.current = null;
+        message.success('Produto salvo com sucesso.');
+        productForm.resetFields();
+        onClose('save', result);
+      } catch (err: any) {
+        if (err.warning) {
+          message.warning(err.warning);
+        } else {
+          message.error('Ocorreu um erro ao salvar o produto.');
+        }
       }
-
-      croppedImageRef.current = null;
-      message.success('Produto salvo com sucesso.');
-      productForm.resetFields();
-      onClose('save', result);
     });
   };
 

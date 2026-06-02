@@ -27,8 +27,12 @@ class ProductController {
 
     return formData;
   }
-  async create(product: CreateProduct, image?: Blob | null): Promise<Product> {
-    const formData = await this.buildFormData(product, image);
+  async create(
+    product: CreateProduct,
+    image: Blob | null,
+    hasImage: boolean,
+  ): Promise<Product> {
+    const formData = await this.buildFormData({ ...product, hasImage } as any, image);
 
     return Request.post<Product>('/product', formData, {
       headers: {
@@ -39,9 +43,26 @@ class ProductController {
 
   async update(
     product: Partial<Product> & { id: string },
-    image?: Blob | null,
+    image: Blob | null,
+    hasImage: boolean,
   ): Promise<Product> {
-    const formData = await this.buildFormData(product, image);
+    const productClone: any = { ...product, hasImage };
+    if (Array.isArray(productClone.categories) && productClone.categories.length > 0) {
+      productClone.categories = productClone.categories.map((c: any) => {
+        if (typeof c === 'string') return c;
+        if (c.value) return c.value;
+      });
+    }
+    if (
+      Array.isArray(productClone.characteristics) &&
+      productClone.characteristics.length > 0
+    ) {
+      productClone.characteristics = productClone.characteristics.map((c: any) => {
+        if (typeof c === 'string') return c;
+        if (c.value) return c.value;
+      });
+    }
+    const formData = await this.buildFormData(productClone, image);
 
     return Request.patch<Product>(`/product/${product.id}`, formData, {
       headers: {

@@ -1,9 +1,13 @@
+import '../src/utils/Env.js';
 import path from 'node:path';
-import dotenv from 'dotenv';
+
 import { addDays } from 'date-fns/addDays';
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { faker } from '@faker-js/faker';
+import { readFile } from 'node:fs/promises';
+import { Image } from '../src/utils/Image.js';
+import SupabaseStorage, { BUCKETS } from '../src/integration/SupabaseStorage.js';
 
 import {
   Customer,
@@ -18,6 +22,7 @@ import {
 // CLI argument parsing
 // ─────────────────────────────────────────────
 const args = process.argv.slice(2);
+const backendPath = path.dirname(path.join(process.argv[1] || '', '..'));
 
 function getFlag(name: string) {
   const flag = args.find((a) => a.startsWith(`--${name}=`));
@@ -66,8 +71,6 @@ console.log('📋 Configuração do seed:', CONFIG);
 // ─────────────────────────────────────────────
 // Prisma setup
 // ─────────────────────────────────────────────
-const backendPath = path.dirname(path.join(process.argv[1] || '', '..'));
-dotenv.config({ path: path.join(backendPath, '.env') });
 
 const connectionString = `${process.env.DATABASE_URL}`;
 const sqliteAdapter = new PrismaBetterSqlite3({ url: connectionString });
@@ -139,124 +142,151 @@ const CHARACTERISTICS = [
 const PRODUCTS_DATA = [
   {
     productName: 'Amendoim & avelã',
+    imagePath: path.join(backendPath, 'temp/seed-images/amendoim e avela.png'),
     productDescription:
       'Biscoitos de amendoim, recheados com creme de avelã e pasta de amendoim',
   },
   {
     productName: 'Casadinho',
+    imagePath: path.join(backendPath, 'temp/seed-images/casadinho.jpg'),
     productDescription:
       'Biscoitos recheados com goiabada artesanal (feita por vó com muito carinho)',
   },
   {
     productName: 'Biscoito de Baunilha e Ninho',
+    imagePath: path.join(backendPath, 'temp/seed-images/biscoitBaunilha.jpg'),
     productDescription: 'Biscoitos de baunilha sem recheio, passados no leite ninho',
   },
   {
     productName: 'Canelinha',
+    imagePath: path.join(backendPath, 'temp/seed-images/canelinha.png'),
     productDescription: 'Biscoitos sem recheio aromatizados com canela',
   },
   {
     productName: 'Café e Avelã',
+    imagePath: path.join(backendPath, 'temp/seed-images/cafe e avela.png'),
     productDescription: 'Biscoitos de café, recheados com creme de avelã',
   },
   {
     productName: 'Churrito',
+    imagePath: path.join(backendPath, 'temp/seed-images/churrito.png'),
     productDescription: 'Biscoitos aromatizados de canela, recheados com doce de leite',
   },
   {
     productName: 'Mousse de Queijo',
+    imagePath: path.join(backendPath, 'temp/seed-images/mousse de queijo.png'),
     productDescription:
       'Feita com parmesão e gorgonzola, finalizada com geleia de pimentões levemente apimentada',
   },
   {
     productName: 'Gelado de Tapioca',
+    imagePath: path.join(backendPath, 'temp/seed-images/gelado de tapioca.png'),
     productDescription:
       'Bolo gelado de tapioca, com creme de leite condensado, leite de coco e coco, finalizado com farofinha de coco caramelizado',
   },
   {
     productName: 'Focaccia',
+    imagePath: path.join(backendPath, 'temp/seed-images/focaccia.png'),
     productDescription:
       'Focaccia artesanal, macia por dentro, levemente crocante por fora, temperada com azeite de oliva, alecrim e um toque de sal marinho.',
   },
   {
     productName: 'Palmier',
+    imagePath: path.join(backendPath, 'temp/seed-images/palmier.png'),
     productDescription: 'Massa folhada levemente adocicada, com ou sem canela',
   },
   {
     productName: 'Bolo Caseiro',
+    imagePath: path.join(backendPath, 'temp/seed-images/bol caseiro.png'),
     productDescription: 'Grande ou pequeno. Limão, laranja, tangerina',
   },
   {
     productName: 'Bolo de Cenoura',
+    imagePath: path.join(backendPath, 'temp/seed-images/bolo cenoura.png'),
     productDescription: 'Grande ou pequeno. Com ganache de chocolate ou brigadeiro',
   },
   {
     productName: 'Bolo de Ninho',
+    imagePath: path.join(backendPath, 'temp/seed-images/bolo ninho.png'),
     productDescription:
       'Massa super fofinha de leite ninho, com brigadeiro de leite ninho',
   },
   {
     productName: 'Bolo de Limão e Mirtilo',
+    imagePath: path.join(backendPath, 'temp/seed-images/bolo limao mirtilo.jpg'),
     productDescription:
       'Massa com suco de limão e mirtilos. Opção com ou sem brigadeiro de limão',
   },
   {
     productName: 'Bolo de Banana e Chocolate',
+    imagePath: path.join(backendPath, 'temp/seed-images/bolo banana.png'),
     productDescription: 'Massa de banana e cacau, com gotas de chocolate nobre blend',
   },
   {
     productName: 'Torta Salgada',
+    imagePath: path.join(backendPath, 'temp/seed-images/torta salgada.png'),
     productDescription: 'Recheada com legumes, carne moída ou frango',
   },
   {
     productName: 'Brownie',
+    imagePath: path.join(backendPath, 'temp/seed-images/brownie.png'),
     productDescription:
       'Brownie tradicional de chocolate nobre blend, macio por dentro e crocante por fora. Pedido mínimo: 50 unidades.',
   },
   {
     productName: 'Brigadeiro de Caramelo Crocante',
+    imagePath: path.join(backendPath, 'temp/seed-images/brigadeiro caramelo.png'),
     productDescription:
       'Docinhos de caramelo passados no cereal crocante. Pedido mínimo: 50 unidades.',
   },
   {
     productName: 'Mini Brownie',
+    imagePath: path.join(backendPath, 'temp/seed-images/mini brownie.png'),
     productDescription:
       'Mini brownie tradicional de chocolate nobre blend, macio por dentro e crocante por fora',
   },
   {
     productName: 'Brigadeiro Tradicional Gourmet',
+    imagePath: path.join(backendPath, 'temp/seed-images/brigadeiro.png'),
     productDescription:
       'Chocolate nobre blend passados no granulado 100% chocolate (vermicelli ou granule)',
   },
   {
     productName: 'Pipoca Gourmet',
+    imagePath: path.join(backendPath, 'temp/seed-images/pipoca.png'),
     productDescription: 'Ninho + chocolate blend; Ninho + chocolate branco',
   },
   {
     productName: 'Brownie Blondie',
+    imagePath: path.join(backendPath, 'temp/seed-images/brownie blonde.png'),
     productDescription:
       'Brownie de chocolate branco. Diversas opções, como: limão siciliano, frutas vermelhas, amêndoas',
   },
   {
     productName: 'Tarte Tartin',
+    imagePath: path.join(backendPath, 'temp/seed-images/tarte tartin.png'),
     productDescription:
       'Torta francesa composta por uma massa amanteigada e maçãs caramelizadas',
   },
   {
     productName: 'Torta de Caramelo Salgado',
+    imagePath: path.join(backendPath, 'temp/seed-images/torta caramelo salgado.png'),
     productDescription: 'Massa de cacau, creme de chocolate e caramelo salgado',
   },
   {
     productName: 'Torta de Maracujá com Chocolate',
+    imagePath: path.join(backendPath, 'temp/seed-images/torta maracuja.png'),
     productDescription:
       'Massa de cacau, mousse de maracujá e creme de chocolate, finalizada com geleia de maracujá',
   },
   {
     productName: 'Torta de Fruta',
+    imagePath: path.join(backendPath, 'temp/seed-images/torta fruta.png'),
     productDescription: 'Base neutra, creme patisserie e geleia de fruta (a sua escolha)',
   },
   {
     productName: 'Pudim de Leite Condensado',
+    imagePath: path.join(backendPath, 'temp/seed-images/pudim de leite.png'),
     productDescription:
       'Pudim cremoso feito com leite condensado e calda de caramelo dourado.',
   },
@@ -317,6 +347,39 @@ async function resetDatabase() {
   await prisma.aboutItem.deleteMany();
 
   console.log('✅ Base de dados limpa.');
+}
+
+async function seedProductImage(productId: string, imagePath: string): Promise<void> {
+  let buffer: Buffer;
+  try {
+    buffer = await readFile(imagePath);
+  } catch {
+    console.warn(`  ⚠️  Imagem não encontrada, pulando: ${imagePath}`);
+    return;
+  }
+
+  // Replica ImageMiddleware.resizeImage()
+  const result = await Image.toWebp(buffer);
+
+  const storageResult = await SupabaseStorage.saveFile(
+    BUCKETS.PRODUCT_IMAGES,
+    `${productId}.webp`,
+    result.buffer,
+    { contentType: 'image/webp', upsert: true },
+  );
+
+  if (storageResult.error) {
+    console.warn(
+      `  ⚠️  Erro ao salvar imagem do produto ${productId}:`,
+      storageResult.error,
+    );
+  } else {
+    await prisma.product.update({
+      where: { id: productId },
+      data: { hasImage: true },
+    });
+    console.log(`  🖼️  Imagem salva: ${productId}.webp`);
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -429,6 +492,15 @@ async function seedProducts(characteristics: any[], categories: any[]) {
         },
       },
     });
+
+    if (
+      p.imagePath &&
+      process.env.SUPABASE_URL &&
+      process.env.SUPABASE_SERVICE_ROLE_KEY &&
+      process.env.GENERATE_IMAGES === 'true'
+    ) {
+      await seedProductImage(created.id, p.imagePath);
+    }
 
     result.push(created);
     console.log(`  Produto criado: ${created.name}`);

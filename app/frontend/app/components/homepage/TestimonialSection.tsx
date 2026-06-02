@@ -13,6 +13,7 @@ export function TestimonialsSection() {
 
   return (
     <section
+      hidden={reviews.length === 0}
       style={{
         padding: screens.md ? '72px 24px' : '48px 20px',
         background: '#fff',
@@ -102,7 +103,8 @@ export function TestimonialsSection() {
                       {t.customer.name}
                     </Typography.Text>
                     <Typography.Text style={{ fontSize: 12, color: '#888' }}>
-                      {t.scheduler.items.length} {t.scheduler.items.length > 1 ? 'Itens' : 'Item'}
+                      {t.scheduler.items.length}{' '}
+                      {t.scheduler.items.length > 1 ? 'Itens' : 'Item'}
                     </Typography.Text>
                   </div>
                 </Flex>
