@@ -44,6 +44,10 @@ class ReviewController {
     return Request.get<{ data: ReviewRecord[] }>('/review').then((r) => r.data);
   }
 
+  async listFeatured(): Promise<ReviewRecord[]> {
+    return Request.get<{ data: ReviewRecord[] }>('/review/featured').then((r) => r.data);
+  }
+  
   /**
    * Admin: toggle de destaque para homepage.
    * PATCH /review/:id/featured

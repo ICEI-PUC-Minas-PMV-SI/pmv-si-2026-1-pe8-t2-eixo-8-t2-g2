@@ -31,6 +31,11 @@ class ReviewRoute {
       res.json({ data: result });
     });
 
+    router.get('/review/featured', async (_req: AboutRequest, res: Response) => {
+      const result = await ReviewController.listFeatured();
+      res.json({ data: result });
+    });
+
     router.get('/review/pending', async (req: AboutRequest, res: Response) => {
       const userId = req.user?.id || '';
       const result = await ReviewController.getPending(userId);

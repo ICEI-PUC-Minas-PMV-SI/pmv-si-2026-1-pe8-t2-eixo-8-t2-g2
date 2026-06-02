@@ -1,32 +1,16 @@
 import { Col, Flex, Grid, Row, Tag, Typography } from 'antd';
+import ReviewController, { type ReviewRecord } from '~/controllers/ReviewController';
+import { useState, useEffect } from 'react';
 import { StarFilled } from '@ant-design/icons';
-
-const MOCK_TESTIMONIALS = [
-  {
-    id: '1',
-    name: 'Mariana S.',
-    text: 'O bolo de casamento foi perfeito! Todos os convidados elogiaram muito. Recomendo demais!',
-    stars: 5,
-    occasion: 'Casamento',
-  },
-  {
-    id: '2',
-    name: 'Roberto A.',
-    text: 'Encomendei brownies para o aniversário da minha filha e ela adorou. Sabor incrível!',
-    stars: 5,
-    occasion: 'Aniversário',
-  },
-  {
-    id: '3',
-    name: 'Fernanda C.',
-    text: 'Atendimento impecável e produto delicioso. Já é minha confeitaria favorita!',
-    stars: 5,
-    occasion: 'Brunch',
-  },
-];
 
 export function TestimonialsSection() {
   const screens = Grid.useBreakpoint();
+  const [reviews, setReviews] = useState<ReviewRecord[]>([]);
+
+  useEffect(() => {
+    ReviewController.listFeatured().then(setReviews);
+  }, []);
+
   return (
     <section
       style={{
@@ -65,7 +49,7 @@ export function TestimonialsSection() {
         </div>
 
         <Row gutter={[24, 24]}>
-          {MOCK_TESTIMONIALS.map((t) => (
+          {reviews.slice(0, 3).map((t) => (
             <Col key={t.id} xs={24} md={8}>
               <div
                 style={{
@@ -77,7 +61,7 @@ export function TestimonialsSection() {
                 }}
               >
                 <Flex gap={4} style={{ marginBottom: 16 }}>
-                  {Array.from({ length: t.stars }).map((_, i) => (
+                  {Array.from({ length: t.rating }).map((_, i) => (
                     <StarFilled key={i} style={{ color: '#E06D5B', fontSize: 14 }} />
                   ))}
                 </Flex>
@@ -90,7 +74,7 @@ export function TestimonialsSection() {
                     marginBottom: 20,
                   }}
                 >
-                  "{t.text}"
+                  "{t.comment}"
                 </Typography.Paragraph>
                 <Flex gap={10} align="center">
                   <div
@@ -108,17 +92,17 @@ export function TestimonialsSection() {
                       flexShrink: 0,
                     }}
                   >
-                    {t.name[0]}
+                    {t.customer.name[0]}
                   </div>
                   <div>
                     <Typography.Text
                       strong
                       style={{ fontSize: 14, display: 'block', color: '#1A1A1A' }}
                     >
-                      {t.name}
+                      {t.customer.name}
                     </Typography.Text>
                     <Typography.Text style={{ fontSize: 12, color: '#888' }}>
-                      {'8 itens'}
+                      {t.scheduler.items.length} {t.scheduler.items.length > 1 ? 'Itens' : 'Item'}
                     </Typography.Text>
                   </div>
                 </Flex>

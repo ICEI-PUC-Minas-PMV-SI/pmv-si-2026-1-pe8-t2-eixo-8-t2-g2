@@ -14,6 +14,10 @@ class ReviewController {
     return ReviewService.list();
   }
 
+  async listFeatured() {
+    return ReviewService.list(true);
+  }
+  
   async ignoreReview(userId: string, schedulerIds: string[]) {
     return ReviewService.ignoreReview(userId, schedulerIds);
   }

@@ -74,9 +74,11 @@ class ReviewService {
       },
     });
   }
-  async list() {
+  async list(featured?: boolean) {
     const prisma = await Prisma.getClient();
     return prisma.review.findMany({
+      ...(featured !== undefined && { take: 3 }),
+      where: featured !== undefined ? { featured } : {},
       include: {
         customer: true,
         scheduler: {
