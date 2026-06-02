@@ -56,7 +56,7 @@ export function KpiCard({
             suffix={suffix}
             styles={{ content: { fontSize: 26, fontWeight: 600, color: '#1a1a1a' } }}
           />
-          {trend !== undefined && trendLabel && (
+          {/* {trend !== undefined && trendLabel && (
             <Text
               style={{
                 fontSize: 11,
@@ -67,7 +67,7 @@ export function KpiCard({
             >
               {trend >= 0 ? <RiseOutlined /> : <FallOutlined />} {trendLabel}
             </Text>
-          )}
+          )} */}
         </div>
         <div
           style={{

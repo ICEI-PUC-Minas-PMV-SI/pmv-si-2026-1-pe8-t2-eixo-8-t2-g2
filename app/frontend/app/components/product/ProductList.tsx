@@ -141,7 +141,10 @@ export function ProductList() {
       <ProductDrawer
         drawerOpened={productFormState.isOpened}
         product={productFormState.product}
-        onClose={() => setProductFormState((state) => ({ ...state, isOpened: false }))}
+        onClose={() => {
+          setProductFormState((state) => ({ ...state, isOpened: false }));
+          productQuery.refetch();
+        }}
       />
       <Card
         title="Produtos"

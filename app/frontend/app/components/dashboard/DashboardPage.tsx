@@ -19,24 +19,10 @@ import { DemandLatestMonths } from './DemandLatestMonths';
 import { AlertModal } from './AlertModal';
 import { ProductionSection } from './ProductionSection';
 import { Planning } from './Planning';
+import { Colors } from '~/constants/Colors';
 
 const { Content } = Layout;
 const { Text } = Typography;
-
-// ─── Palette ────────────────────────────────────────────────────────────────
-const C = {
-  primary: '#e06d5b',
-  primaryLight: '#f0997b',
-  confirmed: '#1677ff',
-  pending: '#fa8c16',
-  progress: '#13c2c2',
-  completed: '#52c41a',
-  cancelled: '#ff4d4f',
-  pickup: '#722ed1',
-  card: '#faad14',
-  cash: '#52c41a',
-  transfer: '#13c2c2',
-} as const;
 
 interface DashboardAlert {
   id: string;
@@ -129,8 +115,12 @@ export function DashboardPage() {
                     <AreaChart data={latestMonthsRevenueSummary.data} dataKey={'revenue'}>
                       <defs>
                         <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={C.primary} stopOpacity={0.18} />
-                          <stop offset="95%" stopColor={C.primary} stopOpacity={0} />
+                          <stop
+                            offset="5%"
+                            stopColor={Colors.primary}
+                            stopOpacity={0.18}
+                          />
+                          <stop offset="95%" stopColor={Colors.primary} stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid
@@ -156,10 +146,10 @@ export function DashboardPage() {
                         type="monotone"
                         dataKey="revenue"
                         name="Faturamento"
-                        stroke={C.primary}
+                        stroke={Colors.primary}
                         strokeWidth={2.5}
                         fill="url(#revGrad)"
-                        dot={{ r: 4, fill: C.primary }}
+                        dot={{ r: 4, fill: Colors.primary }}
                         activeDot={{ r: 6 }}
                       />
                     </AreaChart>

@@ -5,10 +5,31 @@ import type { GenericRequest, ProductRequest, Response } from '../@types/index.j
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 import { ImageMiddleware } from '../middlewares/ImageMiddleware.js';
 import SupabaseStorage, { BUCKETS } from '../integration/SupabaseStorage.js';
+import { Logger } from '../logger/Logger.js';
 
 const upload = ImageMiddleware.getUpload();
-
+const saveProductImage = async (productId: string, file: Express.Multer.File) => {
+  const storageResult = await SupabaseStorage.saveFile(
+    BUCKETS.PRODUCT_IMAGES,
+    `${productId}.webp`,
+    file.buffer,
+    {
+      contentType: file.mimetype,
+      upsert: true,
+    },
+  );
+  if (storageResult.error) {
+    console.error('Error uploading file to Supabase Storage:', storageResult.error);
+    throw new Error(
+      'Produto criado porem houve um problema ao salvar a imagem. Tente enviar a imagem novamente.',
+    );
+  } else {
+    await ProductController.toggleHasImage(productId, true);
+  }
+};
 class ProductRoute {
+  private logger = new Logger('ProductRoute');
+
   register(router: Router) {
     router.post(
       '/product',
@@ -30,24 +51,13 @@ class ProductRoute {
         payload.price = parseFloat(payload.price);
         payload.bookingLeadMinutes = parseInt(payload.bookingLeadMinutes, 10);
         const result = await ProductController.create(payload);
-        const storageResult = await SupabaseStorage.saveFile(
-          BUCKETS.PRODUCT_IMAGES,
-          `${result.id}.webp`,
-          req.file.buffer,
-          {
-            contentType: req.file.mimetype,
-            upsert: true,
-          },
-        );
-        const response = { data: result, warning: null as null | string };
-        if (storageResult.error) {
-          console.error('Error uploading file to Supabase Storage:', storageResult.error);
-          response.warning =
-            'Produto criado porem houve um problema ao salvar a imagem. Tente enviar a imagem novamente.';
-        } else {
-          await ProductController.toggleHasImage(result.id, true);
-        }
-        res.status(201).json(response);
+        saveProductImage(result.id, req.file)
+          .then(() => {
+            res.status(201).json({ data: result, warning: null });
+          })
+          .catch((err) => {
+            res.status(201).json({ data: result, warning: err.message });
+          });
       },
     );
 
@@ -76,9 +86,46 @@ class ProductRoute {
       ImageMiddleware.resizeImage(),
       async (req: GenericRequest, res: Response) => {
         const id = req.params.id as string;
-        const result = await ProductController.update(id, req.body);
-
-        res.json(result);
+        const payload = { ...req.body };
+        const hasImage = payload.hasImage === 'true' || payload.hasImage === true;
+        delete payload.hasImage;
+        delete payload.id;
+        if (typeof payload.categories === 'string') {
+          payload.categories = JSON.parse(payload.categories);
+        }
+        if (typeof payload.characteristics === 'string') {
+          payload.characteristics = JSON.parse(payload.characteristics);
+        }
+        payload.isActive = payload.isActive === 'true' || payload.isActive === true;
+        payload.price = parseFloat(payload.price);
+        payload.bookingLeadMinutes = parseInt(payload.bookingLeadMinutes, 10);
+        const result = await ProductController.update(id, payload);
+        if (req.file) {
+          saveProductImage(result.id, req.file)
+            .then(() => {
+              res.status(201).json({ data: result, warning: null });
+            })
+            .catch((err) => {
+              res.status(201).json({ data: result, warning: err.message });
+            });
+        } else {
+          if (result.hasImage && hasImage === false) {
+            try {
+              await SupabaseStorage.removeFile(BUCKETS.PRODUCT_IMAGES, [`${id}.webp`]);
+              await ProductController.toggleHasImage(id, false);
+              res.status(200).json({ data: result, warning: null });
+            } catch (err) {
+              this.logger.error('Error removing file from Supabase Storage:', err);
+              res.status(200).json({
+                data: result,
+                warning:
+                  'Produto atualizado com sucesso, mas ocorreu um erro ao remover a imagem',
+              });
+            }
+          } else {
+            res.status(200).json({ data: result, warning: null });
+          }
+        }
       },
     );
 
