@@ -57,6 +57,19 @@ class TextUtil {
     if (!phone) return '#';
     return `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
   }
+
+  parseInstagram(value?: string): { handle: string; url: string } | undefined {
+    if (!value) return undefined;
+  
+    const handle = value.startsWith('http')
+      ? '@' + value.split('/').filter(Boolean).pop()!
+      : value.startsWith('@') ? value : '@' + value;
+  
+    const username = handle.replace('@', '');
+    const url = `https://www.instagram.com/${username}`;
+  
+    return { handle, url };
+  }
 }
 
 export default new TextUtil();

@@ -1,6 +1,7 @@
 import { Button, Col, Flex, Grid, Row, Space, Tag, Typography } from 'antd';
 import type { AppSettings } from '~/@types/app-settings';
 import { ShoppingCartOutlined, InstagramOutlined } from '@ant-design/icons';
+import TextUtil from '~/utils/TextUtil';
 
 export function ContactSection({ settings }: { settings: AppSettings }) {
   const screens = Grid.useBreakpoint();
@@ -14,6 +15,7 @@ export function ContactSection({ settings }: { settings: AppSettings }) {
 
   return (
     <section
+      id="contato"
       style={{
         padding: screens.md ? '84px 24px' : '56px 20px',
         background: 'linear-gradient(180deg, #FFF7F5 0%, #FFF1EC 100%)',
@@ -87,7 +89,7 @@ export function ContactSection({ settings }: { settings: AppSettings }) {
                 <Button
                   size="large"
                   icon={<InstagramOutlined />}
-                  href={`https://instagram.com/${settings.instagram}`}
+                  href={`${TextUtil.parseInstagram(settings.instagram)?.url}`}
                   target="_blank"
                   style={{
                     borderColor: '#E06D5B',

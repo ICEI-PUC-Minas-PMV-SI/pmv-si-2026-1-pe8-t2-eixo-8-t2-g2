@@ -8,6 +8,9 @@ class AppSettingsController {
   find() {
     return Request.get<AppSettingsPayload>('/app-settings');
   }
+  findInfo() {
+    return Request.get<AppSettingsPayload>('/footerInfo');
+  }
 }
 const instance = new AppSettingsController();
 export { instance as AppSettingsController };

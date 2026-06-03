@@ -4,47 +4,56 @@ import { Divider, Flex, Layout, Row, Col, Space, Typography } from 'antd';
 import logoIsabellaCaster from './assets/logo-isabella-caster.png';
 import { Clock, Envelope, Instagram, Marker, WhatsApp } from '../icon/components';
 import StyleSheet from '~/utils/StyleSheet';
+import TextUtil from '~/utils/TextUtil';
+
+import { useQuery } from '@tanstack/react-query';
+import { AppSettingsController } from '~/controllers/AppSettingsController';
+import type { AppSettingsPayload } from '~/@types/app-settings';
 
 const { Footer } = Layout;
 const { Text, Link, Title } = Typography;
 
 export type AppFooterProps = {
-  phone?: string;
-  phoneHref?: string;
-  email?: string;
-  businessHours?: string;
-  locationLabel?: string;
-  instagramHandle?: string;
-  instagramUrl?: string;
   badgeText?: string;
   copyrightYear?: number;
   useFullFooter?: boolean;
 };
 
-const DEFAULTS = {
-  phone: '(31) 92222-22222',
-  phoneHref: 'https://wa.me/553122222222222',
-  email: 'contato@doceecia.com.br',
-  businessHours: 'Seg a Sáb: 8h às 18h',
-  locationLabel: 'Feito em casa, com amor.',
-  instagramHandle: '@doceecia',
-  instagramUrl: 'https://www.instagram.com/doceecia',
-  badgeText: 'Feito com amor em cada detalhe.',
-  copyrightYear: new Date().getFullYear(),
-} as const;
+const styles = StyleSheet.create({
+  link: {
+    color: 'inherit',
+    transition: 'opacity 0.15s',
+  },
+  iconContainer: {
+    alignItems: 'center',
+  },
+  icon: {
+    fontSize: 18,
+    color: '#C05A48',
+  },
+})
 
 export function AppFooter({
-  phone = DEFAULTS.phone,
-  phoneHref = DEFAULTS.phoneHref,
-  email = DEFAULTS.email,
-  businessHours = DEFAULTS.businessHours,
-  locationLabel = DEFAULTS.locationLabel,
-  instagramHandle = DEFAULTS.instagramHandle,
-  instagramUrl = DEFAULTS.instagramUrl,
-  badgeText = DEFAULTS.badgeText,
-  copyrightYear = DEFAULTS.copyrightYear,
+  badgeText = 'Feito com amor em cada detalhe.',
+  copyrightYear = new Date().getFullYear(),
   useFullFooter = false,
-}: AppFooterProps) {
+}: Pick<AppFooterProps, 'badgeText' | 'copyrightYear' | 'useFullFooter'>) {
+  const settingsQuery = useQuery<AppSettingsPayload>({
+    queryKey: ['app-settings'],
+    queryFn: () => AppSettingsController.findInfo(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const instagram = TextUtil.parseInstagram(settingsQuery.data?.instagram);
+
+  const phone = settingsQuery.data?.whatsapp ?? '';
+  const phoneHref = settingsQuery.data?.whatsapp ? `https://wa.me/${settingsQuery.data.whatsapp}` : '';
+  const email = settingsQuery.data?.contactEmail ?? '';
+  const serviceHours = settingsQuery.data?.serviceHours ?? '';
+  const locationLabel = settingsQuery.data?.address ?? '';
+  const instagramHandle = instagram?.handle;
+  const instagramUrl = instagram?.url;
+{
   return (
     <Footer
       style={{
@@ -148,7 +157,7 @@ export function AppFooter({
                   <Space size={10} align="center" style={styles.iconContainer}>
                     <Clock style={styles.icon} />
                     <Text style={{ color: '#5C3D38', fontSize: 14 }}>
-                      {businessHours}
+                      {serviceHours}
                     </Text>
                   </Space>
 
@@ -238,17 +247,4 @@ export function AppFooter({
     </Footer>
   );
 }
-
-const styles = StyleSheet.create({
-  link: {
-    color: 'inherit',
-    transition: 'opacity 0.15s',
-  },
-  iconContainer: {
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: 18,
-    color: '#C05A48',
-  },
-});
+}
