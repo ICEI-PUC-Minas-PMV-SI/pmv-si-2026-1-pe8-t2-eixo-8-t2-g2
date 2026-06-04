@@ -16,7 +16,6 @@ import {
 import type { Product } from '~/@types/product';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import ProductController from '~/controllers/ProductController';
-import { useTableQuery } from '~/hooks/useTableQuery';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { Segmented } from 'antd';
 
@@ -105,19 +104,6 @@ export function SchedulerForm({ form }: ComponentProps) {
     setPhoneSearchTimeout(timeout);
   };
 
-  const productQuery = useTableQuery<Product>('products', (params) =>
-    ProductController.list<Product>(params),
-  );
-  const items = Form.useWatch('items', form) as
-    | { productName: string; quantity: number; customization: string }[]
-    | undefined;
-  const total =
-    items?.reduce((acc, item) => {
-      const product = productQuery.tableProps.dataSource?.find(
-        (p) => p.name === item?.productName,
-      );
-      return acc + (product?.price ?? 0) * (item?.quantity ?? 1);
-    }, 0) ?? 0;
   const {
     options: productOptions,
     isFetching: isFetchingProduct,
@@ -136,6 +122,15 @@ export function SchedulerForm({ form }: ComponentProps) {
     },
     300,
   );
+
+  const items = Form.useWatch('items', form) as
+    | { productId: string; quantity: number; customization: string }[]
+    | undefined;
+  const total =
+    items?.reduce((acc, item) => {
+      const product = productOptions.find((p) => p.id === item?.productId);
+      return acc + (product?.price ?? 0) * (item?.quantity ?? 1);
+    }, 0) ?? 0;
 
   useEffect(() => {
     refetch();

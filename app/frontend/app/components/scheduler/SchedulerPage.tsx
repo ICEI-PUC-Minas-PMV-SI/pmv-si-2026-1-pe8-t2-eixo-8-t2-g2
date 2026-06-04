@@ -4,7 +4,7 @@ import 'dayjs/locale/pt-br';
 import { TabbedPage } from '../tab/TabbedPage';
 import { SchedulerTab } from './SchedulerTab';
 import { useReviewPrompt } from '~/hooks/useReviewPrompt';
-import { ReviewModal, type IgnorePayload } from '../review/ReviewModal';
+import { ReviewModal } from '../review/ReviewModal';
 
 dayjs.locale('pt-br');
 
@@ -20,7 +20,7 @@ export function SchedulerPage() {
         schedulers={schedulersPendingReview}
         onClose={clearPendingReview}
         onSubmitReview={async () => {}}
-        onIgnore={async (ignorePayload: IgnorePayload) => {}}
+        onIgnore={async () => {}}
       />
       <TabbedPage
         defaultTab="schedules"

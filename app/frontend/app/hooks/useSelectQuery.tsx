@@ -26,7 +26,7 @@ export function useSelectQuery<T>(
   const query = useQuery({
     queryKey: [key, debouncedSearch],
     queryFn: () => fetchFn(debouncedSearch),
-    enabled: !!debouncedSearch, // evita buscar vazio (opcional)
+    enabled: true,
   });
 
   return {

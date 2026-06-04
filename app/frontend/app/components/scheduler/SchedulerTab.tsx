@@ -18,7 +18,6 @@ export function SchedulerTab() {
   const schedulerQuery = useTableQuery<Scheduler>('scheduler', (params) =>
     SchedulerController.list<Scheduler>(params),
   );
-
   const {
     tableProps: { dataSource: schedulers = [], pagination },
     forceRefetch,
@@ -26,6 +25,7 @@ export function SchedulerTab() {
 
   const [scheduleView, setScheduleView] = useState<'list' | 'calendar'>('list');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const { isAdmin } = useAuthStore();
   const [form] = Form.useForm();
   const [unsyncedSchedulerState, setUnsyncedSchedulerState] = useState({
@@ -46,7 +46,6 @@ export function SchedulerTab() {
         setUnsyncedSchedulerState((prev) => ({ ...prev, loading: false, count }));
       }
     };
-
     fetchUnsyncedCount();
   }, []);
 
@@ -57,8 +56,7 @@ export function SchedulerTab() {
     const completed = schedulers.filter((s) => s.status === 'completed').length;
     const cancelled = schedulers.filter((s) => s.status === 'cancelled').length;
     const inProgress = schedulers.filter((s) => s.status === 'in_progress').length;
-
-    const stats = {
+    return {
       status: [
         { ...SchedulerConstant.status.pending, value: pending },
         { ...SchedulerConstant.status.confirmed, value: confirmed },
@@ -68,7 +66,6 @@ export function SchedulerTab() {
       ],
       total,
     };
-    return stats;
   }, [schedulers, pagination]);
 
   const calendarEvents = useMemo(() => {
@@ -100,11 +97,13 @@ export function SchedulerTab() {
       })),
       isEdit: true,
     });
+    setIsEditMode(true);
     setDrawerOpen(true);
   };
 
   const onCloseForm = () => {
     form.resetFields();
+    setIsEditMode(false);
     setDrawerOpen(false);
   };
 
@@ -121,7 +120,6 @@ export function SchedulerTab() {
         message.error('Adicione pelo menos um produto ao pedido.');
         return;
       }
-
       const next: CreateScheduler = {
         customerId: values.customerId || undefined,
         customerName: values.customerName,
@@ -150,8 +148,6 @@ export function SchedulerTab() {
       } else {
         message.success('Pedido criado com sucesso.');
       }
-
-      // onAdd(next);
       onCloseForm();
       forceRefetch();
     } catch (error) {
@@ -162,7 +158,7 @@ export function SchedulerTab() {
 
   return (
     <Space orientation="vertical" size="large" style={{ width: '100%' }}>
-      <SchedulerSummary stats={scheduleStats} /> {/* resumo estatístico */}
+      <SchedulerSummary stats={scheduleStats} />
       <Card
         title="Pedidos"
         extra={
@@ -193,7 +189,11 @@ export function SchedulerTab() {
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => setDrawerOpen(true)}
+              onClick={() => {
+                form.resetFields();
+                setIsEditMode(false);
+                setDrawerOpen(true);
+              }}
             >
               Novo pedido
             </Button>
@@ -206,10 +206,10 @@ export function SchedulerTab() {
           <SchedulerCalendar calendarEvents={calendarEvents} />
         )}
       </Card>
-      {/* Drawer: Novo pedido */}
+
       <Drawer
         size="large"
-        title="Novo pedido"
+        title={isEditMode ? 'Editar pedido' : 'Novo pedido'}
         open={drawerOpen}
         onClose={onCloseForm}
         extra={
