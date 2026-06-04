@@ -100,6 +100,36 @@ class AuthValidation {
       }
     };
   };
+  deleteAccount = () => {
+    return (req: GenericRequest, res: Response, next: NextFunction) => {
+      try {
+        const schema = {
+          code: z.string().min(6).max(8).optional(),
+          isRecoveryCode: z.boolean().optional(),
+        };
+        z.object(schema).parse(req.body);
+        next();
+      } catch (err) {
+        ErrorValidation.handleZodError(err, res);
+      }
+    };
+  };
+  changePassword = () => {
+    return (req: GenericRequest, res: Response, next: NextFunction) => {
+      try {
+        const schema = {
+          currentPassword: z.string().max(255),
+          newPassword: z.string().max(255),
+          code: z.string().min(6).max(8).optional(),
+          isRecoveryCode: z.boolean().optional(),
+        };
+        z.object(schema).parse(req.body);
+        next();
+      } catch (err) {
+        ErrorValidation.handleZodError(err, res);
+      }
+    };
+  };
 }
 
 const instance = new AuthValidation();

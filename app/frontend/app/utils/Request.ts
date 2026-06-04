@@ -2,7 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { errorService } from '~/services/ErrorService';
 import type { TableParams } from '~/hooks/useTableQuery';
-import { useCartStore } from '~/hooks/useCartStore';
+import { UserSession } from './UserSession';
 
 // Interface para parâmetros de query
 export interface QueryParams {
@@ -98,9 +98,11 @@ class Request {
         if (axios.isAxiosError(error)) {
           const { response } = error;
           // Logout on unauthorized
-          if ([401, 403].includes(response?.status || 0)) {
-            useAuthStore.getState().logout();
-            useCartStore.getState().clearCart();
+          if (
+            [401, 403].includes(response?.status || 0) &&
+            !URI.includes('/auth/change-password')
+          ) {
+            UserSession.clear();
           }
 
           // Try to extract friendly message from backend

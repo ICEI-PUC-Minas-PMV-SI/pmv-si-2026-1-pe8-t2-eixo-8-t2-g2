@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 class Text {
   generateSlug(text: string) {
     return text
@@ -8,6 +10,13 @@ class Text {
       .trim()
       .replace(/\s+/g, '-') // espaço vira hífen
       .replace(/-+/g, '-'); // remove hífens duplicados
+  }
+  anonymizeCustomerTag(customerId: string) {
+    return createHash('sha256')
+      .update(customerId)
+      .digest('hex')
+      .slice(0, 8)
+      .toUpperCase(); // ex: "A3F9C21B"
   }
 }
 

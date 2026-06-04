@@ -13,7 +13,6 @@ import {
   Typography,
 } from 'antd';
 import { useState } from 'react';
-import type { AppSettings } from '~/@types/app-settings';
 import type { PublicCategory } from '~/@types/category';
 import type { PublicProduct } from '~/@types/product';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
@@ -25,10 +24,8 @@ import { ProductCard } from './ProductCard';
 const PAGE_SIZE = 8;
 
 export function CatalogSection({
-  settings,
   onViewDetails,
 }: {
-  settings: AppSettings;
   onViewDetails: (p: PublicProduct) => void;
 }) {
   const screens = Grid.useBreakpoint();

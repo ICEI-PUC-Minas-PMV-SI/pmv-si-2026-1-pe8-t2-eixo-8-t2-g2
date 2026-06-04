@@ -4,14 +4,20 @@ import { ProfileTab } from './ProfileTab';
 import { AppSettingsTab } from './AppSettingsTab';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { Space } from 'antd';
+import { SecurityTab } from './SecurityTab';
 
 export function SettingsPage() {
   const { isAdmin } = useAuthStore();
   const tabs = [
     {
       key: 'profile',
-      label: 'Perfil e Segurança',
+      label: 'Perfil',
       children: <ProfileTab />,
+    },
+    {
+      key: 'security',
+      label: 'Segurança',
+      children: <SecurityTab />,
     },
     {
       key: 'integrations',

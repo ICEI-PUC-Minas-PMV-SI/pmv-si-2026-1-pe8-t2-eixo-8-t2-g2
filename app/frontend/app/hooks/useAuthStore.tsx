@@ -25,7 +25,7 @@ export const useAuthStore = create<AuthStore>()(
 
       setToken: (token: string) => set({ token }),
 
-      logout: () => set({ user: null }),
+      logout: () => set({ user: null, token: null }),
 
       isLogged: () => !!get().user?.email && !!get().user?.role,
 

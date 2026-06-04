@@ -6,6 +6,7 @@ export type User = {
   email: string;
   role: AuthPermission;
   enabledTwoFactor: boolean;
+  onlyGoogle: boolean;
 };
 
 export type UserList = {

@@ -101,6 +101,28 @@ class AuthRoute {
         res.json(result);
       },
     );
+    router.delete(
+      '/auth/delete-account',
+      AuthValidation.deleteAccount(),
+      async (req: GenericRequest, res) => {
+        await AuthController.deleteAccount({
+          ...req.body,
+          email: req.user?.email,
+        });
+        res.status(204).send();
+      },
+    );
+    router.post(
+      '/auth/change-password',
+      AuthValidation.changePassword(),
+      async (req: GenericRequest, res) => {
+        const result = await AuthController.changePassword({
+          ...req.body,
+          email: req.user?.email,
+        });
+        res.json(result);
+      },
+    );
   }
 }
 

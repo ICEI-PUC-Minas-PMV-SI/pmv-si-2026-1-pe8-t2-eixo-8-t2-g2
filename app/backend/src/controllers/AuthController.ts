@@ -1,5 +1,5 @@
 import { UserService } from '../services/UserService.js';
-import type { AuthCredentials } from '../@types/index.js';
+import type { AuthCredentials, ChangePasswordParams } from '../@types/index.js';
 import { HttpCode } from '../utils/HttpCode.js';
 import { JWT } from '../utils/JWT.js';
 import { OTPUtil } from '../utils/OTPUtil.js';
@@ -44,7 +44,7 @@ class AuthController {
     email: string;
     code: string;
     isRecoveryCode: boolean;
-    operation: 'RESET_PASSWORD' | 'AUTH';
+    operation: 'RESET_PASSWORD' | 'AUTH' | 'DELETE_ACCOUNT' | 'CHANGE_PASSWORD';
   }) {
     const user = await UserService.find({ email }, { twoFactorSecret: true });
     let isValid = null;
@@ -223,6 +223,59 @@ class AuthController {
     await UserService.deleteRecoveryCodes(userId);
     const codes = await UserService.generateUserRecoveryCodes(userId);
     return { codes };
+  }
+  async deleteAccount({
+    email,
+    code,
+    isRecoveryCode,
+  }: {
+    email: string;
+    code?: string;
+    isRecoveryCode?: boolean;
+  }) {
+    const user = await UserService.find({ email });
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    const hasOtherAdmin = await UserService.find({ role: 'admin', id: { not: user.id } });
+
+    if (!hasOtherAdmin) {
+      throw new AppError(
+        'Não é possível excluir a conta. Pelo menos um usuário administrador deve permanecer.',
+        HttpCode.BAD_REQUEST,
+      );
+    }
+    if (user.enabledTwoFactor) {
+      await this.validate2FA({
+        email,
+        code: code || '',
+        isRecoveryCode: Boolean(isRecoveryCode),
+        operation: 'DELETE_ACCOUNT',
+      });
+    }
+    await UserService.delete(user.id);
+  }
+  async changePassword(params: ChangePasswordParams) {
+    const { email, currentPassword, newPassword } = params;
+    const user = await UserService.find({ email, password: currentPassword });
+    if (!user) {
+      throw new AppError('Credenciais inválidas', HttpCode.BAD_REQUEST);
+    }
+    if (user.enabledTwoFactor) {
+      if (!params.code) {
+        throw new AppError(
+          'Código de autenticação é obrigatório para alteração de senha',
+          HttpCode.BAD_REQUEST,
+        );
+      }
+      await this.validate2FA({
+        email,
+        code: params.code || '',
+        isRecoveryCode: Boolean(params.isRecoveryCode),
+        operation: 'CHANGE_PASSWORD',
+      });
+    }
+    return UserService.updatePassword(email, newPassword);
   }
 }
 

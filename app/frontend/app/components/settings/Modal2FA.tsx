@@ -11,15 +11,20 @@ type Modal2FAResult = {
   codes?: string[];
 };
 
-export type Modal2FAType = 'disable2FA' | 'recreateCodes';
+export type Modal2FAType =
+  | 'disable2FA'
+  | 'recreateCodes'
+  | 'deleteAccount'
+  | 'changePassword';
 
 type Modal2FAProps = {
   type: Modal2FAType;
   isOpened: boolean;
+  data?: Record<string, any>;
   onClose: (reason: 'confirmed' | 'cancelled', result?: Modal2FAResult) => void;
 };
 
-export function Modal2FA({ isOpened, onClose, type }: Modal2FAProps) {
+export function Modal2FA({ isOpened, onClose, type, data }: Modal2FAProps) {
   const [method, setMethod] = useState<'otp' | 'recovery'>('otp');
 
   const [otp, setOtp] = useState('');
@@ -61,6 +66,16 @@ export function Modal2FA({ isOpened, onClose, type }: Modal2FAProps) {
       successMsg: null,
       preffixDescription: 'Para regerar os códigos reservas',
     },
+    deleteAccount: {
+      title: 'Excluir conta',
+      successMsg: 'Conta excluída com sucesso',
+      preffixDescription: 'Para excluir sua conta',
+    },
+    changePassword: {
+      title: 'Alterar senha',
+      successMsg: 'Senha alterada com sucesso',
+      preffixDescription: 'Para alterar sua senha',
+    },
   };
 
   const labelData = labels[type] || { title: '', preffixDescription: '' };
@@ -82,6 +97,18 @@ export function Modal2FA({ isOpened, onClose, type }: Modal2FAProps) {
           isRecoveryCode: method === 'recovery',
         });
         codes = result.codes;
+      } else if (type === 'deleteAccount') {
+        await AuthController.deleteAccount({
+          code: otp,
+          isRecoveryCode: method === 'recovery',
+        });
+      } else if (type === 'changePassword') {
+        await AuthController.changePassword({
+          currentPassword: data?.currentPassword,
+          newPassword: data?.newPassword,
+          code: otp,
+          isRecoveryCode: method === 'recovery',
+        });
       }
       if (labelData.successMsg) {
         message.success(labelData.successMsg);

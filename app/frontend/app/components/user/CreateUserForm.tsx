@@ -162,31 +162,26 @@ export function CreateUserForm() {
                 <Input.Password autoComplete="new-password" />
               </Form.Item>
 
-              {password.length > -1 && (
-                <div
-                  style={{
-                    marginTop: -12,
-                    marginBottom: 16,
-                  }}
-                >
-                  <Flex vertical gap={4} style={{ paddingTop: 12 }}>
-                    <PasswordRuleItem
-                      valid={passwordHasMinLength}
-                      text="Mínimo de 6 caracteres"
-                    />
+              <div
+                style={{
+                  marginTop: -12,
+                  marginBottom: 16,
+                }}
+              >
+                <Flex vertical gap={4} style={{ paddingTop: 12 }}>
+                  <PasswordRuleItem
+                    valid={passwordHasMinLength}
+                    text="Mínimo de 6 caracteres"
+                  />
 
-                    <PasswordRuleItem
-                      valid={passwordHasUppercase && passwordHasLowercase}
-                      text="Letras maiúsculas e minúsculas"
-                    />
+                  <PasswordRuleItem
+                    valid={passwordHasUppercase && passwordHasLowercase}
+                    text="Letras maiúsculas e minúsculas"
+                  />
 
-                    <PasswordRuleItem
-                      valid={passwordHasNumber}
-                      text="Ao menos um número"
-                    />
-                  </Flex>
-                </div>
-              )}
+                  <PasswordRuleItem valid={passwordHasNumber} text="Ao menos um número" />
+                </Flex>
+              </div>
             </Flex>
           </Col>
 

@@ -85,6 +85,18 @@ class AuthController {
     );
     return result;
   }
+  async deleteAccount(params?: { code: string; isRecoveryCode: boolean }) {
+    await Request.delete('/auth/delete-account', params || {});
+  }
+  async changePassword(params: {
+    currentPassword: string;
+    newPassword: string;
+    code?: string;
+    isRecoveryCode?: boolean;
+  }) {
+    const result = await Request.post('/auth/change-password', params);
+    return result;
+  }
 }
 
 export default new AuthController();

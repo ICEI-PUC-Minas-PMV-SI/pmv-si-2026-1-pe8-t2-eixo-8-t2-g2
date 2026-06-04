@@ -50,7 +50,7 @@ export function IntegrationsTab() {
   const [mailForm] = Form.useForm<IntegrationGmailForm>();
 
   const integrationsQuery = useQuery<IntegrationsPayload>({
-    queryKey: ['app-settings'],
+    queryKey: ['google-integrations'],
     queryFn: () =>
       IntegrationsController.list().then((data) => {
         if (data.google) {

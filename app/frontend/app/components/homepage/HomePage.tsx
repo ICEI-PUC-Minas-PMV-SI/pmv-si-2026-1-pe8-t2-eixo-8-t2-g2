@@ -18,7 +18,6 @@ import { HeroSection } from './HeroSection';
 import { AppSettingsController } from '~/controllers/AppSettingsController';
 import TextUtil from '~/utils/TextUtil';
 
-
 // ─── Mock / placeholder data (substitua pelas chamadas reais de API) ──────────
 
 const MOCK_ABOUT: AboutInfo = {
@@ -90,7 +89,9 @@ export function HomePage() {
   const settings = {
     whatsapp: settingsQuery.data?.whatsapp ?? '',
     phone: settingsQuery.data?.whatsapp ?? '',
-    phoneHref: settingsQuery.data?.whatsapp ? `https://wa.me/${settingsQuery.data.whatsapp}` : '',
+    phoneHref: settingsQuery.data?.whatsapp
+      ? `https://wa.me/${settingsQuery.data.whatsapp}`
+      : '',
     email: settingsQuery.data?.contactEmail ?? '',
     serviceHours: settingsQuery.data?.serviceHours ?? '',
     locationLabel: settingsQuery.data?.address ?? '',
@@ -112,7 +113,6 @@ export function HomePage() {
       <AboutSection about={about} />
       <HowToOrderSection settings={settings} />
       <CatalogSection
-        settings={settings}
         onViewDetails={(p) => {
           setSelectedProduct(p);
           setModalOpen(true);

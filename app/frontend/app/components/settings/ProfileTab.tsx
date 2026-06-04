@@ -1,168 +1,249 @@
-import {
-  Button,
-  Card,
-  Col,
-  Form,
-  Input,
-  Row,
-  Progress,
-  Space,
-  Typography,
-  Switch,
-} from 'antd';
+import { Button, Card, Col, Form, Input, Row, Space, message, Tooltip, Flex } from 'antd';
 import { useEffect, useState } from 'react';
 import type { ProfileFormValues } from '~/@types/profile';
-import { CheckCircleOutlined, LockOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, LockOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useAuthStore } from '~/hooks/useAuthStore';
-import { ModalQRCode2FA } from './ModalQRCode2FA';
-import AuthController from '~/controllers/AuthController';
-import { ModalRecoveryCode } from './ModalRecoveryCode';
 import { Modal2FA, type Modal2FAType } from './Modal2FA';
+import PasswordUtil from '~/utils/PasswordUtil';
+import Rules from '~/utils/Rules';
+import { PasswordRuleItem } from '../user/PasswordRuleItem';
+import AuthController from '~/controllers/AuthController';
+import { useNavigation } from '~/hooks/useNavigation';
+import { UserSession } from '~/utils/UserSession';
 
 export function ProfileTab() {
   const [settingsForm] = Form.useForm<ProfileFormValues>();
-  const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
-  const [qrCodeModalState, setQrCodeModalState] = useState({
-    isOpened: false,
-    loading: false,
-    url: '',
-  });
+  const [passwordForm] = Form.useForm<ProfileFormValues>();
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+  const { user } = useAuthStore();
+
+  const password = Form.useWatch('newPassword', passwordForm) || '';
+  const passwordHasMinLength = PasswordUtil.hasMinLength(password);
+
+  const passwordHasUppercase = PasswordUtil.hasUppercase(password);
+
+  const passwordHasLowercase = PasswordUtil.hasLowercase(password);
+
+  const passwordHasNumber = PasswordUtil.hasNumber(password);
+
+  const isGoogleUser = !!user?.onlyGoogle;
   const [modal2FAState, setModal2FAState] = useState({
     type: '' as Modal2FAType,
     isOpened: false,
+    data: {} as Record<string, any>,
   });
-  const [recoveryModalState, setRecoveryModalState] = useState({
-    recoveryCodes: [] as string[],
-    isOpened: false,
-  });
-  const { user } = useAuthStore();
+  const { goToLogin } = useNavigation();
   useEffect(() => {
     if (user) {
       settingsForm.setFieldsValue({
         name: user.name,
         email: user.email,
       });
-      setTwoFactorEnabled(user.enabledTwoFactor);
     }
-  }, [settingsForm, user]);
+  }, [user]);
+
+  async function handleSaveProfile(values: ProfileFormValues) {
+    setSavingProfile(true);
+    try {
+      // await AuthController.updateProfile({
+      //   name: values.name,
+      //   phone: values.phone,
+      // });
+      message.success('Perfil atualizado!');
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  async function handleChangePassword(values: ProfileFormValues) {
+    if (user?.enabledTwoFactor) {
+      setModal2FAState({
+        type: 'changePassword',
+        isOpened: true,
+        data: {
+          currentPassword: values.currentPassword!,
+          newPassword: values.newPassword!,
+        },
+      });
+    } else {
+      setSavingPassword(true);
+      try {
+        await AuthController.changePassword({
+          currentPassword: values.currentPassword!,
+          newPassword: values.newPassword!,
+        });
+        passwordForm.resetFields();
+        message.success('Senha alterada com sucesso! Redirecionando para login...');
+        setTimeout(() => {
+          UserSession.clear();
+          setTimeout(() => {
+            goToLogin();
+          }, 0);
+        }, 3500);
+      } finally {
+        setSavingPassword(false);
+      }
+    }
+  }
 
   return (
     <Row gutter={[16, 16]}>
-      <ModalQRCode2FA
-        isOpened={qrCodeModalState.isOpened}
-        onClose={(reason, { recoveryCodes }) => {
-          setQrCodeModalState({ ...qrCodeModalState, isOpened: false });
-          if (reason === 'confirmed' && recoveryCodes) {
-            setRecoveryModalState({
-              recoveryCodes,
-              isOpened: true,
-            });
-          }
-        }}
-        url={qrCodeModalState.url}
-      />
       <Modal2FA
         type={modal2FAState.type}
         isOpened={modal2FAState.isOpened}
-        onClose={(_, result) => {
+        data={modal2FAState.data}
+        onClose={(reason, result) => {
           setModal2FAState((oldState) => ({ ...oldState, isOpened: false }));
-          if (modal2FAState.type === 'recreateCodes') {
-            setRecoveryModalState({
-              recoveryCodes: result?.codes || [],
-              isOpened: true,
-            });
+          if (reason === 'confirmed') {
+            passwordForm.resetFields();
+            message.success('Senha alterada com sucesso! Redirecionando para login...');
+            setTimeout(() => {
+              UserSession.clear();
+              setTimeout(() => {
+                goToLogin();
+              }, 0);
+            }, 3500);
           }
         }}
       />
-      <ModalRecoveryCode
-        isOpened={recoveryModalState.isOpened}
-        onClose={() => setRecoveryModalState({ recoveryCodes: [], isOpened: false })}
-        recoveryCodes={recoveryModalState.recoveryCodes}
-      />
-      <Col xs={24} lg={16}>
-        <Card title="Dados do perfil">
-          <Form
-            layout="vertical"
-            form={settingsForm}
-            initialValues={{ name: '', email: '' }}
-          >
-            <Row gutter={16}>
-              <Col span={16}>
-                <Form.Item label="Nome" name="name" rules={[{ required: true }]}>
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  label="E-mail"
-                  name="email"
-                  rules={[{ required: true, type: 'email' }]}
-                >
-                  <Input disabled />
-                </Form.Item>
-                <Button type="primary" icon={<CheckCircleOutlined />}>
-                  Salvar perfil
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-        </Card>
-      </Col>
-
-      <Col xs={24} lg={8}>
-        <Card title="Segurança" style={{ height: '100%' }}>
-          <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-            <Space align="start">
-              <LockOutlined style={{ fontSize: 18, marginTop: 4 }} />
-              <div>
-                <Typography.Text strong>Autenticação em 2 fatores</Typography.Text>
-                <div>
-                  <Typography.Text type="secondary">
-                    Proteja o acesso à conta com um segundo fator.
-                  </Typography.Text>
-                </div>
-              </div>
-            </Space>
-            <Space style={{ justifyContent: 'space-between', width: '100%' }}>
-              <Typography.Text>2FA ativado</Typography.Text>
-              <Switch
-                loading={qrCodeModalState.loading}
-                checked={twoFactorEnabled}
-                onChange={() => {
-                  if (twoFactorEnabled) {
-                    setModal2FAState({ type: 'disable2FA', isOpened: true });
-                  } else {
-                    if (!qrCodeModalState.url) {
-                      setQrCodeModalState({ ...qrCodeModalState, loading: true });
-                      AuthController.createTwoFactor().then((url) => {
-                        setQrCodeModalState({
-                          ...qrCodeModalState,
-                          isOpened: true,
-                          loading: false,
-                          url,
-                        });
-                      });
-                    } else {
-                      setQrCodeModalState({ ...qrCodeModalState, isOpened: true });
-                    }
-                  }
-                }}
-              />
-            </Space>
-            {/* <Progress
-              percent={twoFactorEnabled ? 100 : 35}
-              status={twoFactorEnabled ? 'success' : 'normal'}
-            /> */}
-            {twoFactorEnabled && (
+      <Col xs={24}>
+        <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
+          {/* Card: dados pessoais */}
+          <Card title="Dados do perfil">
+            <Form layout="vertical" form={settingsForm} onFinish={handleSaveProfile}>
+              <Row gutter={16}>
+                <Col xs={24} sm={12}>
+                  <Form.Item
+                    label="Nome"
+                    name="name"
+                    rules={[{ required: true, message: 'Informe seu nome' }]}
+                  >
+                    <Input placeholder="Seu nome completo" />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item
+                    label="Telefone"
+                    name="phone"
+                    rules={[
+                      {
+                        pattern: /^\(\d{2}\)\s\d{4,5}-\d{4}$/,
+                        message: 'Formato inválido',
+                      },
+                    ]}
+                  >
+                    {/* Troque por qualquer lib de máscara que já usar no projeto */}
+                    <Input placeholder="(11) 91234-5678" maxLength={15} />
+                  </Form.Item>
+                </Col>
+                <Col xs={24} sm={12}>
+                  <Form.Item label="E-mail">
+                    <Input
+                      value={user?.email}
+                      disabled
+                      suffix={
+                        <Tooltip title="O e-mail não pode ser alterado pois é usado para identificação e login">
+                          <InfoCircleOutlined style={{ color: 'rgba(0,0,0,.45)' }} />
+                        </Tooltip>
+                      }
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
               <Button
                 type="primary"
-                onClick={() => {
-                  setModal2FAState({ type: 'recreateCodes', isOpened: true });
-                }}
+                htmlType="submit"
+                icon={<CheckCircleOutlined />}
+                loading={savingProfile}
               >
-                Recriar códigos reserva
+                Salvar perfil
               </Button>
-            )}
-          </Space>
-        </Card>
+            </Form>
+          </Card>
+
+          {/* Card: troca de senha — oculto para usuários Google */}
+          {!isGoogleUser && (
+            <Card title="Alterar senha">
+              <Form layout="vertical" form={passwordForm} onFinish={handleChangePassword}>
+                <Row gutter={16}>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Senha atual"
+                      name="currentPassword"
+                      rules={[{ required: true, message: 'Informe a senha atual' }]}
+                    >
+                      <Input.Password />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={16}>
+                  <Col xs={24} sm={12}>
+                    <Flex vertical>
+                      <Form.Item
+                        label="Nova senha"
+                        name="newPassword"
+                        rules={[Rules.required(), Rules.password()]}
+                      >
+                        <Input.Password />
+                      </Form.Item>
+                      <div
+                        style={{
+                          marginTop: -12,
+                          marginBottom: 16,
+                        }}
+                      >
+                        <Flex vertical gap={4} style={{ paddingTop: 12 }}>
+                          <PasswordRuleItem
+                            valid={passwordHasMinLength}
+                            text="Mínimo de 6 caracteres"
+                          />
+
+                          <PasswordRuleItem
+                            valid={passwordHasUppercase && passwordHasLowercase}
+                            text="Letras maiúsculas e minúsculas"
+                          />
+
+                          <PasswordRuleItem
+                            valid={passwordHasNumber}
+                            text="Ao menos um número"
+                          />
+                        </Flex>
+                      </div>
+                    </Flex>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      label="Confirmar nova senha"
+                      name="confirmPassword"
+                      dependencies={['newPassword']}
+                      rules={[
+                        { required: true, message: 'Confirme a nova senha' },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (!value || getFieldValue('newPassword') === value)
+                              return Promise.resolve();
+                            return Promise.reject('As senhas não coincidem');
+                          },
+                        }),
+                      ]}
+                    >
+                      <Input.Password />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  icon={<LockOutlined />}
+                  loading={savingPassword}
+                >
+                  Alterar senha
+                </Button>
+              </Form>
+            </Card>
+          )}
+        </Space>
       </Col>
     </Row>
   );

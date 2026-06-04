@@ -61,7 +61,7 @@ class UserRoute {
         const userId = req.user?.id || '';
         if (id === userId) {
           throw new AppError(
-            'Não é possível remover o próprio usuário',
+            'Para remover sua própria conta, utilize a funcionalidade de exclusão de conta no perfil do usuário',
             HttpCode.CONFLICT,
           );
         }

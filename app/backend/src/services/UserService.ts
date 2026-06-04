@@ -5,7 +5,6 @@ import { OTPUtil } from '../utils/OTPUtil.js';
 import { SMTP } from '../utils/SMTP.js';
 import type { PaginationParams, UserCreatePayload } from '../@types/index.js';
 import { Prisma } from '../db/Prisma.js';
-import type { User } from '../generated/prisma/client.js';
 import { AppError } from '../error/AppError.js';
 import { OTPTemplate } from '../templates/email/OTPTemplate.js';
 import type {
@@ -15,6 +14,7 @@ import type {
 } from '../generated/prisma/models.js';
 import { PasswordResetTemplate } from '../templates/email/PasswordResetTemplate.js';
 import { ResponseUtil } from '../utils/ResponseUtil.js';
+import { Text } from '../utils/Text.js';
 
 const userSelect = {
   id: true,
@@ -88,7 +88,7 @@ class UserService {
     return createdUser;
   }
 
-  async find(params: Partial<User>, customSelect: UserSelect = {}) {
+  async find(params: UserWhereInput, customSelect: UserSelect = {}) {
     if (!params.id && !params.email) {
       throw new AppError('Falha ao buscar informações do usuário', HttpCode.BAD_REQUEST);
     }
@@ -104,14 +104,14 @@ class UserService {
 
     const { password: userPassword, ...userInfo } = user;
 
-    if (password && userPassword) {
+    if (password && userPassword && typeof password === 'string') {
       const isValidPassword = await Crypt.isValidHash(password, userPassword);
       if (!isValidPassword) {
         throw new AppError('Credenciais inválidas', HttpCode.UNAUTHORIZED);
       }
     }
 
-    return userInfo;
+    return { ...userInfo, onlyGoogle: !userPassword && !!user.googleId };
   }
 
   async list(
@@ -142,8 +142,60 @@ class UserService {
 
   async delete(id: string) {
     const prisma = await Prisma.getClient();
-    await prisma.user.delete({
-      where: { id },
+
+    await prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { id },
+        select: {
+          customer: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      if (user?.customer) {
+        const customerId = user.customer.id;
+        const tag = Text.anonymizeCustomerTag(customerId);
+
+        // Anonimiza endereços — mantém só cidade e estado
+        await tx.address.updateMany({
+          where: { customerId },
+          data: {
+            street: 'REMOVIDO',
+            neighborhood: 'REMOVIDO',
+            number: 'REMOVIDO',
+            complement: null,
+            postalCode: '00000-000',
+          },
+        });
+
+        // Anonimiza reviews — mantém rating, remove comentário
+        await tx.review.updateMany({
+          where: { customerId },
+          data: {
+            comment: null,
+            featured: false,
+          },
+        });
+
+        // Anonimiza o customer
+        await tx.customer.update({
+          where: { id: customerId },
+          data: {
+            name: `Cliente #${tag}`, // "Cliente #A3F9C21B"
+            email: null,
+            phone: null,
+            notes: null,
+            userId: null,
+          },
+        });
+      }
+
+      await tx.user.delete({
+        where: { id },
+      });
     });
   }
 
