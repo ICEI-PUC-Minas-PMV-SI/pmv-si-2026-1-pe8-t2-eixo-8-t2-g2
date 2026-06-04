@@ -30,6 +30,7 @@ class AuthMiddleware {
       '/dashboard',
       '/product-list',
       '/product-category-list',
+      '/footerInfo',
       '/review/featured',
     ];
     const publicRoutesByMethod: Record<string, string[]> = {

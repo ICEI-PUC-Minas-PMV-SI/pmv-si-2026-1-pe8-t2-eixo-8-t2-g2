@@ -3,6 +3,7 @@ import { Layout, Typography, Button, Tag, Space, Grid, message } from 'antd';
 import { CalendarOutlined, HeartOutlined } from '@ant-design/icons';
 import AppHeader from '../header/AppHeader';
 import { AppFooter } from '../footer';
+import { useQuery } from '@tanstack/react-query';
 import { useCartStore } from '~/hooks/useCartStore';
 import type { PublicProduct } from '~/@types/product';
 import { TestimonialsSection } from './TestimonialSection';
@@ -14,17 +15,11 @@ import { ContactSection } from './ContactSection';
 import { CatalogSection } from './CatalogSection';
 import { HowToOrderSection } from './HowToOrderSection';
 import { HeroSection } from './HeroSection';
+import { AppSettingsController } from '~/controllers/AppSettingsController';
+import TextUtil from '~/utils/TextUtil';
+
 
 // ─── Mock / placeholder data (substitua pelas chamadas reais de API) ──────────
-
-const MOCK_SETTINGS: AppSettings = {
-  siteName: 'Doce & Cia',
-  whatsapp: '5531999999999',
-  contactEmail: 'contato@doceatelier.com.br',
-  serviceHours: 'Seg–Sex 8h–18h · Sáb 8h–14h',
-  address: 'Belo Horizonte, MG',
-  instagram: 'doceatelier',
-};
 
 const MOCK_ABOUT: AboutInfo = {
   title: 'Feito com amor, entregue com cuidado',
@@ -79,13 +74,30 @@ function getProductImage(product: PublicProduct) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 export function HomePage() {
-  const [settings] = useState<AppSettings>(MOCK_SETTINGS);
   const [about] = useState<AboutInfo>(MOCK_ABOUT);
-
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-
   const addItem = useCartStore((state) => state.addItem);
+
+  const settingsQuery = useQuery<AppSettings>({
+    queryKey: ['app-settings'],
+    queryFn: () => AppSettingsController.findInfo(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const instagram = TextUtil.parseInstagram(settingsQuery.data?.instagram);
+
+  const settings = {
+    whatsapp: settingsQuery.data?.whatsapp ?? '',
+    phone: settingsQuery.data?.whatsapp ?? '',
+    phoneHref: settingsQuery.data?.whatsapp ? `https://wa.me/${settingsQuery.data.whatsapp}` : '',
+    email: settingsQuery.data?.contactEmail ?? '',
+    serviceHours: settingsQuery.data?.serviceHours ?? '',
+    locationLabel: settingsQuery.data?.address ?? '',
+    instagramHandle: instagram?.handle,
+    instagramUrl: instagram?.url,
+    instagram: settingsQuery.data?.instagram,
+  };
 
   const handleAddToCart = (product: PublicProduct) => {
     addItem(product as any);

@@ -7,6 +7,10 @@ class AppSettingsRoute {
       const data = await AppSettingsController.find();
       res.json(data);
     });
+    router.get('/footerInfo', async (_req, res) => {
+      const data = await AppSettingsController.find();
+      res.json(data);
+    });
     router.post('/app-settings', async (req, res) => {
       const data = await AppSettingsController.save(req.body);
       res.json(data);
