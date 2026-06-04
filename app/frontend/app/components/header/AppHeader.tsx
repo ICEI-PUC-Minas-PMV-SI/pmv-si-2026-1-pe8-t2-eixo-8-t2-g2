@@ -25,7 +25,6 @@ import {
   MenuOutlined,
 } from '@ant-design/icons';
 import { iconStyle, menu, type MenuItem } from '../menu/Menu';
-import { useCartStore } from '~/hooks/useCartStore';
 import { UserSession } from '~/utils/UserSession';
 
 type AppSettings = {
@@ -143,7 +142,7 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
         style={{
           maxWidth: isMobile ? 1100 : 'unset',
           margin: isMobile ? '0 auto' : 'unset',
-          height: 64,
+          height: 48,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',

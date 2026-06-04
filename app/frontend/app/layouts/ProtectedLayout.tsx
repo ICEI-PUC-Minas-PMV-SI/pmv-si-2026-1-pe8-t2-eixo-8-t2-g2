@@ -16,7 +16,7 @@ export function ProtectedLayout() {
 
   return (
     <Layout style={{ height: '100vh' }}>
-      <AppHeader /*onMenuClick={() => setOpen(true)}*/ />
+      <AppHeader />
 
       <Layout>
         {/* Desktop */}

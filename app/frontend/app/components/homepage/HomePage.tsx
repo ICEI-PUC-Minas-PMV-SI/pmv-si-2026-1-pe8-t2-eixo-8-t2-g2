@@ -108,7 +108,7 @@ export function HomePage() {
   return (
     <Layout style={{ minHeight: '100vh', background: '#fff' }}>
       {/* <SiteHeader settings={settings} /> */}
-      <AppHeader settings={settings} />
+      {/* <AppHeader settings={settings} /> */}
       <HeroSection settings={settings} />
       <AboutSection about={about} />
       <HowToOrderSection settings={settings} />

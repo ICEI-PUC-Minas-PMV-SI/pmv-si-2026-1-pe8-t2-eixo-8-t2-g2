@@ -1,7 +1,6 @@
 import { Layout } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import { CreateUserForm } from '../user/CreateUserForm';
-import Title from 'antd/es/typography/Title';
 
 export function SignUp() {
   return (
