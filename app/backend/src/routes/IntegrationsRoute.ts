@@ -29,7 +29,7 @@ class IntegrationsRoute {
           ResponseUtil.handleError(
             res,
             new AppError(
-              'Error occurred while testing the integration',
+              'Falha ao testar integração. Verifique as credenciais e tente novamente.',
               HttpCode.INTERNAL_SERVER_ERROR,
               null,
               err,
@@ -39,14 +39,11 @@ class IntegrationsRoute {
       },
     );
 
-    router.get(
-      '/google-calendar/webhook',
-      UserScopeMiddleware.adminOnly(),
-      async (req, res) => {
-        const code = req.query.code;
-        try {
-          await IntegrationsController.handleWebhookToken(code, 'calendar');
-          res.send(`
+    router.get('/google-calendar/webhook', async (req, res) => {
+      const code = req.query.code;
+      try {
+        await IntegrationsController.handleWebhookToken(code, 'calendar');
+        res.send(`
           <script>
             window.opener.postMessage(
               { type: 'GOOGLE_AUTH_SUCCESS', integration: 'calendar' },
@@ -55,19 +52,18 @@ class IntegrationsRoute {
             window.close();
           </script>
         `);
-        } catch (err) {
-          ResponseUtil.handleError(
-            res,
-            new AppError(
-              'Error occurred while authenticating with Google',
-              HttpCode.INTERNAL_SERVER_ERROR,
-            ),
-          );
-        }
-      },
-    );
+      } catch (err) {
+        ResponseUtil.handleError(
+          res,
+          new AppError(
+            'Error occurred while authenticating with Google',
+            HttpCode.INTERNAL_SERVER_ERROR,
+          ),
+        );
+      }
+    });
 
-    router.get('/gmail/webhook', UserScopeMiddleware.adminOnly(), async (req, res) => {
+    router.get('/gmail/webhook', async (req, res) => {
       const code = req.query.code;
       try {
         await IntegrationsController.handleWebhookToken(code, 'gmail');
@@ -91,7 +87,7 @@ class IntegrationsRoute {
       }
     });
 
-    router.get('/google/webhook', UserScopeMiddleware.adminOnly(), async (req, res) => {
+    router.get('/google/webhook', async (req, res) => {
       const code = req.query.code;
       try {
         await IntegrationsController.handleWebhookToken(code, 'all');

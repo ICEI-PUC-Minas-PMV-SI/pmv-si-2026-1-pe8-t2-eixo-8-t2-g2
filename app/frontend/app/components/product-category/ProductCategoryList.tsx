@@ -1,5 +1,5 @@
 import React, { useMemo, useContext, useState, useEffect } from 'react';
-import { Card, Space, Button, Table, message, Input } from 'antd';
+import { Card, Space, Button, Table, message, Input, Tag, Switch } from 'antd';
 import { HolderOutlined, PlusOutlined } from '@ant-design/icons';
 import { ModalAddProductCategory } from '../product-category/ModalAddProductCategory';
 
@@ -17,6 +17,7 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import type { ProductCategory } from '~/@types/product';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
 import { useTableQuery } from '~/hooks/useTableQuery';
+import { SortDropdown } from '../sort-dropdown/SortDropdown';
 
 interface RowContextProps {
   setActivatorNodeRef?: (el: HTMLElement | null) => void;
@@ -25,7 +26,6 @@ interface RowContextProps {
 
 const RowContext = React.createContext<RowContextProps>({});
 
-// 🔥 Botão de drag
 const DragHandle = () => {
   const { setActivatorNodeRef, listeners } = useContext(RowContext);
 
@@ -41,9 +41,11 @@ const DragHandle = () => {
   );
 };
 
-// 🔥 Row customizada com sortable
 const SortableRow = (props: any) => {
   const isPlaceholder = props.className?.includes('ant-table-placeholder');
+  if (isPlaceholder) {
+    return <tr {...props} />;
+  }
   const {
     attributes,
     listeners,
@@ -53,10 +55,6 @@ const SortableRow = (props: any) => {
     transition,
     isDragging,
   } = useSortable({ id: props['data-row-key'], disabled: isPlaceholder });
-
-  if (isPlaceholder) {
-    return <tr {...props} />;
-  }
 
   const style: React.CSSProperties = {
     ...props.style,
@@ -79,23 +77,42 @@ const SortableRow = (props: any) => {
 
 export function ProductCategoryList() {
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
-
-  const { tableProps, forceRefetch, params, setSearch } = useTableQuery<ProductCategory>(
-    'product-category',
-    (params) => ProductCategoryController.list<ProductCategory>(params),
-  );
-
   const [editingCategory, setEditingCategory] = useState<ProductCategory | null>(null);
-
   const [localData, setLocalData] = useState<ProductCategory[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [loadingRows, setLoadingRows] = useState<Record<string, boolean>>({});
+  const { tableProps, forceRefetch, params, setSearch, updateSorter, clearSorters } =
+    useTableQuery<ProductCategory>('product-category', (params) =>
+      ProductCategoryController.list<ProductCategory>(params),
+    );
+
+  const handleToggleActive = async (row: ProductCategory, checked: boolean) => {
+    try {
+      setLoadingRows((prev) => ({
+        ...prev,
+        [row.id]: true,
+      }));
+
+      await ProductCategoryController.toggleActive(row.id, checked);
+      setLocalData((prev) =>
+        prev.map((item) => (item.id === row.id ? { ...item, isActive: checked } : item)),
+      );
+    } finally {
+      setLoadingRows((prev) => ({
+        ...prev,
+        [row.id]: false,
+      }));
+    }
+  };
 
   useEffect(() => {
     if (tableProps.dataSource) {
       setLocalData([...tableProps.dataSource]);
+      setIsDirty(false);
     }
   }, [tableProps.dataSource]);
 
-  // 🔥 Drag end
   const onDragEnd = async ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
 
@@ -107,18 +124,35 @@ export function ProductCategoryList() {
     );
 
     setLocalData(reordered);
-
-    await ProductCategoryController.reorder(
-      reordered.map((category) => ({
-        id: category.id,
-        orderIndex: category.orderIndex,
-      })),
-    );
-
-    forceRefetch();
+    setIsDirty(true);
   };
 
-  // 🔥 Colunas
+  const handleSaveOrder = async () => {
+    setIsSaving(true);
+    try {
+      await ProductCategoryController.reorder(
+        localData.map((category) => ({
+          id: category.id,
+          orderIndex: category.orderIndex,
+        })),
+      );
+      message.success('Ordenação salva com sucesso!');
+      setIsDirty(false);
+      forceRefetch();
+    } catch {
+      message.error('Erro ao salvar ordenação.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDiscardOrder = () => {
+    if (tableProps.dataSource) {
+      setLocalData([...tableProps.dataSource]);
+    }
+    setIsDirty(false);
+  };
+
   const columns = [
     {
       key: 'sort',
@@ -127,16 +161,72 @@ export function ProductCategoryList() {
       render: () => <DragHandle />,
     },
     {
-      title: 'Nome',
+      title: (
+        <Space>
+          Nome
+          <SortDropdown
+            options={[{ key: 'name', label: 'Nome', type: 'string' }]}
+            activeSorters={params.sorters}
+            onSelect={updateSorter}
+            onClear={() => {
+              clearSorters(['name']);
+            }}
+          />
+        </Space>
+      ),
       dataIndex: 'name',
     },
     {
-      title: 'Slug',
-      dataIndex: 'slug',
+      title: 'Vigência',
+      width: 80,
+      align: 'center' as const,
+      render: (_: any, record: ProductCategory) => {
+        if (!record.startsAt && !record.endsAt) return '—';
+        return record.isRecurring ? (
+          <Tag color="blue">Anual</Tag>
+        ) : (
+          <Tag color="default">Única</Tag>
+        );
+      },
+    },
+    {
+      title: 'Período',
+      render: (_: any, record: ProductCategory) => {
+        if (!record.startsAt && !record.endsAt) return '—';
+
+        const fmt = (d: string | Date, withYear: boolean) =>
+          new Intl.DateTimeFormat('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            ...(withYear
+              ? { year: 'numeric', timeZone: 'America/Sao_Paulo' }
+              : { timeZone: 'UTC' }),
+          }).format(new Date(d));
+
+        const withYear = !record.isRecurring;
+        const start = record.startsAt ? fmt(record.startsAt, withYear) : '?';
+        const end = record.endsAt ? fmt(record.endsAt, withYear) : '?';
+
+        return `${start} → ${end}`;
+      },
     },
     {
       title: 'Status',
-      dataIndex: 'status',
+      dataIndex: 'isActive',
+      width: 100,
+      render: (value: boolean, record: ProductCategory) => (
+        <Switch
+          checkedChildren="Ativo"
+          unCheckedChildren="Inativo"
+          loading={loadingRows[record.id]}
+          checked={record.isActive}
+          onChange={(checked) => {
+            handleToggleActive(record, checked);
+            // event.stopPropagation();
+          }}
+        />
+        // <Tag color={value ? 'green' : 'default'}>{value ? 'Ativo' : 'Inativo'}</Tag>
+      ),
     },
     {
       title: 'Ações',
@@ -178,14 +268,24 @@ export function ProductCategoryList() {
               placeholder="Buscar..."
               value={params.search}
               onChange={(e) => setSearch(e.target.value)}
+              disabled={isDirty}
             />
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setCategoryModalOpen(true)}
-            >
-              Nova categoria
-            </Button>
+            {isDirty ? (
+              <>
+                <Button onClick={handleDiscardOrder}>Descartar</Button>
+                <Button type="primary" loading={isSaving} onClick={handleSaveOrder}>
+                  Salvar ordem
+                </Button>
+              </>
+            ) : (
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setCategoryModalOpen(true)}
+              >
+                Nova categoria
+              </Button>
+            )}
           </Space>
         }
       >
@@ -195,14 +295,15 @@ export function ProductCategoryList() {
             strategy={verticalListSortingStrategy}
           >
             <Table
+              {...tableProps}
               components={{
                 body: {
                   row: SortableRow,
                 },
               }}
-              dataSource={localData}
               columns={columns}
-              {...tableProps}
+              dataSource={localData}
+              rowKey="id"
             />
           </SortableContext>
         </DndContext>

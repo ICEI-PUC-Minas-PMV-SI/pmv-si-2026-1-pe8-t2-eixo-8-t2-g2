@@ -75,7 +75,7 @@ class GoogleApi {
   async getAuthUrl(integrationType: IntegrationType) {
     const { options } = this.config[integrationType];
     const { client } = await this.getClient(integrationType);
-    return client.generateAuthUrl(options);
+    return client.generateAuthUrl({ ...options });
   }
 
   async getTokens(code: string, integrationType: IntegrationType) {

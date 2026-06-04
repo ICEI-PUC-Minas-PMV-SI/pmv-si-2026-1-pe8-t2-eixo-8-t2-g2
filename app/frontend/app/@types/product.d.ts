@@ -4,10 +4,12 @@ export type ProductCategory = {
   id: string;
   name: string;
   slug: string;
-  description?: string;
   isActive: boolean;
+  description?: string;
   orderIndex: number;
-  parentId?: string | null;
+  startsAt?: string;
+  endsAt?: string;
+  isRecurring: boolean;
 };
 
 export type CreateProductCategoryPayload = Omit<ProductCategory, 'id'>;

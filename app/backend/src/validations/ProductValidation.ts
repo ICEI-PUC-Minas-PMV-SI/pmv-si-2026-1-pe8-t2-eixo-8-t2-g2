@@ -28,7 +28,6 @@ class ProductValidation {
           categories: jsonStringArray.optional(),
           characteristics: jsonStringArray.optional(),
         };
-        console.log('body', req.body);
         z.object(schema).parse(req.body);
         next();
       } catch (err) {

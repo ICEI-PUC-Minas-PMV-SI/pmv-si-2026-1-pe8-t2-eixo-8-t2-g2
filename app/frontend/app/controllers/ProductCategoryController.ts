@@ -31,6 +31,10 @@ class ProductCategoryController {
   async reorder(categories: { id: string; orderIndex: number }[]) {
     return Request.post('/product-category/reorder', { categories });
   }
+
+  async toggleActive(id: string, isActive: boolean) {
+    return Request.patch(`/product-category/${id}/toggle-active`, { isActive });
+  }
 }
 
 export default new ProductCategoryController();

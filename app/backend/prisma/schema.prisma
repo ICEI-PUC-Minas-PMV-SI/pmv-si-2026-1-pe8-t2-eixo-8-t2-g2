@@ -105,9 +105,11 @@ model Category {
   isActive    Boolean @default(true)
   orderIndex  Int     @default(0)
 
+  isRecurring Boolean @default(false)
+  startsAt   DateTime?
+  endsAt     DateTime?
+
   parentId String?
-  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children Category[] @relation("CategoryHierarchy")
 
   products ProductCategory[]
 

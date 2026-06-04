@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import type {
   Product,
+  ProductCategory,
   ProductCharacteristic,
   ProductCharacteristicType,
 } from '~/@types/product';
@@ -22,6 +23,8 @@ import { CharacteristicBadge } from './CharacteristicBadge';
 import { ProductDrawer } from './ProductDrawer';
 import { useCartStore } from '~/hooks/useCartStore';
 import { ProductImage } from './ProductImage';
+import ProductCategoryController from '~/controllers/ProductCategoryController';
+import { CategoryChip } from './CategoryChip';
 
 export function ProductList() {
   const [deleteProductState, setDeleteProductState] = useState({
@@ -41,6 +44,11 @@ export function ProductList() {
     tableProps: { dataSource: characteristics = [] },
   } = useTableQuery<ProductCharacteristic>('characteristics', (params) =>
     ProductCharacteristicController.list<ProductCharacteristic>(params),
+  );
+  const {
+    tableProps: { dataSource: categories = [] },
+  } = useTableQuery<ProductCategory>('categories', (params) =>
+    ProductCategoryController.list<ProductCategory>(params),
   );
 
   const openProductForm = (product?: Product) => {
@@ -73,7 +81,7 @@ export function ProductList() {
           </div>
           <div>
             <div style={{ fontWeight: 600 }}>{record.name}</div>
-            <Text type="secondary">{record.slug}</Text>
+            <Text type="secondary">{record.description}</Text>
           </div>
         </Space>
       ),
@@ -83,6 +91,20 @@ export function ProductList() {
       dataIndex: 'price',
       width: 120,
       render: (value: number) => NumberUtil.currency(value),
+    },
+    {
+      title: 'Categorias',
+      dataIndex: 'categories',
+      render: (categoryCollection: { category: ProductCategory }[]) => (
+        <Space wrap>
+          {categoryCollection?.map((currentCategory) => {
+            const category = categories.find((c) => c.id === currentCategory.category.id);
+            return category ? (
+              <CategoryChip key={category.id} category={category} />
+            ) : null;
+          })}
+        </Space>
+      ),
     },
     {
       title: 'Características',

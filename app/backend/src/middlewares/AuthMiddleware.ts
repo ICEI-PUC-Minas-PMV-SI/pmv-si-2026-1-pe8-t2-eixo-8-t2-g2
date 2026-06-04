@@ -30,6 +30,7 @@ class AuthMiddleware {
       '/dashboard',
       '/product-list',
       '/product-category-list',
+      '/review/featured',
     ];
     const publicRoutesByMethod: Record<string, string[]> = {
       POST: ['/user'],
@@ -77,6 +78,19 @@ class AuthMiddleware {
     app.use((req: GenericRequest, res: Response, next: NextFunction) => {
       if (this.isPublicRoute(req)) {
         this.setFiltersAndPagination(req);
+        if (req.headers.authorization) {
+          const authHeader = req.headers.authorization;
+          const token = authHeader.split(' ')[1];
+          if (token) {
+            const decoded = JWT.validate(token);
+            if (decoded) {
+              req.user = decoded.user;
+              if (decoded.operation) {
+                req.operation = decoded.operation;
+              }
+            }
+          }
+        }
         next();
         return;
       }

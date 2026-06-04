@@ -9,10 +9,11 @@ import { fromZonedTime } from 'date-fns-tz';
 import { Prisma } from '../db/Prisma.js';
 import NumberUtil from '../utils/NumberUtil.js';
 import { addDays } from 'date-fns';
+import { Env } from '../utils/Env.js';
 
 class DashboardService {
   getStartAndEndDay(date: Date | string) {
-    const timeZone = 'America/Sao_Paulo';
+    const timeZone = Env.getTimeZone();
 
     const localDate = new Date(date);
 
@@ -399,7 +400,7 @@ class DashboardService {
           in: ['pending', 'confirmed', 'in_progress'],
         },
         scheduledTo: {
-          lt: fromZonedTime(new Date(), 'America/Sao_Paulo'),
+          lt: fromZonedTime(new Date(), Env.getTimeZone()),
         },
       },
       include: {

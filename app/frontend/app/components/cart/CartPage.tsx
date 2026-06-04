@@ -44,9 +44,9 @@ export function CartPage() {
               Revise os itens antes de seguir para a finalização.
             </Text>
           </div>
-          <Badge count={totalItems} color="#E06D5B">
+          {/* <Badge count={totalItems} color="#E06D5B">
             <Button icon={<ShoppingCartOutlined />} />
-          </Badge>
+          </Badge> */}
         </Flex>
       </Card>
 
@@ -152,10 +152,10 @@ export function CartPage() {
                 <Text>Subtotal</Text>
                 <Text strong>{NumberUtil.currency(subtotal)}</Text>
               </Flex>
-              <Flex justify="space-between">
+              {/* <Flex justify="space-between">
                 <Text>Entrega</Text>
                 <Text strong>Calculado na finalização</Text>
-              </Flex>
+              </Flex> */}
             </Space>
 
             <Divider />

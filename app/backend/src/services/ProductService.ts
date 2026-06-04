@@ -9,6 +9,7 @@ import type {
 import { HttpCode } from '../utils/HttpCode.js';
 import { AppError } from '../error/AppError.js';
 import SupabaseStorage, { BUCKETS } from '../integration/SupabaseStorage.js';
+import { ValidityHelper } from '../helper/ValidityHelper.js';
 
 class ProductService {
   async create(product: ProductCreatePayload) {
@@ -49,6 +50,7 @@ class ProductService {
     filter?: ProductWhereInput,
     orderBy?: ProductOrderByWithRelationInput[],
     pagination?: PaginationParams,
+    isAdmin = false,
   ) {
     const prisma = await Prisma.getClient();
     const where = filter ? filter : {};
@@ -66,6 +68,9 @@ class ProductService {
                 },
               },
             },
+            where: isAdmin
+              ? {}
+              : { category: { isActive: true, ...ValidityHelper.buildValidityFilter() } },
           },
           characteristics: {
             select: {

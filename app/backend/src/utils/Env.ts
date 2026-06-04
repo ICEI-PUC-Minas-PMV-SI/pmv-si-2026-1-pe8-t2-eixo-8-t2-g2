@@ -16,6 +16,10 @@ class Env {
     return value !== undefined ? value : defaultValue || '';
   }
 
+  getTimeZone(): string {
+    return 'America/Sao_Paulo';
+  }
+
   isDevelopment(): boolean {
     return this.get('NODE_ENV') === 'development';
   }

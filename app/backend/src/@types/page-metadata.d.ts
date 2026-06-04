@@ -40,3 +40,12 @@ export type CharacteristicFilter = {
 export type CharacteristicFilterKey = keyof CharacteristicFilter;
 
 export type CharacteristicSort = 'name';
+
+export type ProductCategoryFilter = {
+  isActive: boolean;
+  isRecurring: boolean;
+  startsAt: string;
+  endsAt: string;
+};
+
+export type ProductCategorySort = 'name';

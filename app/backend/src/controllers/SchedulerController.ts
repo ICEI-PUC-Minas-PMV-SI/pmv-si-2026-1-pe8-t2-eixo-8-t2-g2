@@ -20,6 +20,7 @@ import type {
 import { CustomerService } from '../services/CustomerService.js';
 import { GoogleCalendarApi } from '../integration/GoogleCalendarApi.js';
 import { Logger } from '../logger/Logger.js';
+import { Env } from '../utils/Env.js';
 
 class SchedulerController {
   private logger = new Logger('SchedulerController');
@@ -173,16 +174,17 @@ class SchedulerController {
           return `${item.quantity}x - ${item.product?.name.substring(0, 20)}`;
         })
         .join('\n');
+      const timeZone = Env.getTimeZone();
       const event = await GoogleCalendarApi.createEvent({
         summary: title,
         description,
         start: {
           dateTime: scheduledTo.toISOString(),
-          timeZone: 'America/Sao_Paulo',
+          timeZone,
         },
         end: {
           dateTime: scheduledTo.toISOString(),
-          timeZone: 'America/Sao_Paulo',
+          timeZone,
         },
       });
       return event;

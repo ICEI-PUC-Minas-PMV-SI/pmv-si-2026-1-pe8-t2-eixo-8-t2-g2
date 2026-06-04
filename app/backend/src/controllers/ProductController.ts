@@ -9,6 +9,7 @@ import type {
   ProductWhereInput,
 } from '../generated/prisma/models.js';
 import { UserRole } from '../validations/UserValidation.js';
+import { ValidityHelper } from '../helper/ValidityHelper.js';
 
 class ProductController {
   async create(product: ProductCreatePayload) {
@@ -18,7 +19,16 @@ class ProductController {
   list(req: ProductRequest) {
     const isAdmin = req.user?.role === UserRole.ADMIN;
     const orderBy = [] as ProductOrderByWithRelationInput[];
-    const filter: ProductWhereInput = isAdmin ? {} : { isActive: true };
+    const filter: ProductWhereInput = isAdmin
+      ? {}
+      : {
+          isActive: true,
+          categories: {
+            some: {
+              category: { isActive: true, ...ValidityHelper.buildValidityFilter() },
+            },
+          },
+        };
     const filters = req.filters;
     const sorters = req.sort;
     const search = req.search?.trim();
@@ -100,7 +110,7 @@ class ProductController {
       ];
     }
 
-    return ProductService.list(filter, orderBy, req.pagination);
+    return ProductService.list(filter, orderBy, req.pagination, isAdmin);
   }
   async find(id: string) {
     return ProductService.find(id);
