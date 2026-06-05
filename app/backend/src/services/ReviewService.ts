@@ -68,7 +68,7 @@ class ReviewService {
       },
       where: {
         customerId: customer?.id || '',
-        schedulerId: {
+        id: {
           in: schedulerIds,
         },
       },
