@@ -2,9 +2,40 @@ import type { CreateAbout, About } from '~/@types/about';
 import Request from '~/utils/Request';
 
 class AboutController {
-  async create(about: CreateAbout): Promise<About> {
-    const result = await Request.post<About>('/about', about);
-    return result;
+  async buildFormData(
+    values: CreateAbout,
+    croppedImage?: Blob | null,
+  ): Promise<FormData> {
+    const formData = new FormData();
+
+    Object.entries(values).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, String(value));
+      }
+    });
+
+    if (croppedImage) {
+      formData.append('file', croppedImage, 'about-main-image.jpg');
+    }
+
+    return formData;
+  }
+  async create(
+    about: CreateAbout,
+    image: Blob | null,
+    hasImage: boolean,
+  ): Promise<About> {
+    const formData = await this.buildFormData({ ...about, hasImage } as any, image);
+
+    return Request.post<About>('/about', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   }
 
   async update(about: Partial<About> & { id: string }) {

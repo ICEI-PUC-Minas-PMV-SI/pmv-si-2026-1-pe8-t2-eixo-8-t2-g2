@@ -1,6 +1,7 @@
 import { Prisma } from '../db/Prisma.js';
 import type { AboutCreatePayload } from '../@types/index.js';
 import DashboardService from './DashboardService.js';
+import SupabaseStorage, { BUCKETS } from '../integration/SupabaseStorage.js';
 
 class AboutService {
   async create(about: AboutCreatePayload) {
@@ -70,6 +71,10 @@ class AboutService {
 
     return {
       ...about,
+      imageUrl: about?.hasImage
+        ? SupabaseStorage.getPublicUrl(BUCKETS.ABOUT, 'about-main-image.webp').data
+            .publicUrl
+        : null,
       topProducts: topProducts.map((prod) => ({
         id: prod.id,
         name: prod.name,
@@ -170,6 +175,14 @@ class AboutService {
     });
 
     return updatedAbout;
+  }
+  async setHasImage(hasImage: boolean) {
+    const prisma = await Prisma.getClient();
+    return prisma.aboutInfo.updateMany({
+      data: {
+        hasImage,
+      },
+    });
   }
 }
 

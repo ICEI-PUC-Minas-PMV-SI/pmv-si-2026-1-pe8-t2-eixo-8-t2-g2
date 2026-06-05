@@ -7,7 +7,6 @@ export type AboutItem = {
   id?: string;
   orderIndex: number;
   text: string;
-  imageUrl?: string;
 };
 
 export type AboutCreatePayload = {
@@ -15,6 +14,5 @@ export type AboutCreatePayload = {
   subtitle?: string;
   main?: string;
   complementary?: string;
-  imageAboutUrl?: string;
   items?: AboutItem[];
 };

@@ -23,6 +23,9 @@ class AboutController {
   async deleteMany(ids: string[]) {
     return AboutService.deleteMany(ids);
   }
+  async setHasImage(hasImage: boolean) {
+    return AboutService.setHasImage(hasImage);
+  }
 }
 
 const instance = new AboutController();

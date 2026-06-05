@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 export const BUCKETS = {
   PRODUCT_IMAGES: 'product-images',
+  ABOUT: 'about',
 };
 
 class SupabaseStorage {

@@ -11,11 +11,13 @@ export function CropModal({
   imageSrc,
   onConfirm,
   onCancel,
+  aspect = CARD_ASPECT,
 }: {
   open: boolean;
   imageSrc: string;
   onConfirm: (blob: Blob, previewUrl: string) => void;
   onCancel: () => void;
+  aspect?: number;
 }) {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -77,7 +79,7 @@ export function CropModal({
           crop={crop}
           zoom={zoom}
           rotation={rotation}
-          aspect={CARD_ASPECT}
+          aspect={aspect}
           onCropChange={setCrop}
           onZoomChange={setZoom}
           onCropComplete={onCropComplete}

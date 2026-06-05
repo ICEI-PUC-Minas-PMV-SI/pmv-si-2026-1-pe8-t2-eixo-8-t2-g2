@@ -1,7 +1,7 @@
 import type { FileFilterCallback } from 'multer';
 import multer from 'multer';
 import type { Request } from 'express';
-import { Image } from '../utils/Image';
+import { Image, type ResizeOptions } from '../utils/Image';
 
 const ALLOWED_MIME = new Set([
   'image/jpeg',
@@ -61,12 +61,12 @@ class ImageMiddleware {
       }
     };
   }
-  resizeImage() {
+  resizeImage(options?: ResizeOptions) {
     return async (req: Request, res: any, next: any) => {
       if (!req.file) return next();
 
       try {
-        const result = await Image.toWebp(req.file.buffer);
+        const result = await Image.toWebp(req.file.buffer, options);
 
         req.file.buffer = result.buffer;
         req.file.mimetype = 'image/webp';

@@ -10,7 +10,7 @@ export type About = {
   subtitle: string;
   main: string;
   complementary: string;
-  imageAboutUrl?: string;
+  imageUrl?: string;
   topProducts?: TopProduct[];
   items?: AboutItem[];
 };

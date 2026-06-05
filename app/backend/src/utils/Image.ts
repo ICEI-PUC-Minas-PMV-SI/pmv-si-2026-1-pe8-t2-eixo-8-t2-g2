@@ -2,7 +2,7 @@ import sharp, { type FitEnum as FitType, type Color } from 'sharp';
 
 type Fit = keyof FitType;
 
-type ResizeOptions = {
+export type ResizeOptions = {
   maxWidth?: number;
   maxHeight?: number;
   /**

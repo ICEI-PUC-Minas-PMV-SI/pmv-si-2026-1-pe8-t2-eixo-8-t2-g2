@@ -1,11 +1,6 @@
-import { Button, Card, Col, Flex, Image, Row, Typography } from 'antd';
-
 import { useQuery } from '@tanstack/react-query';
-
+import { Col, Flex, Row, Typography } from 'antd';
 import AboutController from '~/controllers/AboutController';
-import NumberUtil from '~/utils/NumberUtil';
-
-const { Title, Paragraph, Text } = Typography;
 
 export function AboutUsView() {
   const { data: about } = useQuery({
@@ -15,35 +10,34 @@ export function AboutUsView() {
   });
 
   return (
-    <div
-      style={{
-        background: '#f5f3f1',
-        paddingBottom: '80px',
-      }}
-    >
-      <div
-        style={{
-          margin: '0 auto',
-        }}
-      >
-        <Flex vertical gap={96}>
-          {/* HERO */}
-          <section
-            style={{
-              overflow: 'hidden',
-              background: '#f1efec',
-            }}
-          >
+    <div style={{ background: '#f5f3f1' }}>
+      <Flex vertical gap={96}>
+        {/* ── Hero ── */}
+        <section style={{ overflow: 'hidden', background: '#f1efec' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <Row align="middle">
+              {/* Texto */}
               <Col xs={24} lg={12}>
-                <Flex
-                  vertical
-                  gap={24}
-                  style={{
-                    padding: '56px 48px',
-                  }}
-                >
-                  <Title
+                <Flex vertical gap={24} style={{ padding: '56px 48px' }}>
+                  {about?.subtitle && (
+                    <div>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          background: 'rgba(224,109,91,0.1)',
+                          color: '#C05A48',
+                          borderRadius: 20,
+                          padding: '3px 12px',
+                          fontSize: 12,
+                          fontWeight: 500,
+                        }}
+                      >
+                        {about.subtitle}
+                      </span>
+                    </div>
+                  )}
+
+                  <Typography.Title
                     level={1}
                     style={{
                       margin: 0,
@@ -53,55 +47,162 @@ export function AboutUsView() {
                       color: '#2d2d2d',
                     }}
                   >
-                    {about?.subtitle ?? 'Olá! Eu sou a Isabella!'}
-                  </Title>
+                    {about?.title ?? 'Quem somos'}
+                  </Typography.Title>
 
-                  <Paragraph
-                    style={{
-                      margin: 0,
-                      fontSize: 16,
-                      lineHeight: 2,
-                      color: '#555',
-                    }}
+                  <Typography.Paragraph
+                    style={{ margin: 0, fontSize: 16, lineHeight: 2, color: '#555' }}
                   >
                     {about?.main}
-                  </Paragraph>
+                  </Typography.Paragraph>
 
                   {about?.complementary && (
-                    <Paragraph
-                      style={{
-                        margin: 0,
-                        fontSize: 16,
-                        lineHeight: 2,
-                        color: '#555',
-                      }}
+                    <Typography.Paragraph
+                      style={{ margin: 0, fontSize: 16, lineHeight: 2, color: '#777' }}
                     >
                       {about.complementary}
-                    </Paragraph>
+                    </Typography.Paragraph>
                   )}
                 </Flex>
               </Col>
 
-              <Col xs={24} lg={12}>
-                <Flex
-                  align="center"
-                  justify="center"
+              {/* Imagem */}
+              {/* <Col xs={24} lg={12}>
+                <div
                   style={{
                     minHeight: 520,
-                    background: '#e7e1db',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
                   }}
                 >
-                  <Text type="secondary">Imagem de destaque</Text>
+                  {about?.imageUrl ? (
+                    <img
+                      src={about.imageUrl}
+                      alt="Imagem de destaque"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block',
+                        padding: 12,
+                        borderRadius: 24,
+                      }}
+                    />
+                  ) : (
+                    <Typography.Text type="secondary">Imagem de destaque</Typography.Text>
+                  )}
+                </div>
+              </Col> */}
+              <Col xs={24} lg={12}>
+                <Flex
+                  vertical
+                  style={{
+                    height: '100%',
+                    padding: '0 12px',
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: 1,
+                      minHeight: 380,
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    {about?.imageUrl ? (
+                      <img
+                        src={about.imageUrl}
+                        alt="Imagem de destaque"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          display: 'block',
+                          borderRadius: 12,
+                        }}
+                      />
+                    ) : (
+                      <Flex
+                        justify="center"
+                        align="center"
+                        style={{
+                          height: '100%',
+                          background: '#f5f3f1',
+                        }}
+                      >
+                        <Typography.Text type="secondary">
+                          Imagem de destaque
+                        </Typography.Text>
+                      </Flex>
+                    )}
+                  </div>
+
+                  {!!about?.items?.length && (
+                    <div
+                      style={{
+                        padding: 8,
+                      }}
+                    >
+                      <Typography.Title
+                        level={5}
+                        style={{
+                          marginBottom: 16,
+                          color: '#C05A48',
+                          textTransform: 'uppercase',
+                          letterSpacing: 1,
+                        }}
+                      >
+                        Nossos diferenciais
+                      </Typography.Title>
+
+                      <ul
+                        style={{
+                          listStyle: 'none',
+                          padding: 0,
+                          margin: 0,
+                        }}
+                      >
+                        {about?.items.map((item) => (
+                          <li
+                            key={item.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'flex-start',
+                              gap: 10,
+                              marginBottom: 12,
+                            }}
+                          >
+                            <span
+                              style={{
+                                width: 6,
+                                height: 6,
+                                marginTop: 8,
+                                borderRadius: '50%',
+                                background: '#E06D5B',
+                                flexShrink: 0,
+                              }}
+                            />
+                            <span>{item.text}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </Flex>
               </Col>
             </Row>
-          </section>
+          </div>
+        </section>
 
-          {/* DIFERENCIAIS */}
-          {!!about?.items?.length && (
-            <section>
+        {/* ── Diferenciais ── */}
+        {/* {!!about?.items?.length && (
+          <section>
+            <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
               <Flex vertical gap={48} align="center">
-                <Title
+                <Typography.Title
                   level={2}
                   style={{
                     margin: 0,
@@ -110,185 +211,63 @@ export function AboutUsView() {
                     textAlign: 'center',
                   }}
                 >
-                  Nossos diferenciais
-                </Title>
+                  Diferenciais
+                </Typography.Title>
 
                 <Row
                   gutter={[24, 24]}
-                  style={{
-                    width: '100%',
-                    justifyContent: 'space-evenly',
-                  }}
+                  style={{ width: '100%', justifyContent: 'space-evenly' }}
                 >
-                  {about.items.map((item) => (
-                    <Col xs={24} sm={12} md={12} lg={6} key={item.id}>
-                      <Card
-                        variant={'borderless'}
-                        style={{
-                          height: '100%',
-                          borderRadius: 20,
-                          borderColor: '#e7e3de',
-                          background: '#faf8f6',
-                          boxShadow: 'none',
-                        }}
-                        styles={{
-                          body: {
-                            padding: '36px 24px',
-                          },
-                        }}
-                      >
-                        <Flex vertical align="center" gap={20}>
-                          {item.icon ? (
-                            <Image
-                              src={item.icon}
-                              preview={false}
-                              width={72}
-                              height={72}
-                              style={{
-                                objectFit: 'contain',
-                              }}
-                            />
-                          ) : (
+                  {[...about.items]
+                    .sort((a, b) => a.orderIndex - b.orderIndex)
+                    .map((item) => (
+                      <Col xs={24} sm={12} md={12} lg={6} key={item.id}>
+                        <Card
+                          variant="borderless"
+                          style={{
+                            height: '100%',
+                            borderRadius: 20,
+                            background: '#faf8f6',
+                            boxShadow: 'none',
+                          }}
+                          styles={{ body: { padding: '36px 24px' } }}
+                        >
+                          <Flex vertical align="center" gap={20}>
                             <Flex
                               align="center"
                               justify="center"
                               style={{
-                                width: 72,
-                                height: 72,
-                                borderRadius: 16,
-                                background: '#f1efec',
+                                width: 56,
+                                height: 56,
+                                borderRadius: '50%',
+                                background: 'rgba(224,109,91,0.1)',
                               }}
-                            />
-                          )}
+                            >
+                              <CheckCircleOutlined
+                                style={{ color: '#E06D5B', fontSize: 24 }}
+                              />
+                            </Flex>
 
-                          <Text
-                            style={{
-                              textAlign: 'center',
-                              lineHeight: 1.7,
-                              fontSize: 14,
-                              color: '#444',
-                            }}
-                          >
-                            {item.text}
-                          </Text>
-                        </Flex>
-                      </Card>
-                    </Col>
-                  ))}
+                            <Typography.Text
+                              style={{
+                                textAlign: 'center',
+                                lineHeight: 1.7,
+                                fontSize: 14,
+                                color: '#444',
+                              }}
+                            >
+                              {item.text}
+                            </Typography.Text>
+                          </Flex>
+                        </Card>
+                      </Col>
+                    ))}
                 </Row>
               </Flex>
-            </section>
-          )}
-
-          {/* PRODUTOS */}
-          <section>
-            <Flex vertical gap={48} align="center">
-              <Title
-                level={2}
-                style={{
-                  margin: 0,
-                  fontSize: 30,
-                  color: '#2d2d2d',
-                  textAlign: 'center',
-                }}
-              >
-                Alguns dos nossos itens mais vendidos
-              </Title>
-
-              <Row
-                gutter={[24, 24]}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'space-evenly',
-                }}
-              >
-                {about?.topProducts?.map((product) => (
-                  <Col
-                    xs={24}
-                    sm={12}
-                    md={12}
-                    lg={6}
-                    key={product.id}
-                    style={{ maxWidth: 300 }}
-                  >
-                    <Card
-                      hoverable
-                      style={{
-                        borderRadius: 20,
-                        overflow: 'hidden',
-                        borderColor: '#e7e3de',
-                        background: '#faf8f6',
-                        boxShadow: 'none',
-                      }}
-                      styles={{
-                        body: {
-                          padding: 18,
-                        },
-                      }}
-                      cover={
-                        <div
-                          style={{
-                            height: 220,
-                            background: '#f1efec',
-                          }}
-                        />
-                      }
-                    >
-                      <Flex vertical gap={16}>
-                        <Flex vertical gap={4}>
-                          <Text
-                            strong
-                            style={{
-                              fontSize: 15,
-                              color: '#2d2d2d',
-                            }}
-                          >
-                            {product.name}
-                          </Text>
-
-                          {/* <Text
-                            type="secondary"
-                            style={{
-                              fontSize: 13,
-                            }}
-                          >
-                            {product.category}
-                          </Text> */}
-                        </Flex>
-
-                        <Text
-                          strong
-                          style={{
-                            color: '#d35b52',
-                            fontSize: 16,
-                            textAlign: 'right',
-                          }}
-                        >
-                          {NumberUtil.currency(product.price)}
-                        </Text>
-
-                        <Button
-                          block
-                          ghost
-                          danger
-                          style={{
-                            height: 38,
-                            borderRadius: 10,
-                            fontSize: 13,
-                          }}
-                        >
-                          Ver detalhes
-                        </Button>
-                      </Flex>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            </Flex>
+            </div>
           </section>
-        </Flex>
-      </div>
+        )} */}
+      </Flex>
     </div>
   );
 }

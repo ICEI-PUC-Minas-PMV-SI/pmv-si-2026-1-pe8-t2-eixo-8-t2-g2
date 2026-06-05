@@ -332,6 +332,7 @@ model AboutInfo {
   subtitle      String
   main          String
   complementary String
+  hasImage      Boolean     @default(false)
   items         AboutItem[] @relation("AboutItem")
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @default(now()) @updatedAt

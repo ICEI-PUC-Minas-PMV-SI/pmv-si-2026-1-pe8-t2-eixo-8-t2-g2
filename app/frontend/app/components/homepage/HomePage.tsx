@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Layout, Typography, Button, Tag, Space, Grid, message } from 'antd';
+import { Layout, Typography, Button, Tag, Space, Grid, message, Spin } from 'antd';
 import { CalendarOutlined, HeartOutlined } from '@ant-design/icons';
 import AppHeader from '../header/AppHeader';
 import { AppFooter } from '../footer';
@@ -10,13 +10,15 @@ import { TestimonialsSection } from './TestimonialSection';
 import { ProductDetailModal } from './ProductDetailModal';
 import { AboutSection } from './AboutSection';
 import type { AppSettings } from '~/@types/app-settings';
-import type { AboutInfo } from '~/@types/about';
+import type { About, AboutInfo } from '~/@types/about';
 import { ContactSection } from './ContactSection';
 import { CatalogSection } from './CatalogSection';
 import { HowToOrderSection } from './HowToOrderSection';
 import { HeroSection } from './HeroSection';
 import { AppSettingsController } from '~/controllers/AppSettingsController';
 import TextUtil from '~/utils/TextUtil';
+import AboutController from '~/controllers/AboutController';
+import { AboutUsView } from '../about-us/AboutUsView';
 
 // ─── Mock / placeholder data (substitua pelas chamadas reais de API) ──────────
 
@@ -34,44 +36,6 @@ const MOCK_ABOUT: AboutInfo = {
   ],
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-// function formatPrice(value: number) {
-//   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-// }
-
-function getProductImage(product: PublicProduct) {
-  if (product.imageUrl) return product.imageUrl;
-
-  const names = (product.categories ?? [])
-    .map((c: any) => {
-      const catName = c?.category?.name ?? c?.name ?? '';
-      return catName.toLowerCase();
-    })
-    .join(' ');
-  const slug = product.slug?.toLowerCase() ?? '';
-
-  const keyword = encodeURIComponent(
-    names.includes('torta')
-      ? 'pie tart pastry'
-      : names.includes('biscoito') || names.includes('artesanal')
-        ? 'artisan cookies biscuits'
-        : names.includes('brunch')
-          ? 'brunch food'
-          : names.includes('doce')
-            ? 'sweet dessert cake'
-            : slug.includes('brownie')
-              ? 'brownie chocolate'
-              : slug.includes('bolo')
-                ? 'cake'
-                : 'bakery food',
-  );
-  const seed = product.id.charCodeAt(0) + product.id.charCodeAt(1);
-  return `https://source.unsplash.com/400x300/?${keyword}&sig=${seed}`;
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
 export function HomePage() {
   const [about] = useState<AboutInfo>(MOCK_ABOUT);
   const [selectedProduct, setSelectedProduct] = useState<PublicProduct | null>(null);
@@ -81,6 +45,11 @@ export function HomePage() {
   const settingsQuery = useQuery<AppSettings>({
     queryKey: ['app-settings'],
     queryFn: () => AppSettingsController.findInfo(),
+    staleTime: 1000 * 60 * 5,
+  });
+  const aboutQuery = useQuery<About>({
+    queryKey: ['about-data'],
+    queryFn: () => AboutController.find(),
     staleTime: 1000 * 60 * 5,
   });
 
@@ -107,10 +76,8 @@ export function HomePage() {
 
   return (
     <Layout style={{ minHeight: '100vh', background: '#fff' }}>
-      {/* <SiteHeader settings={settings} /> */}
-      {/* <AppHeader settings={settings} /> */}
       <HeroSection settings={settings} />
-      <AboutSection about={about} />
+      <Spin spinning={aboutQuery.isLoading}>{aboutQuery.data && <AboutUsView />}</Spin>
       <HowToOrderSection settings={settings} />
       <CatalogSection
         onViewDetails={(p) => {
@@ -120,7 +87,6 @@ export function HomePage() {
       />
       <TestimonialsSection />
       <ContactSection settings={settings} />
-      {/* <SiteFooter settings={settings} /> */}
       <AppFooter useFullFooter />
 
       <ProductDetailModal

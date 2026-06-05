@@ -163,7 +163,6 @@ export function CartPage() {
                         <Text strong style={{ fontSize: 16 }}>
                           {item.product.name}
                         </Text>
-                        <Text type="secondary">{item.product.slug}</Text>
                         {item.product.description && (
                           <Text type="secondary">{item.product.description}</Text>
                         )}

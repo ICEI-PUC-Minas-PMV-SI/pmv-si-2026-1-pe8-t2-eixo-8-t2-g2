@@ -1,8 +1,8 @@
-import { Col, Flex, Grid, Row, Tag, Typography } from "antd";
-import type { AboutInfo } from "~/@types/about";
-import {CheckCircleOutlined} from '@ant-design/icons';
+import { Col, Flex, Grid, Row, Tag, Typography } from 'antd';
+import type { About, AboutInfo } from '~/@types/about';
+import { CheckCircleOutlined } from '@ant-design/icons';
 
-export function AboutSection({ about }: { about: AboutInfo }) {
+export function AboutSection({ about }: { about: About }) {
   const screens = Grid.useBreakpoint();
   return (
     <section
@@ -61,7 +61,7 @@ export function AboutSection({ about }: { about: AboutInfo }) {
                 border: '1.5px solid #F0E8E5',
               }}
             >
-              {[...about.items]
+              {[...(about.items || [])]
                 .sort((a, b) => a.orderIndex - b.orderIndex)
                 .map((item) => (
                   <Flex

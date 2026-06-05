@@ -127,18 +127,6 @@ export function ProductList() {
       dataIndex: 'isActive',
       width: 100,
       render: (value: boolean, record: Product) => (
-        // <Switch
-        //   checkedChildren="Ativo"
-        //   unCheckedChildren="Inativo"
-        //   defaultChecked={value}
-        //   onChange={(checked) => {
-        //     setProducts((current) => {
-        //       return current.map((p) =>
-        //         p.id === record.id ? { ...p, isActive: checked } : p,
-        //       );
-        //     });
-        //   }}
-        // />
         <Tag color={value ? 'green' : 'default'}>{value ? 'Ativo' : 'Inativo'}</Tag>
       ),
     },

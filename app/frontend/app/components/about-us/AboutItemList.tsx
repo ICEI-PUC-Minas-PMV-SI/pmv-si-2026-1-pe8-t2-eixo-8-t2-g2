@@ -185,45 +185,6 @@ export function AboutItemList({ items, onChange, onDeletePersistedItem }: Props)
 
       render: () => <DragHandle />,
     },
-
-    {
-      title: 'Imagem',
-
-      width: 100,
-
-      render: (_: any, record: AboutItem) => (
-        <Upload {...uploadProps(record)}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              overflow: 'hidden',
-              background: '#f5f5f5',
-              cursor: 'pointer',
-              display: 'grid',
-              placeItems: 'center',
-              border: '1px dashed #d9d9d9',
-            }}
-          >
-            {record.icon ? (
-              <Image
-                src={record.icon}
-                preview={false}
-                width={48}
-                height={48}
-                style={{
-                  objectFit: 'cover',
-                }}
-              />
-            ) : (
-              <PictureOutlined />
-            )}
-          </div>
-        </Upload>
-      ),
-    },
-
     {
       title: 'Texto',
 

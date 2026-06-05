@@ -51,13 +51,17 @@ class ProductRoute {
         payload.price = parseFloat(payload.price);
         payload.bookingLeadMinutes = parseInt(payload.bookingLeadMinutes, 10);
         const result = await ProductController.create(payload);
-        saveProductImage(result.id, req.file)
-          .then(() => {
-            res.status(201).json({ data: result, warning: null });
-          })
-          .catch((err) => {
-            res.status(201).json({ data: result, warning: err.message });
-          });
+        if (req.file) {
+          saveProductImage(result.id, req.file)
+            .then(() => {
+              res.status(201).json({ data: result, warning: null });
+            })
+            .catch((err) => {
+              res.status(201).json({ data: result, warning: err.message });
+            });
+        } else {
+          res.status(201).json({ data: result, warning: null });
+        }
       },
     );
 
