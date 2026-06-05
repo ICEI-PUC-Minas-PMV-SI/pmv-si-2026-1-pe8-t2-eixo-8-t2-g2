@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/app/api/:match*",
+      "destination": "https://vercel-backend-gvgx.vercel.app/:match*"
+    },
+    {
       "source": "/api/:match*",
       "destination": "https://vercel-backend-gvgx.vercel.app/:match*"
     },

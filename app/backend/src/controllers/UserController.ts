@@ -1,7 +1,7 @@
 import ms from 'ms';
 import { UserService } from '../services/UserService.js';
 import type { UserCreatePayload, UserFilterKey, UserRequest } from '../@types/index.js';
-import type { User } from '../generated/prisma/client.js';
+import type { User } from '../generated/prisma/default.js';
 import { AppError } from '../error/AppError.js';
 import { HttpCode } from '../utils/HttpCode.js';
 import { OTPUtil } from '../utils/OTPUtil.js';

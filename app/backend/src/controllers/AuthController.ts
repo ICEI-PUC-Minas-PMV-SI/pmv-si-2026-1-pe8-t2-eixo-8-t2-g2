@@ -5,7 +5,7 @@ import { JWT } from '../utils/JWT.js';
 import { OTPUtil } from '../utils/OTPUtil.js';
 import { AppError } from '../error/AppError.js';
 import { Google } from '../utils/Google.js';
-import type { User } from '../generated/prisma/client.js';
+import type { User } from '../generated/prisma/default.js';
 
 class AuthController {
   async authenticate(credentials: AuthCredentials) {

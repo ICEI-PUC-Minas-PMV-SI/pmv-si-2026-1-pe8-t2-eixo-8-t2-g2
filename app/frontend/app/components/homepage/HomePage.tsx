@@ -78,15 +78,20 @@ export function HomePage() {
     <Layout style={{ minHeight: '100vh', background: '#fff' }}>
       <HeroSection settings={settings} />
       <Spin spinning={aboutQuery.isLoading}>{aboutQuery.data && <AboutUsView />}</Spin>
+
       <HowToOrderSection settings={settings} />
+
       <CatalogSection
         onViewDetails={(p) => {
           setSelectedProduct(p);
           setModalOpen(true);
         }}
       />
+
       <TestimonialsSection />
+
       <ContactSection settings={settings} />
+
       <AppFooter useFullFooter />
 
       <ProductDetailModal

@@ -4,18 +4,18 @@ generator client {
 }
 
 
-// datasource db {
-//   provider = "sqlite"
-// }
+datasource db {
+  provider = "sqlite"
+}
 
 // datasource db {
 //   provider = "sqlite"
 //   url      = "file:./dev.db"
 // }
 
-datasource db {
-  provider = "postgresql"
-}
+// datasource db {
+//   provider = "postgresql"
+// }
 
 enum UserRole {
   admin

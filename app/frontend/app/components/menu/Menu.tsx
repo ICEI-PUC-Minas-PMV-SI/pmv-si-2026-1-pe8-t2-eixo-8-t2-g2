@@ -4,13 +4,11 @@ import AppIcon from '../icon/AppIcon';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { UserRole } from '~/constants/Auth';
-// import { ShoppingCartOutlined } from '@ant-design/icons';
 
 export type MenuItem = Required<MenuProps>['items'][number];
 
 export const iconStyle: React.CSSProperties = {
   fontSize: 18,
-  // paddingLeft: 24,
 };
 
 export const menu = [

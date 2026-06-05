@@ -24,12 +24,7 @@ import {
   StarOutlined,
 } from '@ant-design/icons';
 import type { PaymentMethod } from '~/@types/payment';
-import type {
-  DeliveryType,
-  Scheduler,
-  SchedulerItem,
-  SchedulerStatus,
-} from '~/@types/scheduler';
+import type { DeliveryType, Scheduler, SchedulerStatus } from '~/@types/scheduler';
 import { PaymentMethodMap } from '~/constants/PaymentMethod';
 import DateUtil from '~/utils/DateUtil';
 import { SchedulerStatusTag } from './SchedulerStatusTag';
@@ -43,28 +38,13 @@ import { useAuthStore } from '~/hooks/useAuthStore';
 import { PaymentModal, type RegisterPaymentPayload } from '../payment/PaymentModal';
 import { ReviewModal, type ReviewPayload } from '../review/ReviewModal';
 import ReviewController from '~/controllers/ReviewController';
+import { SchedulerHelper } from '~/helpers/SchedulerHelper';
 
 // ─── Types estendidos ─────────────────────────────────────────────────────────
 
 type SchedulerWithRelations = Scheduler & {
   payments?: any[];
   review?: { rating: number; comment?: string | null } | null;
-};
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const getOrderTotal = (items: SchedulerItem[]): number => {
-  const total = items.reduce(
-    (acc, item) => acc + (item.priceAtBooking ?? 0) * item.quantity,
-    0,
-  );
-  return Math.round(total * 100) / 100;
-};
-
-const getItemColumnText = (items: SchedulerItem[]) => {
-  const count = items.length;
-  const price = getOrderTotal(items);
-  return `${count} ${count > 1 ? 'itens' : 'item'} · ${NumberUtil.currency(price)} est.`;
 };
 
 const STATUS_TRANSITIONS: Partial<
@@ -94,7 +74,7 @@ function PaymentProgressCell({
   scheduler: SchedulerWithRelations;
   onPayClick: () => void;
 }) {
-  const total = getOrderTotal(scheduler.items);
+  const total = SchedulerHelper.getOrderTotal(scheduler.items);
   const paid =
     Math.round(
       (scheduler.payments ?? []).reduce((acc: number, p: any) => acc + p.amount, 0) * 100,
@@ -461,7 +441,7 @@ export function SchedulerList({
             responsive: ['xl', 'xxl'],
             render: (_, record) => (
               <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {getItemColumnText(record.items)}
+                {SchedulerHelper.getItemColumnText(record.items)}
               </Typography.Text>
             ),
           },

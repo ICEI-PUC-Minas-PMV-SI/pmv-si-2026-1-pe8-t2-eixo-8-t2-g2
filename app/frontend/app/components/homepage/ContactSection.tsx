@@ -22,8 +22,16 @@ export function ContactSection({ settings }: { settings: AppSettings }) {
         borderBottom: '1px solid #F0E8E5',
       }}
     >
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <Row gutter={[48, 40]} align="middle">
+      <div style={{ maxWidth: 'min(1100px, 100%)', margin: '0 auto' }}>
+        <Row
+          gutter={{
+            xs: 16,
+            sm: 24,
+            md: 32,
+            lg: 48,
+          }}
+          align="middle"
+        >
           <Col xs={24} md={14}>
             <Tag
               style={{
@@ -70,6 +78,7 @@ export function ContactSection({ settings }: { settings: AppSettings }) {
               <Button
                 type="primary"
                 size="large"
+                href="#catalogo"
                 icon={<ShoppingCartOutlined />}
                 style={{
                   background: '#E06D5B',
@@ -115,6 +124,7 @@ export function ContactSection({ settings }: { settings: AppSettings }) {
                 padding: '30px',
                 border: '1px solid #F3DFDA',
                 boxShadow: '0 18px 40px rgba(0,0,0,0.04)',
+                marginTop: 24,
               }}
             >
               <Typography.Title
