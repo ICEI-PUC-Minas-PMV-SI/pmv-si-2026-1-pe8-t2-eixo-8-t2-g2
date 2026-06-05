@@ -1,7 +1,8 @@
 import type { GoogleCredentials } from '../@types/index.js';
 import { Crypt } from '../utils/Crypt.js';
 import { Env } from '../utils/Env.js';
-import type { IntegrationType } from '../generated/prisma/enums.js';
+import type { IntegrationType } from '../generated/prisma';
+// import type { IntegrationType } from '../generated/prisma/enums.js';
 import { IntegrationsService } from '../services/IntegrationsService.js';
 import { Logger } from '../logger/Logger.js';
 // import type { Credentials } from 'google-auth-library/build/src/auth/credentials';

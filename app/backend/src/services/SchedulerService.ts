@@ -5,17 +5,18 @@ import type {
   SchedulerPayment,
   SchedulerUpdatePayload,
 } from '../@types/index.js';
-import { Prisma } from '../db/Prisma.js';
+import { Prisma as PrismaDB } from '../db/Prisma.js';
 import { ProductService } from './ProductService.js';
 import { BookingLeadTimeHelper } from '../helper/BookingLeadTimeHelper.js';
 import { AppError } from '../error/AppError.js';
 import { HttpCode } from '../utils/HttpCode.js';
-import type {
-  SchedulerItemUncheckedCreateWithoutSchedulerInput,
-  SchedulerOrderByWithRelationInput,
-  SchedulerWhereInput,
-} from '../generated/prisma/models.js';
-import type { SchedulerStatus } from '../generated/prisma/enums.js';
+import type { Prisma, SchedulerStatus } from '../generated/prisma';
+// import type {
+//   SchedulerItemUncheckedCreateWithoutSchedulerInput,
+//   SchedulerOrderByWithRelationInput,
+//   SchedulerWhereInput,
+// } from '../generated/prisma/models.js';
+// import type { SchedulerStatus } from '../generated/prisma/enums.js';
 import { ResponseUtil } from '../utils/ResponseUtil.js';
 import { CustomerService } from './CustomerService.js';
 
@@ -85,7 +86,7 @@ class SchedulerService {
     return invalidItems;
   }
   async create(scheduler: SchedulerCreatePayload) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const {
       userId,
       customerId,
@@ -139,7 +140,7 @@ class SchedulerService {
         },
       );
     }
-    const schedulerItems: SchedulerItemUncheckedCreateWithoutSchedulerInput[] = [
+    const schedulerItems: Prisma.SchedulerItemUncheckedCreateWithoutSchedulerInput[] = [
       ...productsList.map((product, orderIndex: number) => ({
         productId: product.id,
         quantity: product.quantity,
@@ -202,7 +203,7 @@ class SchedulerService {
   }
 
   async find(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const scheduler = await prisma.scheduler.findUnique({
       where: { id },
       select: {
@@ -241,11 +242,11 @@ class SchedulerService {
   }
 
   async list(
-    filter?: SchedulerWhereInput,
-    orderBy?: SchedulerOrderByWithRelationInput[],
+    filter?: Prisma.SchedulerWhereInput,
+    orderBy?: Prisma.SchedulerOrderByWithRelationInput[],
     pagination?: PaginationParams,
   ) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const where = filter ? filter : {};
     const pageParams = pagination || {};
     const [schedulers, total] = await Promise.all([
@@ -297,14 +298,14 @@ class SchedulerService {
   }
 
   async delete(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     await prisma.scheduler.delete({
       where: { id },
     });
   }
 
   async updateExternalId(id: string, externalId: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     return prisma.scheduler.update({
       where: { id },
       data: {
@@ -314,7 +315,7 @@ class SchedulerService {
   }
 
   async updateStatus(id: string, status: SchedulerStatus) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     return prisma.scheduler.update({
       where: { id },
       data: {
@@ -324,14 +325,14 @@ class SchedulerService {
   }
 
   async createPayment(data: SchedulerPayment) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     return prisma.payment.create({
       data,
     });
   }
 
   async update(id: string, data: SchedulerUpdatePayload) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
 
     const { items, ...schedulerData } = data;
 
@@ -429,7 +430,7 @@ class SchedulerService {
   }
 
   async cancel(id: string, cancellationReason: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const updatedScheduler = await prisma.scheduler.update({
       where: { id },
       data: {
@@ -446,7 +447,7 @@ class SchedulerService {
   }
 
   async getCountUnsyncedSchedulers() {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const count = await prisma.scheduler.count({
       where: {
         googleEventId: null,
@@ -459,7 +460,7 @@ class SchedulerService {
   }
 
   async findUnsyncedSchedulers() {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     return prisma.scheduler.findMany({
       where: {
         googleEventId: null,

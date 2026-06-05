@@ -1,11 +1,12 @@
 import type { IntegrationsPayload } from '../@types/index.js';
-import { Prisma } from '../db/Prisma.js';
+import { Prisma as PrismaDB } from '../db/Prisma.js';
+import type { Prisma } from '../generated/prisma';
 import { GoogleApi } from '../integration/GoogleApi.js';
-import type {
-  GoogleIntegrationUpdateInput,
-  GoogleIntegrationWhereInput,
-  TransactionClient,
-} from '../generated/prisma/internal/prismaNamespace.js';
+// import type {
+//   GoogleIntegrationUpdateInput,
+//   GoogleIntegrationWhereInput,
+//   TransactionClient,
+// } from '../generated/prisma/internal/prismaNamespace.js';
 import { HttpCode } from '../utils/HttpCode.js';
 import { AppError } from '../error/AppError.js';
 import { Crypt } from '../utils/Crypt.js';
@@ -13,7 +14,10 @@ import { Crypt } from '../utils/Crypt.js';
 type IntegrationType = 'calendar' | 'gmail' | 'all';
 
 class IntegrationsService {
-  private deleteIntegration(prisma: TransactionClient, integration: IntegrationType) {
+  private deleteIntegration(
+    prisma: Prisma.TransactionClient,
+    integration: IntegrationType,
+  ) {
     return prisma.googleIntegration.deleteMany({
       where: {
         useForCalendar: integration === 'calendar' || integration === 'all',
@@ -22,7 +26,7 @@ class IntegrationsService {
     });
   }
   async save(data: IntegrationsPayload) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     let integration: IntegrationType = 'all';
     if (data.gmail) {
       integration = 'gmail';
@@ -92,8 +96,8 @@ class IntegrationsService {
     return GoogleApi.getAuthUrl(integration);
   }
   async find(integration: IntegrationType = 'all') {
-    const prisma = await Prisma.getClient();
-    const filter: GoogleIntegrationWhereInput = {};
+    const prisma = await PrismaDB.getClient();
+    const filter: Prisma.GoogleIntegrationWhereInput = {};
     if (integration === 'calendar') {
       filter.useForCalendar = true;
     } else if (integration === 'gmail') {
@@ -110,7 +114,7 @@ class IntegrationsService {
     return result;
   }
   async list() {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const result = await prisma.googleIntegration.findMany({
       select: {
         mailFrom: true,
@@ -145,8 +149,8 @@ class IntegrationsService {
     }
     return result;
   }
-  async update(integration: IntegrationType, data: GoogleIntegrationUpdateInput) {
-    const prisma = await Prisma.getClient();
+  async update(integration: IntegrationType, data: Prisma.GoogleIntegrationUpdateInput) {
+    const prisma = await PrismaDB.getClient();
     return prisma.googleIntegration.updateMany({
       where: {
         useForCalendar: integration === 'calendar' || integration === 'all',

@@ -1,6 +1,7 @@
 import { AppError } from '../error/AppError.js';
-import type { IntegrationType } from '../generated/prisma/enums.js';
-import type { GoogleIntegrationUpdateInput } from '../generated/prisma/models.js';
+// import type { IntegrationType } from '../generated/prisma/enums.js';
+// import type { GoogleIntegrationUpdateInput } from '../generated/prisma/models.js';
+import type { IntegrationType, Prisma } from '../generated/prisma';
 import { IntegrationsService } from '../services/IntegrationsService.js';
 import type { IntegrationsPayload } from '../@types/index.js';
 import { GoogleApi } from '../integration/GoogleApi.js';
@@ -17,7 +18,7 @@ class IntegrationsController {
   async save(data: IntegrationsPayload) {
     return IntegrationsService.save(data);
   }
-  async update(integration: IntegrationType, data: GoogleIntegrationUpdateInput) {
+  async update(integration: IntegrationType, data: Prisma.GoogleIntegrationUpdateInput) {
     return IntegrationsService.update(integration, data);
   }
   async handleWebhookToken(code: unknown, integration: IntegrationType) {

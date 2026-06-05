@@ -1,11 +1,12 @@
-import { Prisma } from '../db/Prisma.js';
+import { Prisma as PrismaDB } from '../db/Prisma.js';
+import type { Prisma } from '../generated/prisma';
 import type { PaginationParams, ProductCreatePayload } from '../@types/index.js';
 import { Text } from '../utils/Text.js';
 import { ResponseUtil } from '../utils/ResponseUtil.js';
-import type {
-  ProductOrderByWithRelationInput,
-  ProductWhereInput,
-} from '../generated/prisma/models.js';
+// import type {
+//   ProductOrderByWithRelationInput,
+//   ProductWhereInput,
+// } from '../generated/prisma/models.js';
 import { HttpCode } from '../utils/HttpCode.js';
 import { AppError } from '../error/AppError.js';
 import SupabaseStorage, { BUCKETS } from '../integration/SupabaseStorage.js';
@@ -13,7 +14,7 @@ import { ValidityHelper } from '../helper/ValidityHelper.js';
 
 class ProductService {
   async create(product: ProductCreatePayload) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const { characteristics = [], categories = [], ...productProps } = product;
     const categoriesToCreate = categories.length
       ? {
@@ -39,7 +40,7 @@ class ProductService {
   }
 
   async find(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const product = await prisma.product.findUnique({
       where: { id },
     });
@@ -47,12 +48,12 @@ class ProductService {
   }
 
   async list(
-    filter?: ProductWhereInput,
-    orderBy?: ProductOrderByWithRelationInput[],
+    filter?: Prisma.ProductWhereInput,
+    orderBy?: Prisma.ProductOrderByWithRelationInput[],
     pagination?: PaginationParams,
     isAdmin = false,
   ) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const where = filter ? filter : {};
     const pageParams = pagination || {};
     const [products, total] = await Promise.all([
@@ -104,7 +105,7 @@ class ProductService {
   }
 
   async delete(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const productInSchedulers = await prisma.schedulerItem.findFirst({
       where: {
         productId: id,
@@ -122,7 +123,7 @@ class ProductService {
   }
 
   async deleteMany(ids: string[]) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const productsInSchedulers = await prisma.schedulerItem.findMany({
       distinct: 'productId',
       where: {
@@ -164,7 +165,7 @@ class ProductService {
   }
 
   async update(id: string, data: Partial<ProductCreatePayload>) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const { characteristics, categories, ...productProps } = data;
     const dataToUpdate = { ...productProps };
     const updatedProduct = await prisma.product.update({
@@ -175,7 +176,7 @@ class ProductService {
   }
 
   async toggleHasImage(id: string, hasImage: boolean) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     return prisma.product.update({
       where: { id },
       data: { hasImage },

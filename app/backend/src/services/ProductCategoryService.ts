@@ -1,11 +1,12 @@
-import { Prisma } from '../db/Prisma.js';
+import { Prisma as PrismaDB } from '../db/Prisma.js';
+import type { Prisma } from '../generated/prisma';
 import type { ProductCategoryCreatePayload, PaginationParams } from '../@types/index.js';
 import { Text } from '../utils/Text.js';
 import { ResponseUtil } from '../utils/ResponseUtil.js';
-import type {
-  CategoryOrderByWithRelationInput,
-  CategoryWhereInput,
-} from '../generated/prisma/models.js';
+// import type {
+//   CategoryOrderByWithRelationInput,
+//   CategoryWhereInput,
+// } from '../generated/prisma/models.js';
 import { Env } from '../utils/Env.js';
 import { fromZonedTime } from 'date-fns-tz';
 
@@ -63,7 +64,7 @@ class ProductCategoryService {
     return { ...rest, isRecurring, ...normalizedDates };
   }
   async create(category: ProductCategoryCreatePayload) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
 
     const createdCategory = await prisma.category.create({
       data: {
@@ -76,7 +77,7 @@ class ProductCategoryService {
   }
 
   async find(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const category = await prisma.category.findUnique({
       where: { id },
     });
@@ -84,11 +85,11 @@ class ProductCategoryService {
   }
 
   async list(
-    filter?: CategoryWhereInput,
-    orderBy?: CategoryOrderByWithRelationInput[],
+    filter?: Prisma.CategoryWhereInput,
+    orderBy?: Prisma.CategoryOrderByWithRelationInput[],
     pagination?: PaginationParams,
   ) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const pageParams = pagination || {};
     const where = filter ? filter : {};
     const [categories, total] = await Promise.all([
@@ -107,14 +108,14 @@ class ProductCategoryService {
   }
 
   async delete(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     await prisma.category.delete({
       where: { id },
     });
   }
 
   async update(id: string, data: Partial<ProductCategoryCreatePayload>) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
 
     const hasDateFields = 'startsAt' in data || 'endsAt' in data || 'isRecurring' in data;
 
@@ -137,7 +138,7 @@ class ProductCategoryService {
   }
 
   async reorder(items: { id: string; orderIndex: number }[]) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     await Promise.all(
       items.map(({ id, orderIndex }) =>
         prisma.category.update({ where: { id }, data: { orderIndex } }),
@@ -147,7 +148,7 @@ class ProductCategoryService {
   }
 
   async toggleActive(id: string, isActive: boolean) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const updatedCategory = await prisma.category.update({
       where: { id },
       data: { isActive },

@@ -2,10 +2,11 @@ import type {
   ProductCharacteristicCreatePayload,
   CharacteristicRequest,
 } from '../@types/index.js';
-import type {
-  CharacteristicOrderByWithRelationInput,
-  CharacteristicWhereInput,
-} from '../generated/prisma/models.js';
+import type { Prisma } from '../generated/prisma';
+// import type {
+//   CharacteristicOrderByWithRelationInput,
+//   CharacteristicWhereInput,
+// } from '../generated/prisma/models.js';
 import { ProductCharacteristicService } from '../services/ProductCharacteristicService.js';
 
 class ProductCharacteristicController {
@@ -14,9 +15,9 @@ class ProductCharacteristicController {
     return result;
   }
   list(req: CharacteristicRequest) {
-    const orderBy = [] as CharacteristicOrderByWithRelationInput[];
+    const orderBy = [] as Prisma.CharacteristicOrderByWithRelationInput[];
     const sorters = req.sort;
-    const filter = {} as CharacteristicWhereInput;
+    const filter = {} as Prisma.CharacteristicWhereInput;
     const search = req.search?.trim();
     if (sorters) {
       sorters.forEach((sort) => {

@@ -1,11 +1,12 @@
 import { AppSettingsService } from '../services/AppSettingsService.js';
-import type { AppSettingsCreateInput } from '../generated/prisma/models.js';
+import type { Prisma } from '../generated/prisma';
+// import type { AppSettingsCreateInput } from '../generated/prisma/models.js';
 
 class AppSettingsController {
   async find() {
     return AppSettingsService.find();
   }
-  async save(data: AppSettingsCreateInput) {
+  async save(data: Prisma.AppSettingsCreateInput) {
     return AppSettingsService.save(data);
   }
 }

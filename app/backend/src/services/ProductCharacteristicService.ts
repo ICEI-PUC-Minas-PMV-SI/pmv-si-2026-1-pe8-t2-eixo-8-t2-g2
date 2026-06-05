@@ -1,17 +1,18 @@
 import { ResponseUtil } from '../utils/ResponseUtil.js';
-import { Prisma } from '../db/Prisma.js';
+import { Prisma as PrismaDB } from '../db/Prisma.js';
+import type { Prisma } from '../generated/prisma';
 import type {
   ProductCharacteristicCreatePayload,
   PaginationParams,
 } from '../@types/index.js';
-import type {
-  CharacteristicOrderByWithRelationInput,
-  CharacteristicWhereInput,
-} from '../generated/prisma/models.js';
+// import type {
+//   CharacteristicOrderByWithRelationInput,
+//   CharacteristicWhereInput,
+// } from '../generated/prisma/models.js';
 
 class ProductCharacteristicService {
   async create(characteristic: ProductCharacteristicCreatePayload) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const createdCharacteristic = await prisma.characteristic.create({
       data: characteristic,
     });
@@ -20,7 +21,7 @@ class ProductCharacteristicService {
   }
 
   async find(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const characteristic = await prisma.characteristic.findUnique({
       where: { id },
     });
@@ -28,11 +29,11 @@ class ProductCharacteristicService {
   }
 
   async list(
-    filter?: CharacteristicWhereInput,
-    orderBy?: CharacteristicOrderByWithRelationInput[],
+    filter?: Prisma.CharacteristicWhereInput,
+    orderBy?: Prisma.CharacteristicOrderByWithRelationInput[],
     pagination?: PaginationParams,
   ) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const pageParams = pagination || {};
     const where = filter ? filter : {};
     const [characteristics, total] = await Promise.all([
@@ -51,14 +52,14 @@ class ProductCharacteristicService {
   }
 
   async delete(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     await prisma.characteristic.delete({
       where: { id },
     });
   }
 
   async update(id: string, data: Partial<ProductCharacteristicCreatePayload>) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const dataToUpdate: Partial<ProductCharacteristicCreatePayload> = { ...data };
     const updatedCharacteristic = await prisma.characteristic.update({
       where: { id },
