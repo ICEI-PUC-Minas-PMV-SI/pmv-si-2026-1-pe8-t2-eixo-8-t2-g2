@@ -8,7 +8,7 @@ import {
   PaymentMethod,
   PaymentType,
   SchedulerStatus,
-} from '../generated/prisma/enums.js';
+} from '../generated/prisma/client.js';
 
 class SchedulerValidation {
   create = () => {

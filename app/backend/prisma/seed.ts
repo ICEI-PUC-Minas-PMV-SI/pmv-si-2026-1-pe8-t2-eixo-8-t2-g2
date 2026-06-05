@@ -17,7 +17,7 @@ import {
   Product,
   SchedulerStatus,
   UserRole,
-} from '../src/generated/prisma/client.js';
+} from '../src/generated/prisma/default.js';
 // ─────────────────────────────────────────────
 // CLI argument parsing
 // ─────────────────────────────────────────────

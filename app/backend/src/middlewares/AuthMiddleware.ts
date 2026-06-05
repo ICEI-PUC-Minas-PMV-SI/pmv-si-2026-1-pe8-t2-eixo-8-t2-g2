@@ -35,6 +35,7 @@ class AuthMiddleware {
     ];
     const publicRoutesByMethod: Record<string, string[]> = {
       POST: ['/user'],
+      GET: ['/about'],
     };
     const methodPublicRoutes = publicRoutesByMethod[req.method] || [];
     const cleanedPath = req.path.replace(/\/$/, '');
