@@ -3,7 +3,7 @@
 
 ### Processos que serão resolvidos pela aplicação
 
-O documento mapeia seis processos principais que apresentam limitações operacionais no empreendimento de confeitaria artesanal da Isabella Cáster:
+O documento mapeia seis processos principais que apresentam limitações operacionais no empreendimento de confeitaria artesanal Doce & Cia:
 1. Captação e atendimento ao cliente
 Hoje ocorre via *WhatsApp* de forma manual e não estruturada. O processo de coleta de dados do pedido (tipo de produto, quantidade, sabor, personalização, data de entrega) depende inteiramente de conversas individuais, gerando risco de perda de informação e limitando o atendimento simultâneo de múltiplos clientes.
 
@@ -22,7 +22,7 @@ O site atual é completamente estático — qualquer alteração de produto exig
 6. Acompanhamento gerencial e tomada de decisão
 Não existem métricas de produção, relatórios de vendas ou indicadores de desempenho. A empreendedora não tem como avaliar capacidade produtiva, sazonalidade ou fidelização de clientes com base em dados concretos.
 
-### Funcionalidades iniciais a desenvolver
+### Funcionalidades iniciais a serem desenvolvidas
 
 Com base nos requisitos funcionais e nas histórias de usuário documentadas no TCC, as funcionalidades foram organizadas por módulo e prioridade:
 - Autenticação e controle de acesso:
@@ -78,7 +78,7 @@ Figura 3 - Quadro-Resumo
 Fonte: Elaborado pelos autores (2026).
 
 ## Levantamento de Requisitos e Modelagem Inicial
-### Histórias de Usuários
+### Histórias de usuários
 - Cliente:
   - Como cliente, quero acessar o sistema através de *login* para visualizar meu histórico de pedidos e informações pessoais.
   - Como cliente, quero visualizar os produtos disponíveis para escolher o que comprar.
@@ -107,7 +107,7 @@ Fonte: Elaborado pelos autores (2026).
   - Como empreendedora, quero visualizar relatórios de pedidos/vendas para acompanhar o faturamento.
   - Como empreendedora, quero visualizar relatórios de tempo médio de entrega para melhorar a satisfação do cliente.
 
-## Requisitos Funcionais e Não Funcionais
+## Requisitos funcionais e não funcionais
 
 Com base nas necessidades identificadas ao longo do projeto, foram definidos os requisitos funcionais e não funcionais da solução, visando garantir o suporte adequado à gestão de pedidos e ao planejamento da produção no contexto do microempreendimento analisado.
 
@@ -131,7 +131,6 @@ Quadro 1 - Requisitos funcionais do sistema
 | Gestão de pedidos | O sistema deve permitir o acompanhamento do *status* do pedido, incluindo: aguardando confirmação, confirmado, em produção, pronto para entrega e entregue. |
 | Pagamento | O sistema deve permitir o registro de pagamento antecipado. |
 | Pagamento | O sistema deve confirmar o pagamento antes da validação do pedido. |
-| Notificações | O sistema deve enviar notificações ao cliente sobre a confirmação do pedido, alterações de status e pedido concluído. |
 
 Fonte: Elaborado pelos autores (2026).
 
@@ -174,12 +173,12 @@ No que se refere à viabilidade financeira, o projeto apresenta custos iniciais 
 - *Visual Studio Code*: gratuito;
 - *Node.js* e *React*: gratuitos e *open source*;
 - Prisma: gratuito em sua versão base;
-- Supabase (incluindo banco de dados e *storage*): plano gratuito adequado para aplicações de pequeno porte;
-- Vercel: plano gratuito com recursos suficientes para hospedagem do sistema;
+- *Supabase* (incluindo banco de dados e *storage*): plano gratuito adequado para aplicações de pequeno porte;
+- *Vercel:* plano gratuito com recursos suficientes para hospedagem do sistema;
 - *Ant Design*: gratuito e *open source*;
 - APIs do *Google*: gratuitas dentro de limites de uso;
 
-A adoção do Supabase *Storage* elimina a necessidade de contratação de serviços adicionais para armazenamento de imagens, centralizando a infraestrutura e reduzindo custos operacionais. Além disso, o modelo de cobrança escalável dessas plataformas permite que eventuais custos futuros sejam proporcionais ao crescimento do sistema.
+A adoção do *Supabase Storage* elimina a necessidade de contratação de serviços adicionais para armazenamento de imagens, centralizando a infraestrutura e reduzindo custos operacionais. Além disso, o modelo de cobrança escalável dessas plataformas permite que eventuais custos futuros sejam proporcionais ao crescimento do sistema.
 
 Em termos de benefícios, a solução proposta contribui para a automação e organização dos processos da confeitaria, promovendo maior controle sobre produtos e agendamentos, redução de erros operacionais e melhoria na comunicação com clientes por meio de notificações automatizadas.
 
@@ -195,101 +194,101 @@ Figura 5 - Modelo Relacional
 <img width="761" height="564" alt="image" src="https://github.com/user-attachments/assets/8abe1dcb-509c-4c2a-badb-4e98b537d0ae" />
 Fonte: Elaborado pelos autores (2026).
 
-# Protótipo e Planejamento da Arquitetura
+## Protótipo e Planejamento da Arquitetura
 
 Figura 6 - Tela de *login*
-<img width="1035" height="587" alt="image" src="https://github.com/user-attachments/assets/342bcaaf-f79b-48c8-b145-60ed98f7f188" />
+<img width="662" height="370" alt="image" src="https://github.com/user-attachments/assets/7188d44d-8396-4240-a697-1961a6e4d96b" />
 
 Figura 7 - Tela de cadastro de usuário
-<img width="1038" height="588" alt="image" src="https://github.com/user-attachments/assets/194e9c0f-f152-41e4-847c-7d2c5148d0c4" />
+<img width="659" height="369" alt="image" src="https://github.com/user-attachments/assets/1bb24f02-96ee-46bc-91fc-5ad4d08718d8" />
 
 Figura 8 - Tela de recuperação de senha
-<img width="1036" height="588" alt="image" src="https://github.com/user-attachments/assets/75172953-e613-4162-a4a6-7d4426692502" />
+<img width="660" height="371" alt="image" src="https://github.com/user-attachments/assets/a0f70d88-74eb-4bf9-8121-f09f4ce13512" />
 
 Figura 9 - Tela de confirmação da recuperação de senha
-<img width="1037" height="588" alt="image" src="https://github.com/user-attachments/assets/24bf058f-b3b5-4173-8f0e-a91cf905bbc0" />
+<img width="661" height="371" alt="image" src="https://github.com/user-attachments/assets/4218e4df-6714-4599-a3a4-06cab108ea86" />
 
 Figura 10 - Pop-up de *logout*
 <img width="689" height="130" alt="image" src="https://github.com/user-attachments/assets/ad9e42f1-ef33-4e88-803c-2238db0234bd" />
 
 Figura 11 - *Footer* 
-<img width="1116" height="215" alt="image" src="https://github.com/user-attachments/assets/fde4d7ea-01a1-4cf4-850f-57ba05ffcd70" />
+<img width="555" height="110" alt="image" src="https://github.com/user-attachments/assets/d60465eb-df23-4fba-922c-7d0e73b48314" />
 
-## Telas acessíveis apenas para o usuário administrador:
+### Telas acessíveis apenas para o usuário administrador
 
 Figura 12 - Tela de exibição dos *dashboards*
-<img width="885" height="642" alt="image" src="https://github.com/user-attachments/assets/717d68a4-2130-465a-af60-ad2a71a5d387" />
+<img width="662" height="498" alt="image" src="https://github.com/user-attachments/assets/3b3c1c42-4cde-4ae2-ac70-bf93d3107c01" />
 
 Figura 13 - Tela de gerenciamento dos pedidos em lista
-<img width="882" height="609" alt="image" src="https://github.com/user-attachments/assets/f366aa11-1f81-4f16-916a-4f82d9d7b545" />
+<img width="662" height="497" alt="image" src="https://github.com/user-attachments/assets/b28a205e-dcb7-427e-8cb0-8756f905fa06" />
 
 Figura 14 - Tela de gerenciamento dos pedidos com o pedido detalhado
-<img width="881" height="643" alt="image" src="https://github.com/user-attachments/assets/8d6f68a7-4abc-474c-a0d4-76101e6c2c26" />
+<img width="666" height="493" alt="image" src="https://github.com/user-attachments/assets/fd55d22c-7584-4b77-a5eb-47af0932a077" />
 
 Figura 15 - Tela de gerenciamento dos pedidos por calendário
-<img width="891" height="659" alt="image" src="https://github.com/user-attachments/assets/09f6b1c2-b3dd-4fcc-82d4-6e7f52265b14" />
+<img width="663" height="497" alt="image" src="https://github.com/user-attachments/assets/66df9f0a-54a9-4915-8486-fa11e695b21c" />
 
 Figura 16 - Tela de solicitação de um novo pedido
-<img width="1049" height="776" alt="image" src="https://github.com/user-attachments/assets/563c4fcd-433c-463f-9892-38f5fe01ef6f" />
+<img width="662" height="495" alt="image" src="https://github.com/user-attachments/assets/5f6a2598-5bb4-4943-91c4-88497885201b" />
 
 Figura 17 - Tela de gerenciamento dos produtos
-<img width="949" height="702" alt="image" src="https://github.com/user-attachments/assets/44f93f93-84ab-496a-b192-105c410e3542" />
+<img width="662" height="490" alt="image" src="https://github.com/user-attachments/assets/b95c1c9f-86a5-4e90-b9c4-175b78d0850e" />
 
 Figura 18 - Tela de cadastro de um novo produto
-<img width="949" height="703" alt="image" src="https://github.com/user-attachments/assets/e2619995-85b7-4607-938d-e314481855c1" />
+<img width="658" height="492" alt="image" src="https://github.com/user-attachments/assets/4167cec9-31a0-4dfe-afa3-855890b9e7f1" />
 
 Figura 19 - Tela de gerenciamento das categorias de produtos
-<img width="950" height="705" alt="image" src="https://github.com/user-attachments/assets/8d6fabe6-058e-435b-968d-a538471ca028" />
+<img width="665" height="492" alt="image" src="https://github.com/user-attachments/assets/0fea5dae-0841-4a2e-8314-f86cdb455a75" />
 
 Figura 20 - Tela de cadastro de uma nova categoria de produtos
-<img width="952" height="709" alt="image" src="https://github.com/user-attachments/assets/2747d55b-4590-4f03-b3ce-fb13368ebd1f" />
+<img width="662" height="492" alt="image" src="https://github.com/user-attachments/assets/4a81581c-60cd-4b1a-b271-912c0975a24d" />
 
 Figura 21 - Tela de gerenciamento das características dos produtos
-<img width="798" height="593" alt="image" src="https://github.com/user-attachments/assets/694c1ce1-f841-41ab-887f-dc511c0206e5" />
+<img width="666" height="498" alt="image" src="https://github.com/user-attachments/assets/0e03b8ba-9479-4bab-86c4-4a2b2f486144" />
 
 Figura 22 - Tela de cadastro de uma nova característica de produtos
-<img width="801" height="589" alt="image" src="https://github.com/user-attachments/assets/2a96d283-2194-4b1c-9d31-7a62fbd993ed" />
+<img width="661" height="491" alt="image" src="https://github.com/user-attachments/assets/4d278323-e4ac-4e99-8ce7-f822d5ce295e" />
 
 Figura 23 - Tela de gerenciamento das informações sobre o negócio
-<img width="557" height="793" alt="image" src="https://github.com/user-attachments/assets/cd883e94-802b-46be-9626-5e611a401f88" />
+<img width="529" height="752" alt="image" src="https://github.com/user-attachments/assets/1f55ef87-06b5-47f0-84c6-639f6a48b206" />
 
 Figura 24 - Tela de gerenciamento das configurações do site
-<img width="873" height="647" alt="image" src="https://github.com/user-attachments/assets/49587b9b-f6bd-40cd-ad0f-f3d9faecdc58" />
+<img width="585" height="434" alt="image" src="https://github.com/user-attachments/assets/d0c82b79-d3d2-470e-b3aa-719a3b579914" />
 
-## Telas acessíveis para os usuários clientes:
+### Telas acessíveis para os usuários clientes
 
 Figura 25 - Tela de acesso aos produtos do catálogo para usuários não logados
-<img width="520" height="737" alt="image" src="https://github.com/user-attachments/assets/dbea1877-34bd-408a-be3c-f55e63f0cf1d" />
+<img width="479" height="677" alt="image" src="https://github.com/user-attachments/assets/cdc30bb6-c5f6-42ac-ae0b-f182ddcbceba" />
 
 Figura 26 - Tela de detalhamento dos produtos do catálogo para usuários não logados
-<img width="519" height="739" alt="image" src="https://github.com/user-attachments/assets/914179b9-dad0-49c1-abc9-dbe46a6a4cf9" />
+<img width="479" height="675" alt="image" src="https://github.com/user-attachments/assets/a5078dae-ccc3-45a8-b114-c28d03f33347" />
 
 Figura 27 - Tela de acesso aos produtos do catálogo para usuários logados
-<img width="523" height="739" alt="image" src="https://github.com/user-attachments/assets/4e482ac3-ae1a-40e2-a960-2282fc23d425" />
+<img width="479" height="673" alt="image" src="https://github.com/user-attachments/assets/c891280f-4681-4983-be7a-c8346304cd3f" />
 
 Figura 28 - Tela de detalhamento dos produtos do catálogo para usuários logados
-<img width="522" height="739" alt="image" src="https://github.com/user-attachments/assets/9b2701f3-68b7-46bc-a210-5d7c72ec3d0f" />
+<img width="477" height="677" alt="image" src="https://github.com/user-attachments/assets/23150d4a-027a-4f72-a5a2-4344436ac6e8" />
 
 Figura 29 - Tela de detalhamento dos produtos adicionados ao carrinho de compras
-<img width="523" height="741" alt="image" src="https://github.com/user-attachments/assets/5ce41f63-aea2-4e5d-a901-6fafd4a8300d" />
+<img width="477" height="674" alt="image" src="https://github.com/user-attachments/assets/3bb4451e-23c5-4ce5-8299-763dfb784fd2" />
 
 Figura 30 - Tela de histórico de pedidos
-<img width="523" height="309" alt="image" src="https://github.com/user-attachments/assets/a7a350f6-6419-4e98-9965-8ad2c06913fa" />
+<img width="484" height="195" alt="image" src="https://github.com/user-attachments/assets/8b5d3539-4e69-4cc5-bbe2-1637d382135e" />
 
 Figura 31 - Tela de histórico de pedidos com o detalhamento do pedido selecionado
-<img width="980" height="515" alt="image" src="https://github.com/user-attachments/assets/1357ccc2-cad9-44b7-8e39-9c6f1da2b1c4" />
+<img width="489" height="184" alt="image" src="https://github.com/user-attachments/assets/e3a95e7a-7ad2-4fa7-9119-70adf91ebb0e" />
 
 Figura 32 - Tela de visualização das informações sobre o negócio
-<img width="577" height="752" alt="image" src="https://github.com/user-attachments/assets/9916ed28-0e2b-40e6-b291-65355d27b809" />
+<img width="480" height="633" alt="image" src="https://github.com/user-attachments/assets/280f92c1-09d6-42dd-9e2b-771366400a5c" />
 
 Figura 33 - Tela de gerenciamento das configurações do site
-<img width="729" height="501" alt="image" src="https://github.com/user-attachments/assets/5138d504-5caa-4750-884c-f0b5013a89b7" />
+<img width="477" height="362" alt="image" src="https://github.com/user-attachments/assets/cbf96cc7-d48b-4ae3-a79b-76d62b65bb53" />
 
 Fontes: Elaborados pelos autores (2026).
 
 Com base nas necessidades do negócio, identificadas através do levantamento dos requisitos funcionais e não funcionais, foram definidos dois perfis principais de acesso: administrador e cliente. O administrador possui acesso às funcionalidades de gerenciamento interno da plataforma, enquanto os clientes possuem acesso ao catálogo de produtos, histórico de pedidos e informações do negócio.
 
-Durante o processo de modelagem inicial, foram elaborados *wireframes* e protótipos navegáveis no Figma, permitindo visualizar previamente a estrutura do sistema, a disposição dos elementos visuais e o fluxo de navegação entre as telas. Essa etapa foi essencial para validar a experiência do usuário, organizar a arquitetura das informações e reduzir possíveis inconsistências antes da implementação do sistema.
+Durante o processo de modelagem inicial, foram elaborados *wireframes* e protótipos navegáveis no *Figma,* permitindo visualizar previamente a estrutura do sistema, a disposição dos elementos visuais e o fluxo de navegação entre as telas. Essa etapa foi essencial para validar a experiência do usuário, organizar a arquitetura das informações e reduzir possíveis inconsistências antes da implementação do sistema.
 
 As primeiras telas desenvolvidas correspondem ao fluxo de autenticação dos usuários, incluindo a tela de *login*, cadastro de usuário, recuperação de senha, confirmação da recuperação de senha e *pop-up* de *logout*. Essas interfaces foram projetadas com foco em simplicidade e acessibilidade, permitindo que os usuários realizem o acesso à plataforma de forma intuitiva e segura.
 
@@ -309,7 +308,7 @@ O armazenamento dos dados foi planejado para contemplar informações de usuári
 
 Dessa forma, o processo de levantamento de requisitos, prototipação e planejamento arquitetural possibilitou estruturar uma solução alinhada às necessidades do negócio, oferecendo uma visão clara do funcionamento do sistema antes do início da implementação, além de contribuir para uma melhor experiência dos usuários e maior eficiência no desenvolvimento do projeto.
 
-## Estrutura de navegação do sistema
+### Estrutura de navegação do sistema
 
 A estrutura de navegação do sistema foi planejada com foco na organização, na simplicidade de uso e na separação de responsabilidades, considerando dois perfis principais de acesso: cliente e administrador. Essa divisão permite que cada tipo de usuário tenha acesso apenas às funcionalidades necessárias, garantindo maior clareza no uso e segurança nas operações.
 
@@ -319,7 +318,7 @@ Para o administrador, a navegação compreende um conjunto mais amplo de funcion
 
 O fluxo principal do sistema integra ambos os perfis: inicia-se com a navegação e a seleção de produtos pelo cliente, passando pela adição ao carrinho e pela finalização do pedido. Em seguida, o pedido torna-se disponível para o administrador, que pode acompanhá-lo, atualizá-lo e organizá-lo dentro do processo produtivo. Essa estrutura garante um fluxo contínuo de informações entre cliente e gestão, promovendo maior eficiência operacional e controle integrado das atividades do negócio.
 
-## Gerenciamento de Dados
+### Gerenciamento de Dados
 
 Do ponto de vista arquitetural, essas funcionalidades estão diretamente associadas às entidades do sistema. Os produtos exibidos na interface estão vinculados à entidade *Product*, organizados por meio de *Category* e enriquecidos com atributos específicos. Os pedidos realizados pelos usuários são representados pela entidade *Scheduler*, que centraliza informações como data, *status*, forma de pagamento e modalidade de entrega, enquanto os itens de cada pedido são armazenados na entidade *SchedulerItem*.
 
@@ -329,12 +328,12 @@ A integração entre *frontend* e *backend* ocorre por meio de uma camada interm
 
 Essa arquitetura não apenas viabiliza o funcionamento adequado das operações atuais, como também favorece a escalabilidade do sistema, permitindo a futura incorporação de novas funcionalidades, como integração com meios de pagamento, automação de notificações e geração de relatórios gerenciais.
 
-# Preparação do Desenvolvimento
+## Preparação do Desenvolvimento
 Figura 26 - Plano de execução inicial
 <img width="1103" height="501" alt="image" src="https://github.com/user-attachments/assets/f02c90a3-f6a4-4167-8a9d-cc589ce7b431" />
 Fonte: Elaborado pelos autores (2026).
 
-# Geração de *Dashboards* Internos
+## Geração de *Dashboards* Internos
 
 Foram desenvolvidos *dashboards* com o objetivo de transformar os dados operacionais da confeitaria em informações estratégicas, permitindo que a empresa respondesse às KIQs (*Key Intelligence Questions*) definidas no plano de Inteligência Competitiva. A solução possibilita acompanhar indicadores em tempo real, identificar padrões de consumo, prever demandas e apoiar decisões gerenciais com maior precisão.
 
@@ -344,7 +343,7 @@ Figura 27 - *Dashboard* da visão geral do negócio junto a demanda e o volume d
 Figura 28 - *Dashboard* sobre os produtos, a produção e o faturamento no último semestre
 <img width="1600" height="580" alt="image" src="https://github.com/user-attachments/assets/d3fe5ecb-6cd7-4c6e-a554-ae4cac7865c6" />
 
-Figura 29 - Dashboard de controle de agenda e planejamento dos pedidos
+Figura 29 - *Dashboard* de controle de agenda e planejamento dos pedidos
 <img width="1600" height="410" alt="image" src="https://github.com/user-attachments/assets/e633b624-69e5-4ae0-a07d-70d39b7086a2" />
 Fontes: Elaborados pelos autores (2026).
 
