@@ -1,4 +1,4 @@
-# Isabella Cáster Confeitaria
+# Doces & Cia
 
 `CURSO: Sistemas de Informação`
 
@@ -6,7 +6,7 @@
 
 `SEMESTRE: 8º`
 
-Este trabalho tem como objetivo analisar os processos operacionais e o sistema de informação utilizado por um empreendimento de confeitaria artesanal, com o propósito de identificar limitações na gestão de pedidos e propor oportunidades de melhoria por meio do uso de soluções tecnológicas. O estudo foi desenvolvido em parceria com a empreendedora responsável pelo negócio, localizado no bairro Betânia, em Belo Horizonte/MG, caracterizado como um microempreendedor de produção artesanal sob encomenda. Como método de pesquisa, foi adotada uma abordagem qualitativa baseada em estudo de caso, utilizando coleta de dados primários obtidos por meio de questionários e análise do funcionamento atual do sistema digital utilizado pela empresa.
+Este trabalho tem como objetivo analisar os processos operacionais e o sistema de informação utilizado por um empreendimento de confeitaria artesanal, com o propósito de identificar limitações na gestão de pedidos e propor oportunidades de melhoria por meio do uso de soluções tecnológicas. O estudo foi desenvolvido em parceria com a empreendedora responsável pelo negócio, localizado em Belo Horizonte/MG, caracterizado como um microempreendedor de produção artesanal sob encomenda. Como método de pesquisa, foi adotada uma abordagem qualitativa baseada em estudo de caso, utilizando coleta de dados primários obtidos por meio de questionários e análise do funcionamento atual do sistema digital utilizado pela empresa.
 
 A investigação contemplou a análise do mercado de confeitaria artesanal, o mapeamento dos processos de trabalho e a avaliação do sistema de informação existente, que consiste em um website utilizado como catálogo digital de produtos integrado ao atendimento via WhatsApp. A análise permitiu identificar que todas as atividades administrativas, comerciais e produtivas são realizadas pela própria empreendedora, incluindo divulgação, atendimento ao cliente, negociação de pedidos, planejamento da produção e entrega dos produtos. Observou-se que o site exerce principalmente a função de divulgação e apresentação do portfólio, enquanto o processo de venda e negociação ocorre fora da plataforma, por meio de comunicação direta com os clientes.
 
