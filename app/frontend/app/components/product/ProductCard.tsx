@@ -1,5 +1,5 @@
-import { Card, Space, Tag, Button } from 'antd';
-import { ShoppingCartOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, Space, Tag, Button, Flex } from 'antd';
+import { ShoppingCartOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { ProductImage } from './ProductImage';
 import type { Product, ProductCategory, ProductCharacteristic } from '~/@types/product';
 import Text from 'antd/es/typography/Text';
@@ -14,6 +14,7 @@ type ComponentProps = {
   characteristics: ProductCharacteristic[] | readonly ProductCharacteristic[];
   onEdit: () => void;
   onAddToCart: () => void;
+  onDelete: () => void;
 };
 
 export function ProductCard({
@@ -22,6 +23,7 @@ export function ProductCard({
   characteristics,
   onAddToCart,
   onEdit,
+  onDelete,
 }: ComponentProps) {
   return (
     <Card size="small">
@@ -111,15 +113,20 @@ export function ProductCard({
           }}
         ></div>
 
-        <Space.Compact block style={{ justifyContent: 'center' }}>
-          <Button type="primary" icon={<ShoppingCartOutlined />} onClick={onAddToCart}>
-            Adicionar
-          </Button>
+        <Flex vertical gap={12} justify="space-between" align="center">
+          <Space.Compact block style={{ justifyContent: 'center' }}>
+            <Button type="primary" icon={<ShoppingCartOutlined />} onClick={onAddToCart}>
+              Adicionar
+            </Button>
 
-          <Button icon={<EditOutlined />} onClick={onEdit}>
-            Editar
+            <Button icon={<EditOutlined />} onClick={onEdit}>
+              Editar
+            </Button>
+          </Space.Compact>
+          <Button type="text" danger icon={<DeleteOutlined />} onClick={onDelete}>
+            Excluir
           </Button>
-        </Space.Compact>
+        </Flex>
       </Space>
     </Card>
   );

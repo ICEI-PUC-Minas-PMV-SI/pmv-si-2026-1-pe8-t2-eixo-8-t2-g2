@@ -139,8 +139,28 @@ class ProductRoute {
       UserScopeMiddleware.adminOnly(),
       async (req: GenericRequest, res: Response) => {
         const ids = req.body.data.ids as string[];
-        const result = await ProductController.deleteMany(ids);
-        res.status(200).send(result);
+        const { data, ...result } = await ProductController.deleteMany(ids);
+        let warning = false;
+        for (let i = 0; i < data.length; i++) {
+          const row = data[i];
+          if (row?.id) {
+            try {
+              await SupabaseStorage.removeFile(BUCKETS.PRODUCT_IMAGES, [
+                `${row.id}.webp`,
+              ]);
+            } catch (err: any) {
+              this.logger.error('Falha na remoção de imagens de produtos', {
+                message: err.message,
+              });
+              console.log(err);
+              warning = true;
+            }
+          }
+        }
+        res.status(200).send({
+          ...result,
+          warning: warning ? 'Falha ao remover imagem de alguns produtos' : false,
+        });
       },
     );
 

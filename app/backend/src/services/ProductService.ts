@@ -85,7 +85,7 @@ class ProductService {
           },
         },
         where,
-        orderBy: orderBy && orderBy.length > 0 ? orderBy : { createdAt: 'desc' },
+        orderBy: orderBy && orderBy.length > 0 ? orderBy : { name: 'asc' },
       }),
       prisma.product.count({ where }),
     ]);
@@ -137,6 +137,15 @@ class ProductService {
     });
     const fkProducts = productsInSchedulers.map((prod) => prod.productId);
     const idsToRemove = ids.filter((id) => !fkProducts.includes(id));
+    const removedProductsWithImage = await prisma.product.findMany({
+      where: {
+        id: { in: idsToRemove },
+        hasImage: true,
+      },
+      select: {
+        id: true,
+      },
+    });
     if (idsToRemove.length) {
       await prisma.product.deleteMany({
         where: { id: { in: idsToRemove } },
@@ -156,6 +165,7 @@ class ProductService {
     }
 
     return {
+      data: removedProductsWithImage,
       status,
       message:
         idsToRemove.length === ids.length

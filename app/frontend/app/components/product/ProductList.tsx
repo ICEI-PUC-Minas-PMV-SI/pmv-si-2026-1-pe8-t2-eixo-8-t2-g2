@@ -4,6 +4,7 @@ import {
   Flex,
   Input,
   message,
+  Modal,
   Pagination,
   Popconfirm,
   Space,
@@ -265,10 +266,42 @@ export function ProductList() {
               width: isMobile ? '100%' : undefined,
             }}
           >
-            {deleteProductState.showButton && (
-              <Button danger icon={<DeleteOutlined />} block={isMobile}>
-                Remover
-              </Button>
+            {deleteProductState.showButton && !isMobile && (
+              <Popconfirm
+                title="Remover produtos selecionados"
+                description="Tem certeza que deseja remover os produtos selecionados?"
+                onConfirm={async () => {
+                  await ProductController.deleteMany(
+                    deleteProductState.selectedRows,
+                  ).then((result) => {
+                    if (result.status === 'failed') {
+                      message.error(result.message);
+                    } else if (result.status === 'partial') {
+                      message.warning(result.message);
+                    } else if (result.status === 'success') {
+                      message.success(result.message);
+                    }
+                  });
+
+                  productQuery.refetch();
+
+                  setDeleteProductState({
+                    openModal: false,
+                    showButton: false,
+                    selectedRows: [],
+                  });
+                }}
+                okText="Remover"
+                cancelText="Cancelar"
+                okButtonProps={{ danger: true }}
+              >
+                <Button danger icon={<DeleteOutlined />}>
+                  Remover
+                </Button>
+              </Popconfirm>
+              // <Button danger icon={<DeleteOutlined />} block={isMobile}>
+              //   Remover
+              // </Button>
             )}
 
             <Button
@@ -291,6 +324,25 @@ export function ProductList() {
                 characteristics={characteristics}
                 onEdit={() => openProductForm(product)}
                 onAddToCart={() => addItem(product)}
+                onDelete={() => {
+                  Modal.confirm({
+                    title: 'Remover produto',
+                    content: `Deseja remover ${product.name}?`,
+                    okButtonProps: { danger: true },
+                    onOk: async () => {
+                      await ProductController.deleteMany([product.id]).then((result) => {
+                        if (result.status === 'failed') {
+                          message.error(result.message);
+                        } else if (result.status === 'partial') {
+                          message.warning(result.message);
+                        } else if (result.status === 'success') {
+                          message.success(result.message);
+                        }
+                      });
+                      productQuery.refetch();
+                    },
+                  });
+                }}
               />
             ))}
             {productQuery.tableProps.pagination && (
