@@ -146,7 +146,9 @@ export function AppFooter({
                     <Link href={phoneHref} target="_blank" style={styles.link}>
                       <Space size={10} align="center" style={styles.iconContainer}>
                         <WhatsApp style={styles.icon} />
-                        <Text style={{ color: '#5C3D38', fontSize: 14 }}>{phone}</Text>
+                        <Text style={{ color: '#5C3D38', fontSize: 14 }}>
+                          {phone ? TextUtil.formatPhone(phone) : ''}
+                        </Text>
                       </Space>
                     </Link>
 

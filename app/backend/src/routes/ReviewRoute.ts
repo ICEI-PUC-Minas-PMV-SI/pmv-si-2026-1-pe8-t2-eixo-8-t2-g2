@@ -1,10 +1,5 @@
 import { type Router } from 'express';
-import type {
-  Response,
-  AboutRequest,
-  GenericRequest,
-  ReviewRequest,
-} from '../@types/index.js';
+import type { Response, GenericRequest, ReviewRequest } from '../@types/index.js';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 import { ReviewValidation } from '../validations/ReviewValidation.js';
 import { ReviewController } from '../controllers/ReviewController.js';

@@ -149,7 +149,7 @@ export default function AppHeader(props: HeaderProps) {
           justifyContent: 'space-between',
         }}
       >
-        {isMobile && (
+        {isMobile && isLogged() && (
           <Button
             size="large"
             type="text"
