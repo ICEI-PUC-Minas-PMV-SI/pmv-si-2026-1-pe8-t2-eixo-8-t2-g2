@@ -8,21 +8,23 @@ import type { ProductCharacteristic } from '~/@types/product';
 type ComponentProps = {
   isOpened: boolean;
   editingChar?: ProductCharacteristic | null; // ← adiciona
-  onClose: (reason?: 'cancel' | 'save', productCharacteristic?: ProductCharacteristic) => void;
+  onClose: (
+    reason?: 'cancel' | 'save',
+    productCharacteristic?: ProductCharacteristic,
+  ) => void;
 };
 
 export function ProductCharacteristicForm(props: ComponentProps) {
-
   const { isOpened, onClose, editingChar } = props;
   const isEditing = !!editingChar;
 
-    useEffect(() => {
-      if (editingChar) {
-        form.setFieldsValue(editingChar);
-      } else {
-        form.resetFields();
-      }
-    }, [editingChar, isOpened]);
+  useEffect(() => {
+    if (editingChar) {
+      form.setFieldsValue(editingChar);
+    } else {
+      form.resetFields();
+    }
+  }, [editingChar, isOpened]);
 
   const [form] = Form.useForm();
   const [iconList, setIconList] = useState<UploadFile[]>([]);
@@ -69,7 +71,7 @@ export function ProductCharacteristicForm(props: ComponentProps) {
           <Form.Item label="Nome" name="name" rules={[{ required: true }]}>
             <Input placeholder="Ex.: Sem glúten" />
           </Form.Item>
-          <Form.Item label="Ícone / imagem (opcional)">
+          {/* <Form.Item label="Ícone / imagem (opcional)">
             <Upload
               listType="picture-card"
               fileList={iconList}
@@ -87,7 +89,7 @@ export function ProductCharacteristicForm(props: ComponentProps) {
             <Text type="secondary" style={{ fontSize: 12 }}>
               Recomendado: PNG ou SVG 32×32px com fundo transparente.
             </Text>
-          </Form.Item>
+          </Form.Item> */}
         </Form>
       </Modal>
     </Space>

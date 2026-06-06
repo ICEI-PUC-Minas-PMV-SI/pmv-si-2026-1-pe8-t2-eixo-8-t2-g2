@@ -216,9 +216,9 @@ export function ProductDrawer(props: ComponentProps) {
           />
         </Form.Item>
 
-        <Form.Item label="Slug" name="slug" rules={[{ required: true }]}>
+        {/* <Form.Item label="Slug" name="slug" rules={[{ required: true }]}>
           <Input placeholder="bolo-de-chocolate" />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item label="Descrição" name="description">
           <Input.TextArea

@@ -6,12 +6,20 @@ import { ProductCharacteristicList } from '../product-characteristic/ProductChar
 import { ModalAddProductCategory } from '../product-category/ModalAddProductCategory';
 import { TabbedPage } from '../tab/TabbedPage';
 import { ProductList } from './ProductList';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 export function ProductPage() {
   const [productDrawerOpen, setProductDrawerOpen] = useState(false);
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
-
+  const isMobile = useBreakpoint('md');
   return (
-    <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
+    <Space
+      orientation="vertical"
+      size="large"
+      style={{
+        width: '100%',
+        padding: isMobile ? 8 : 16,
+      }}
+    >
       <ProductDrawer
         drawerOpened={productDrawerOpen}
         onClose={() => setProductDrawerOpen(false)}

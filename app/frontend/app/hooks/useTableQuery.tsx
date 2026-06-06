@@ -99,6 +99,14 @@ export function useTableQuery<
     [],
   );
 
+  const setPage = useCallback((page: number, pageSize?: number) => {
+    setParams((prev) => ({
+      ...prev,
+      page,
+      pageSize: pageSize ?? prev.pageSize,
+    }));
+  }, []);
+
   const setFilters = useCallback(
     (filters: F) => setParams((prev) => ({ ...prev, filters, page: 1 })),
     [],
@@ -191,5 +199,6 @@ export function useTableQuery<
     setSorters,
     updateSorter,
     clearSorters,
+    setPage,
   };
 }

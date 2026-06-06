@@ -9,6 +9,7 @@ import {
   Alert,
   Segmented,
   Steps,
+  Input,
 } from 'antd';
 import {
   DollarOutlined,
@@ -28,6 +29,7 @@ import {
   PIX,
   SackDollar,
 } from '../icon/components';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -99,7 +101,7 @@ const PAYMENT_OPTIONS = [
     label: (
       <div style={{ padding: '4px 0' }}>
         <BuildingColumns style={{ fontSize: 20 }} />
-        <div style={{ fontSize: 12, marginTop: 2 }}>Transf.</div>
+        <div style={{ fontSize: 12, marginTop: 2 }}>Transf. Bancária</div>
       </div>
     ),
     value: 'bank_transfer',
@@ -210,6 +212,7 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
   const remainderPayment = payments.find((p) => p.type === 'remainder');
   const paidTotal = payments.reduce((acc, p) => acc + p.amount, 0);
   const remaining = Math.round(Math.max(orderTotal - paidTotal, 0) * 100) / 100;
+  const isMobile = useBreakpoint('md');
 
   // Qual tipo de pagamento está disponível agora
   const paymentType: PaymentType = depositPayment ? 'remainder' : 'deposit';
@@ -290,7 +293,10 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
       cancelText="Fechar"
       width={520}
       title={null}
-      styles={{ body: { padding: 0 } }}
+      style={{ top: 20 }}
+      styles={{
+        body: { padding: 0, maxHeight: 'calc(100vh - 220px)', overflowY: 'auto' },
+      }}
     >
       {/* Header */}
       <div
@@ -324,7 +330,19 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
         }}
       >
         {/* Situação atual */}
-        <PaymentStatusBadge paidTotal={paidTotal} orderTotal={orderTotal} />
+        {isMobile ? (
+          <Alert
+            type={isFullyPaid ? 'success' : 'warning'}
+            showIcon
+            description={
+              isFullyPaid
+                ? 'Pedido quitado'
+                : `Restante: ${NumberUtil.currency(remaining)}`
+            }
+          />
+        ) : (
+          <PaymentStatusBadge paidTotal={paidTotal} orderTotal={orderTotal} />
+        )}
 
         {/* Steps de pagamento */}
         <Steps size="small" items={stepItems} style={{ padding: '4px 0' }} />
@@ -332,13 +350,15 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
         <Divider style={{ margin: '0' }} />
 
         {isFullyPaid ? (
-          <Alert
-            type="success"
-            showIcon
-            icon={<CheckCircleOutlined />}
-            message="Pedido quitado"
-            description="Todos os pagamentos deste pedido foram registrados."
-          />
+          !isMobile && (
+            <Alert
+              type="success"
+              showIcon
+              icon={<CheckCircleOutlined />}
+              title="Pedido quitado"
+              description="Todos os pagamentos deste pedido foram registrados."
+            />
+          )
         ) : (
           <Form form={form} layout="vertical">
             {/* Tipo de pagamento (informativo, não editável) */}
@@ -387,7 +407,7 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
               name="paymentMethod"
               rules={[{ required: true, message: 'Selecione o meio de pagamento' }]}
             >
-              <Segmented block options={PAYMENT_OPTIONS as any} />
+              <Segmented vertical={isMobile} block options={PAYMENT_OPTIONS as any} />
             </Form.Item>
 
             {/* Valor */}
@@ -428,18 +448,7 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
             {/* Observação opcional */}
             <Form.Item label="Observação (opcional)" name="note">
               <Form.Item name="note" noStyle>
-                <input
-                  placeholder="Ex.: pago em espécie na entrega"
-                  style={{
-                    width: '100%',
-                    border: '1px solid #D9D9D9',
-                    borderRadius: 6,
-                    padding: '6px 12px',
-                    fontSize: 13,
-                    color: '#262626',
-                    outline: 'none',
-                  }}
-                />
+                <Input.TextArea rows={2} placeholder="Ex.: pago em espécie na entrega" />
               </Form.Item>
             </Form.Item>
           </Form>

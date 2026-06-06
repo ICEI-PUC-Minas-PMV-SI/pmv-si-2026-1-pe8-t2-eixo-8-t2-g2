@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Col, Flex, Row, Typography } from 'antd';
 import AboutController from '~/controllers/AboutController';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 export function AboutUsView() {
   const { data: about } = useQuery({
@@ -8,6 +9,8 @@ export function AboutUsView() {
     queryFn: () => AboutController.find(),
     staleTime: 1000 * 60 * 60,
   });
+
+  const isMobile = useBreakpoint('md');
 
   return (
     <div style={{ background: '#f5f3f1' }}>
@@ -18,7 +21,11 @@ export function AboutUsView() {
             <Row align="middle">
               {/* Texto */}
               <Col xs={24} lg={12}>
-                <Flex vertical gap={24} style={{ padding: '56px 48px' }}>
+                <Flex
+                  vertical
+                  gap={24}
+                  style={{ padding: isMobile ? '36px' : '56px 48px' }}
+                >
                   {about?.subtitle && (
                     <div>
                       <span
@@ -106,7 +113,7 @@ export function AboutUsView() {
                   <div
                     style={{
                       flex: 1,
-                      minHeight: 380,
+                      minHeight: 250,
                       overflow: 'hidden',
                       display: 'flex',
                       alignItems: 'center',

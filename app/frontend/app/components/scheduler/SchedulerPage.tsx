@@ -13,7 +13,13 @@ export function SchedulerPage() {
     useReviewPrompt();
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#f5f7fb', padding: 16 }}>
+    <Layout
+      style={{
+        minHeight: '100vh',
+        background: '#f5f7fb',
+        padding: 'clamp(8px, 3vw, 24px)',
+      }}
+    >
       <ReviewModal
         mode="list"
         open={pendingReview}

@@ -5,6 +5,7 @@ import {
   DatePicker,
   Divider,
   Form,
+  Grid,
   Input,
   InputNumber,
   Row,
@@ -48,6 +49,7 @@ export function SchedulerForm({ form }: ComponentProps) {
   const { isAdmin, getUserShortname } = useAuthStore();
   const [isSearchingCustomer, setIsSearchingCustomer] = useState(false);
   const [isCustomerNameDisabled, setIsCustomerNameDisabled] = useState(true);
+  const isMobile = !Grid.useBreakpoint().lg;
   const [phoneSearchTimeout, setPhoneSearchTimeout] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
@@ -182,12 +184,12 @@ export function SchedulerForm({ form }: ComponentProps) {
       )}
 
       <Row gutter={16}>
-        <Col span={12} hidden={isAdmin()}>
+        <Col xs={24} sm={12} hidden={isAdmin()}>
           <Form.Item label="Nome" name="clientName">
             <Input disabled value={getUserShortname()} />
           </Form.Item>
         </Col>
-        <Col span={12} hidden={!isAdmin()}>
+        <Col xs={24} sm={12} hidden={!isAdmin()}>
           <Form.Item
             label="Data e hora do pedido"
             name="scheduledAt"
@@ -196,7 +198,7 @@ export function SchedulerForm({ form }: ComponentProps) {
             <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: '100%' }} />
           </Form.Item>
         </Col>
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Form.Item label="Estimativa de retirada / entrega" name="scheduledTo">
             <DatePicker showTime format="DD/MM/YYYY HH:mm" style={{ width: '100%' }} />
           </Form.Item>
@@ -212,6 +214,7 @@ export function SchedulerForm({ form }: ComponentProps) {
           >
             <Segmented
               block
+              vertical={!Grid.useBreakpoint().md}
               options={[
                 {
                   label: (
@@ -262,7 +265,7 @@ export function SchedulerForm({ form }: ComponentProps) {
             />
           </Form.Item>
         </Col>
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             label="Modalidade"
             name="deliveryType"
@@ -276,7 +279,6 @@ export function SchedulerForm({ form }: ComponentProps) {
                     <div style={{ padding: '4px 0' }}>
                       <BagShopping style={{ fontSize: 24 }} />
                       <div style={{ fontSize: 14 }}>Retirada</div>
-                      {/* <div style={{ fontSize: 12, color: '#888' }}>Retirar no local</div> */}
                     </div>
                   ),
                   value: 'pickup',

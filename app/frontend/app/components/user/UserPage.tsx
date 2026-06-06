@@ -1,16 +1,36 @@
-import { Card, Space, Button, Table, message, Input, Switch, Tooltip } from 'antd';
+import {
+  Card,
+  Space,
+  Button,
+  Table,
+  message,
+  Input,
+  Switch,
+  Tooltip,
+  Flex,
+  Pagination,
+} from 'antd';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import { SortDropdown } from '../sort-dropdown/SortDropdown';
 import type { UserList } from '~/@types/user';
 import UserController from '~/controllers/UserController';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { useState } from 'react';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 export function UserPage() {
-  const { tableProps, forceRefetch, params, setSearch, updateSorter, clearSorters } =
-    useTableQuery<UserList>('user-list', (params) =>
-      UserController.list<UserList>(params),
-    );
+  const isMobile = useBreakpoint('md');
+  const {
+    tableProps,
+    forceRefetch,
+    params,
+    setSearch,
+    updateSorter,
+    clearSorters,
+    setPage,
+  } = useTableQuery<UserList>('user-list', (params) =>
+    UserController.list<UserList>(params),
+  );
 
   const { user } = useAuthStore();
   const [loadingRows, setLoadingRows] = useState<Record<string, boolean>>({});
@@ -124,18 +144,89 @@ export function UserPage() {
   return (
     <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
       <Card
+        styles={{
+          header: {
+            paddingInline: isMobile ? 12 : 24,
+          },
+          body: {
+            padding: isMobile ? 12 : 24,
+          },
+        }}
         title="Usuários"
         extra={
-          <Space>
-            <Input
-              placeholder="Buscar..."
-              value={params.search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </Space>
+          <Input
+            placeholder="Buscar usuário..."
+            value={params.search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: isMobile ? '100%' : 250,
+            }}
+          />
         }
       >
-        <Table dataSource={tableProps.dataSource} columns={columns} {...tableProps} />
+        {isMobile && (
+          <Space orientation="vertical" style={{ width: '100%' }}>
+            {tableProps.dataSource?.map((record) => (
+              <Card
+                key={record.id}
+                size="small"
+                styles={{
+                  body: {
+                    padding: 12,
+                  },
+                }}
+              >
+                <Space orientation="vertical" size="small" style={{ width: '100%' }}>
+                  <div>
+                    <strong>{record.name}</strong>
+                  </div>
+
+                  <div>
+                    Criado em:{' '}
+                    {new Date(record.createdAt).toLocaleString().replace(', ', ' às ')}
+                  </div>
+
+                  <div>
+                    <Space>
+                      Administrador
+                      <Switch
+                        disabled={record.id === user?.id}
+                        checked={record.role === 'admin'}
+                        loading={loadingRows[record.id]}
+                        onChange={(value) => handleRoleChange(record, value)}
+                      />
+                    </Space>
+                  </div>
+
+                  <Button
+                    danger
+                    block
+                    onClick={async () => {
+                      await UserController.delete(record.id);
+                      forceRefetch();
+                      message.success('Usuário removido.');
+                    }}
+                  >
+                    Excluir
+                  </Button>
+                </Space>
+              </Card>
+            ))}
+            {tableProps.pagination && (
+              <Flex justify="center" style={{ paddingTop: 8 }}>
+                <Pagination
+                  {...tableProps.pagination}
+                  simple
+                  size="small"
+                  onChange={setPage}
+                />
+              </Flex>
+            )}
+          </Space>
+        )}
+        {!isMobile && (
+          <Table dataSource={tableProps.dataSource} columns={columns} {...tableProps} />
+        )}
       </Card>
     </Space>
   );

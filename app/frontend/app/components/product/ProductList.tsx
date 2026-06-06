@@ -1,7 +1,17 @@
-import { Button, Card, Input, message, Popconfirm, Space, Table, Tag } from 'antd';
+import {
+  Button,
+  Card,
+  Flex,
+  Input,
+  message,
+  Pagination,
+  Popconfirm,
+  Space,
+  Table,
+  Tag,
+} from 'antd';
 import {
   EditOutlined,
-  PictureOutlined,
   PlusOutlined,
   DeleteOutlined,
   ShoppingCartOutlined,
@@ -25,8 +35,11 @@ import { useCartStore } from '~/hooks/useCartStore';
 import { ProductImage } from './ProductImage';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
 import { CategoryChip } from './CategoryChip';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
+import { ProductCard } from './ProductCard';
 
 export function ProductList() {
+  const isMobile = useBreakpoint('md');
   const [deleteProductState, setDeleteProductState] = useState({
     openModal: false,
     showButton: false,
@@ -156,7 +169,7 @@ export function ProductList() {
           productQuery.refetch();
         }}
       />
-      <Card
+      {/* <Card
         title="Produtos"
         extra={
           <Space>
@@ -219,7 +232,7 @@ export function ProductList() {
               value={productQuery.params.search}
               onChange={(e) => productQuery.setSearch(e.target.value)}
             />
-            {/* <Button onClick={() => setCharModalOpen(true)}>Nova característica</Button> */}
+            
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -229,22 +242,85 @@ export function ProductList() {
             </Button>
           </Space>
         }
-      >
-        <Table
-          style={{ overflowX: 'auto' }}
-          rowSelection={{
-            type: 'checkbox',
-            onChange: (selectedRowKeys) => {
-              setDeleteProductState((state) => ({
-                ...state,
-                showButton: selectedRowKeys.length > 0,
-                selectedRows: selectedRowKeys as string[],
-              }));
-            },
+      > */}
+      <Card title="Produtos">
+        <Space
+          orientation={isMobile ? 'vertical' : 'horizontal'}
+          style={{
+            width: '100%',
+            marginBottom: 16,
           }}
-          columns={productColumns}
-          {...productQuery.tableProps}
-        />
+        >
+          <Input
+            placeholder="Buscar..."
+            value={productQuery.params.search}
+            onChange={(e) => productQuery.setSearch(e.target.value)}
+            style={{
+              width: isMobile ? '100%' : 250,
+            }}
+          />
+
+          <Space
+            style={{
+              width: isMobile ? '100%' : undefined,
+            }}
+          >
+            {deleteProductState.showButton && (
+              <Button danger icon={<DeleteOutlined />} block={isMobile}>
+                Remover
+              </Button>
+            )}
+
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              block={isMobile}
+              onClick={() => openProductForm()}
+            >
+              Novo produto
+            </Button>
+          </Space>
+        </Space>
+        {isMobile ? (
+          <Space orientation="vertical" style={{ width: '100%' }}>
+            {productQuery.tableProps.dataSource?.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                categories={categories}
+                characteristics={characteristics}
+                onEdit={() => openProductForm(product)}
+                onAddToCart={() => addItem(product)}
+              />
+            ))}
+            {productQuery.tableProps.pagination && (
+              <Flex justify="center" style={{ paddingTop: 8 }}>
+                <Pagination
+                  {...productQuery.tableProps.pagination}
+                  simple
+                  size="small"
+                  onChange={productQuery.setPage}
+                />
+              </Flex>
+            )}
+          </Space>
+        ) : (
+          <Table
+            style={{ overflowX: 'auto' }}
+            rowSelection={{
+              type: 'checkbox',
+              onChange: (selectedRowKeys) => {
+                setDeleteProductState((state) => ({
+                  ...state,
+                  showButton: selectedRowKeys.length > 0,
+                  selectedRows: selectedRowKeys as string[],
+                }));
+              },
+            }}
+            columns={productColumns}
+            {...productQuery.tableProps}
+          />
+        )}
       </Card>
     </>
   );

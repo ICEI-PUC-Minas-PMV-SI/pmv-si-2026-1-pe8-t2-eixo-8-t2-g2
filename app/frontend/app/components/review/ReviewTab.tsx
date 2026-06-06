@@ -24,10 +24,14 @@ import DateUtil from '~/utils/DateUtil';
 import ReviewController, { type ReviewRecord } from '~/controllers/ReviewController';
 import { RATING_COLOR } from '~/constants/Colors';
 import { SummaryCards } from './SummaryCards';
+import Text from 'antd/es/typography/Text';
+import { ReviewCard } from './ReviewCard';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 export function ReviewTab() {
   const [search, setSearch] = useState('');
   const queryClient = useQueryClient();
+  const isMobile = useBreakpoint('md');
 
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ['admin-reviews'],
@@ -106,12 +110,15 @@ export function ReviewTab() {
             </Tag>
           </Flex>
           {r.comment && (
-            <Typography.Text
-              style={{ fontSize: 12, color: '#595959', fontStyle: 'italic' }}
-              ellipsis={{ tooltip: r.comment }}
+            <Typography.Paragraph
+              ellipsis={{
+                rows: 2,
+                expandable: true,
+                symbol: 'Ver mais',
+              }}
             >
-              "{r.comment}"
-            </Typography.Text>
+              {r.comment}
+            </Typography.Paragraph>
           )}
         </Flex>
       ),
@@ -119,7 +126,6 @@ export function ReviewTab() {
     {
       title: 'Pedido',
       key: 'order',
-      responsive: ['lg'],
       render: (_, r) => {
         const items = r.scheduler.items;
         const label = items[0]
@@ -173,7 +179,7 @@ export function ReviewTab() {
           body: { padding: 0 },
         }}
         title={
-          <Flex justify="space-between" align="center" wrap="wrap" gap={8}>
+          <Flex justify="space-between" align="center" wrap="wrap" gap={12}>
             <Typography.Text strong style={{ fontSize: 13 }}>
               Todas as avaliações
             </Typography.Text>
@@ -183,21 +189,49 @@ export function ReviewTab() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               allowClear
-              style={{ width: 300 }}
+              style={{ width: '100%', maxWidth: 320 }}
             />
           </Flex>
         }
       >
-        <Table<ReviewRecord>
-          rowKey="id"
-          loading={isLoading}
-          dataSource={filtered}
-          columns={columns}
-          pagination={{ pageSize: 10, showSizeChanger: false }}
-          size="middle"
-          rowClassName={(r) => (r.featured ? 'review-row-featured' : '')}
-          style={{ '--featured-bg': '#FFFBF9' } as React.CSSProperties}
-        />
+        {/* <Segmented
+          // value={filter}
+          // onChange={setFilter}
+          options={[
+            { label: 'Todas', value: 'all' },
+            { label: '⭐ 5 estrelas', value: '5' },
+            { label: 'Homepage', value: 'featured' },
+            { label: 'Com comentário', value: 'comment' },
+          ]}
+        /> */}
+        {isMobile ? (
+          <Flex vertical gap={12} style={{ padding: 16 }}>
+            {filtered.map((review) => (
+              <ReviewCard
+                key={review.id}
+                review={review}
+                loading={toggleFeatured.isPending}
+                onToggle={(checked) =>
+                  toggleFeatured.mutate({
+                    id: review.id,
+                    featured: checked,
+                  })
+                }
+              />
+            ))}
+          </Flex>
+        ) : (
+          <Table<ReviewRecord>
+            rowKey="id"
+            loading={isLoading}
+            dataSource={filtered}
+            columns={columns}
+            pagination={{ pageSize: 10, showSizeChanger: false }}
+            size="middle"
+            rowClassName={(r) => (r.featured ? 'review-row-featured' : '')}
+            style={{ '--featured-bg': '#FFFBF9' } as React.CSSProperties}
+          />
+        )}
       </Card>
 
       {/* Estilo inline para linha destacada */}

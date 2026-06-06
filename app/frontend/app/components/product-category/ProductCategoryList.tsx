@@ -18,7 +18,32 @@ import type { ProductCategory } from '~/@types/product';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import { SortDropdown } from '../sort-dropdown/SortDropdown';
+import Text from 'antd/es/typography/Text';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
+import type { ColumnsType } from 'antd/es/table';
 
+const formatCategoryPeriod = (category: ProductCategory) => {
+  if (!category.startsAt && !category.endsAt) {
+    return '—';
+  }
+
+  const fmt = (d: string | Date, withYear: boolean) =>
+    new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      ...(withYear
+        ? { year: 'numeric', timeZone: 'America/Sao_Paulo' }
+        : { timeZone: 'UTC' }),
+    }).format(new Date(d));
+
+  const withYear = !category.isRecurring;
+
+  const start = category.startsAt ? fmt(category.startsAt, withYear) : '?';
+
+  const end = category.endsAt ? fmt(category.endsAt, withYear) : '?';
+
+  return `${start} → ${end}`;
+};
 interface RowContextProps {
   setActivatorNodeRef?: (el: HTMLElement | null) => void;
   listeners?: any;
@@ -82,6 +107,7 @@ export function ProductCategoryList() {
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [loadingRows, setLoadingRows] = useState<Record<string, boolean>>({});
+  const isMobile = useBreakpoint('md');
   const { tableProps, forceRefetch, params, setSearch, updateSorter, clearSorters } =
     useTableQuery<ProductCategory>('product-category', (params) =>
       ProductCategoryController.list<ProductCategory>(params),
@@ -153,14 +179,37 @@ export function ProductCategoryList() {
     setIsDirty(false);
   };
 
-  const columns = [
+  const columns: ColumnsType<ProductCategory> = [
     {
       key: 'sort',
       width: 60,
+      hidden: isMobile,
       align: 'center' as const,
       render: () => <DragHandle />,
     },
     {
+      hidden: !isMobile,
+      title: 'Categoria',
+      render: (_: any, record: ProductCategory) => (
+        <Space orientation="vertical" size={2}>
+          <Text strong>{record.name}</Text>
+
+          {!record.startsAt ? (
+            <Text type="secondary">Sem vigência</Text>
+          ) : (
+            <Space wrap size={4}>
+              <Tag color={record.isRecurring ? 'blue' : 'default'}>
+                {record.isRecurring ? 'Recorrente' : 'Temporária'}
+              </Tag>
+
+              <Text type="secondary">{formatCategoryPeriod(record)}</Text>
+            </Space>
+          )}
+        </Space>
+      ),
+    },
+    {
+      hidden: isMobile,
       title: (
         <Space>
           Nome
@@ -177,6 +226,7 @@ export function ProductCategoryList() {
       dataIndex: 'name',
     },
     {
+      hidden: isMobile,
       title: 'Vigência',
       width: 80,
       align: 'center' as const,
@@ -190,30 +240,19 @@ export function ProductCategoryList() {
       },
     },
     {
+      hidden: isMobile,
       title: 'Período',
       render: (_: any, record: ProductCategory) => {
         if (!record.startsAt && !record.endsAt) return '—';
 
-        const fmt = (d: string | Date, withYear: boolean) =>
-          new Intl.DateTimeFormat('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            ...(withYear
-              ? { year: 'numeric', timeZone: 'America/Sao_Paulo' }
-              : { timeZone: 'UTC' }),
-          }).format(new Date(d));
-
-        const withYear = !record.isRecurring;
-        const start = record.startsAt ? fmt(record.startsAt, withYear) : '?';
-        const end = record.endsAt ? fmt(record.endsAt, withYear) : '?';
-
-        return `${start} → ${end}`;
+        return `${formatCategoryPeriod(record)}`;
       },
     },
     {
-      title: 'Status',
+      title: '',
       dataIndex: 'isActive',
-      width: 100,
+      width: 60,
+      align: 'center',
       render: (value: boolean, record: ProductCategory) => (
         <Switch
           checkedChildren="Ativo"
@@ -222,10 +261,8 @@ export function ProductCategoryList() {
           checked={record.isActive}
           onChange={(checked) => {
             handleToggleActive(record, checked);
-            // event.stopPropagation();
           }}
         />
-        // <Tag color={value ? 'green' : 'default'}>{value ? 'Ativo' : 'Inativo'}</Tag>
       ),
     },
     {
@@ -246,7 +283,6 @@ export function ProductCategoryList() {
             danger
             onClick={async () => {
               await ProductCategoryController.delete(record.id);
-              // setCategories((c) => c.filter((x) => x.id !== record.id));
               forceRefetch();
               message.success('Categoria removida.');
             }}
@@ -262,6 +298,9 @@ export function ProductCategoryList() {
     <>
       <Card
         title="Categorias"
+        styles={{
+          body: isMobile ? { padding: 6 } : {},
+        }}
         extra={
           <Space>
             <Input
@@ -296,6 +335,7 @@ export function ProductCategoryList() {
           >
             <Table
               {...tableProps}
+              scroll={{ x: true }}
               components={{
                 body: {
                   row: SortableRow,

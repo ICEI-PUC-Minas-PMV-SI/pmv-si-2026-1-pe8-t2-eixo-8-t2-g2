@@ -1,14 +1,16 @@
 import { Card, Space, Button, Table, message, Input } from 'antd';
-import { PlusOutlined, PictureOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import type { ProductCharacteristic } from '~/@types/product';
 import ProductCharacteristicController from '~/controllers/ProductCharacteristicController';
 import { useTableQuery } from '~/hooks/useTableQuery';
 import { SortDropdown } from '../sort-dropdown/SortDropdown';
 import { useState } from 'react';
 import { ProductCharacteristicForm } from './ProductCharacteristicForm';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 export function ProductCharacteristicList() {
   const [charModalState, setCharModalState] = useState(false);
+  const isMobile = useBreakpoint('md');
   const { tableProps, forceRefetch, params, setSearch, updateSorter, clearSorters } =
     useTableQuery<ProductCharacteristic>('product-characteristic', (params) =>
       ProductCharacteristicController.list<ProductCharacteristic>(params),
@@ -69,6 +71,9 @@ export function ProductCharacteristicList() {
     <>
       <Card
         title="Características"
+        styles={{
+          body: isMobile ? { padding: 6 } : {},
+        }}
         extra={
           <Space>
             <Input
