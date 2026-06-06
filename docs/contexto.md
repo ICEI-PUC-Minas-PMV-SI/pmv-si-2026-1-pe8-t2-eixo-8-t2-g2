@@ -1,20 +1,17 @@
 # Apresentação da empresa, mercado, processos e sistemas
 ## Apresentação da empresa
 
+Para a elaboração deste trabalho, foi definida como parceira a confeitaria Doce & Cia, pertencente a uma cozinheira profissional com especialização na área de confeitaria e panificação, adquirida por meio de diversos cursos de aperfeiçoamento.
 
-Para a elaboração deste trabalho, foi definida como parceira a empreendedora Isabella Cáster, cozinheira profissional com especialização na área de confeitaria e panificação, adquirida por meio de diversos cursos de aperfeiçoamento.
-
-O empreendimento atua no setor alimentício, com foco na produção artesanal de bolos, doces, tortas e diversos outros produtos do gênero, atendendo principalmente a demandas sob encomenda para consumo doméstico e eventos. A empresa está localizada no bairro Betânia, em Belo Horizonte/MG, e desenvolve suas atividades em estrutura residencial, caracterizando-se como um micro empreendimento de pequeno porte, com operação enxuta e produção artesanal.
+O empreendimento atua no setor alimentício, com foco na produção artesanal de bolos, doces, tortas e diversos outros produtos do gênero, atendendo principalmente a demandas sob encomenda para consumo doméstico e eventos. A empresa está localizada em Belo Horizonte/MG, e desenvolve suas atividades em estrutura residencial, caracterizando-se como um micro empreendimento de pequeno porte, com operação enxuta e produção artesanal.
 
 Trata-se de um empreendimento individual, sem sócios e sem empregados fixos, sendo todas as atividades administrativas, financeiras e operacionais realizadas pela própria empreendedora. Além da produção dos alimentos, a responsável também desempenha funções relacionadas ao atendimento aos clientes, gestão de pedidos, organização da agenda de produção, aquisição de insumos e divulgação dos produtos.
 
-A divulgação e comercialização dos produtos ocorrem majoritariamente por meio digital, utilizando website próprio e redes sociais para apresentação do portfólio, captação de clientes e comunicação com o público.
+A divulgação e comercialização dos produtos ocorrem majoritariamente por meio digital, utilizando *website* próprio e redes sociais para apresentação do portfólio, captação de clientes e comunicação com o público.
 
 A escolha da empresa justifica-se pelas oportunidades de melhoria identificadas em seus processos internos, especialmente no que se refere à organização de produtos, controle de pedidos e gestão de agenda. Além disso, considera-se que a empreendedora apresentará um alto nível de engajamento e comprometimento tanto durante o desenvolvimento do projeto quanto na implementação e utilização da solução proposta, contribuindo para a efetividade dos resultados esperados.
 
-
 ## Análise de Mercado
-
 
 A empresa analisada atua no setor de alimentação fora do lar (*food service*), mais especificamente no segmento de confeitaria artesanal sob encomenda, caracterizado pela produção e comercialização de doces e bolos personalizados destinados ao consumidor final. Nesse modelo de negócio, a produção ocorre geralmente mediante solicitação prévia do cliente, permitindo a personalização de sabores, quantidades e características do produto conforme a demanda específica de cada pedido. Esse tipo de empreendimento costuma ser classificado como micro ou pequeno negócio, muitas vezes operando com produção artesanal e atendimento direto ao consumidor.
 
@@ -36,15 +33,11 @@ Fonte: Elaborado pelos autores (2026).
 
 A análise da matriz SWOT permite identificar os principais fatores internos e externos que influenciam o desempenho do empreendimento analisado. No ambiente interno, destacam-se como forças a produção artesanal de alta qualidade, a possibilidade de personalização dos produtos e o atendimento direto ao cliente, características que contribuem para a diferenciação da empresa no mercado. Entretanto, também foram identificadas fraquezas, principalmente relacionadas à limitação da capacidade produtiva e à dependência de apenas uma pessoa para a gestão e execução das atividades, além da ausência de sistemas estruturados para controle de pedidos e organização da agenda. No ambiente externo, observam-se oportunidades associadas ao crescimento do mercado de confeitaria artesanal e ao uso de plataformas digitais como redes sociais para divulgação e captação de clientes. Por outro lado, existem ameaças relevantes, como a alta concorrência no setor, a variação no preço de matérias-primas e a instabilidade econômica, fatores que podem impactar diretamente a competitividade e a sustentabilidade do negócio.
 
-
-
 ## Análise de Processos e Sistemas
 
+O empreendimento analisado consiste em um negócio de produção artesanal de confeitaria sob encomenda, administrado integralmente pela empreendedora dona do Doce & Cia. Todas as atividades relacionadas ao negócio — incluindo divulgação, atendimento ao cliente, negociação de pedidos, planejamento produtivo, produção e entrega — são realizadas pela própria responsável.
 
-O empreendimento analisado consiste em um negócio de produção artesanal de confeitaria sob encomenda, administrado integralmente pela empreendedora Isabella Cáster. Todas as atividades relacionadas ao negócio — incluindo divulgação, atendimento ao cliente, negociação de pedidos, planejamento produtivo, produção e entrega — são realizadas pela própria responsável.
-
-O funcionamento do negócio apresenta um caráter flexível e informal, uma vez que a empreendedora concilia a atividade profissional com a rotina pessoal de cuidado de uma filha pequena. Dessa forma, o volume de produção não segue metas rígidas semanais ou mensais, sendo ajustado de acordo com a demanda de pedidos recebidos.
-
+O funcionamento do negócio apresenta um caráter flexível e informal, uma vez que a empreendedora concilia a atividade profissional com a rotina pessoal. Dessa forma, o volume de produção não segue metas rígidas semanais ou mensais, sendo ajustado de acordo com a demanda de pedidos recebidos.
 
 ### Captação de clientes e divulgação
 
@@ -54,12 +47,11 @@ O processo de trabalho inicia-se com a captação de clientes, que ocorre princi
 - Indicação entre clientes, que recomendam os produtos para conhecidos e familiares.
 
 Entre esses canais, o *marketing* boca a boca exerce papel importante na aquisição de novos clientes, uma vez que a recomendação de consumidores satisfeitos contribui para ampliar a rede de compradores.
-Além desses meios de divulgação, o empreendimento também possui um site institucional, desenvolvido pela irmã da empreendedora utilizando a biblioteca *React* em conjunto com a linguagem *TypeScript*, sendo hospedado na plataforma Vercel. O site funciona principalmente como uma vitrine digital de produtos, apresentando os itens disponíveis e direcionando os clientes para o contato direto com a confeiteira.
-
+Além desses meios de divulgação, o empreendimento também possui um site institucional, desenvolvido pela irmã da empreendedora utilizando a biblioteca *React* em conjunto com a linguagem *TypeScript*, sendo hospedado na plataforma *Vercel.* O site funciona principalmente como uma vitrine digital de produtos, apresentando os itens disponíveis e direcionando os clientes para o contato direto com a confeiteira.
 
 ### Estrutura do site e apresentação dos produtos
 
-O site funciona como um catálogo online, no qual os produtos são organizados em categorias como:
+O site funciona como um catálogo *online,* no qual os produtos são organizados em categorias como:
 - Biscoitos artesanais;
 - *Brunch*;
 - Produtos para lanche;
@@ -72,9 +64,8 @@ Cada item apresentado contém:
 - Breve descrição;
 - Botão de compra representado por um ícone de carrinho.
 
-Quando o cliente clica no botão de compra, o sistema realiza um redirecionamento automático para uma conversa no WhatsApp da empreendedora, onde o processo de atendimento e negociação é realizado.
+Quando o cliente clica no botão de compra, o sistema realiza um redirecionamento automático para uma conversa no *WhatsApp* da empreendedora, onde o processo de atendimento e negociação é realizado.
 Nesse modelo, o site exerce principalmente a função de divulgação e apresentação dos produtos, enquanto o processo efetivo de venda ocorre fora da plataforma.
-
 
 ### Processo de atendimento e solicitação de pedidos
 
@@ -88,7 +79,6 @@ Durante a conversa inicial, são coletadas as informações necessárias para el
 - Data desejada para retirada ou entrega.
 
 Com base nesses dados, a empreendedora elabora um orçamento personalizado, uma vez que o valor final pode variar de acordo com diversos fatores, como quantidade solicitada, tipo de ingrediente utilizado e nível de personalização do produto. A variação frequente no preço de insumos também influencia a necessidade de cálculo individual de cada encomenda.
-
 
 ### Confirmação do pedido e condições de pagamento
 
@@ -104,7 +94,6 @@ As formas de pagamento aceitas incluem:
 - Transferência bancária.
 
 Após a confirmação do pagamento inicial, o pedido é oficialmente registrado pela empreendedora e passa para a etapa de planejamento da produção.
-
 
 ### Planejamento da produção e aquisição de insumos
 
@@ -122,13 +111,11 @@ Entre os produtos mais frequentemente solicitados pelos clientes destacam-se:
 
 Produtos salgados ou itens mais específicos aparecem com menor frequência entre os pedidos realizados.
 
-
 ### Produção, entrega e retirada
 
 A produção é realizada de forma totalmente artesanal pela própria empreendedora, sem equipe adicional de apoio. A organização das atividades produtivas depende diretamente da disponibilidade de tempo da responsável pelo negócio.
 
-Após a finalização dos produtos, os pedidos são disponibilizados para retirada no endereço da empreendedora, localizado no bairro Betânia, na região do Central Park. Em alguns casos, também são realizadas entregas em bairros próximos, conforme acordado previamente com o cliente durante o processo de negociação.
-
+Após a finalização dos produtos, os pedidos são disponibilizados para retirada no endereço da empreendedora, localizado na região do Central Park. Em alguns casos, também são realizadas entregas em bairros próximos, conforme acordado previamente com o cliente durante o processo de negociação.
 
 ### Perfil dos clientes e comportamento de compra
 
@@ -140,9 +127,7 @@ Além disso, o negócio também recebe pedidos pontuais, geralmente relacionados
 
 Atualmente, não existe uma estratégia estruturada de reengajamento de clientes, como envio de mensagens promocionais ou lembretes para clientes que estão há algum tempo sem comprar. A empreendedora relata que essa prática poderia ser adotada futuramente, especialmente em períodos de menor demanda. O início do ano, por exemplo, costuma apresentar volume reduzido de pedidos, sendo utilizado como período de descanso após o aumento significativo da demanda durante o final do ano.
 
-
 ### Coleta, armazenamento e uso das informações
-
 
 No que se refere à gestão da informação, o empreendimento não utiliza atualmente um sistema informatizado estruturado para registro e controle dos pedidos.
 A coleta de dados ocorre principalmente durante as conversas realizadas com os clientes no *WhatsApp* ou em outros canais de comunicação.
@@ -171,7 +156,6 @@ No entanto, essa forma de armazenamento apresenta limitações importantes, pois
 Figura 2 - Modelagem dos processos do negócio (BPMN)
 <img width="997" height="542" alt="image" src="https://github.com/user-attachments/assets/654093ed-0840-40e6-ae8b-b11617261bb8" />
 Fonte: Elaborado pelos autores (2026).
-
 
 ### Infraestrutura tecnológica do sistema
 
