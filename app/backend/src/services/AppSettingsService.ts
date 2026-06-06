@@ -1,9 +1,10 @@
-import { Prisma } from '../db/Prisma.js';
-import type { AppSettingsCreateInput } from '../generated/prisma/models.js';
+import { Prisma as PrismaDB } from '../db/Prisma.js';
+import type { Prisma } from '../generated/prisma';
+// import type { AppSettingsCreateInput } from '../generated/prisma/models.js';
 
 class AppSettingsService {
-  async save(data: AppSettingsCreateInput) {
-    const prisma = await Prisma.getClient();
+  async save(data: Prisma.AppSettingsCreateInput) {
+    const prisma = await PrismaDB.getClient();
     const siteInformation = await prisma.appSettings.findFirst();
     if (siteInformation) {
       await prisma.appSettings.update({
@@ -17,7 +18,7 @@ class AppSettingsService {
     }
   }
   async find() {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const siteInformation = await prisma.appSettings.findFirst();
     return siteInformation;
   }

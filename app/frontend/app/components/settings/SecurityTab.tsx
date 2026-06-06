@@ -3,18 +3,16 @@ import {
   Card,
   Col,
   Form,
-  Input,
   Row,
   Space,
   Typography,
   Switch,
   Modal,
   message,
-  Tooltip,
 } from 'antd';
 import { useEffect, useState } from 'react';
 import type { ProfileFormValues } from '~/@types/profile';
-import { CheckCircleOutlined, LockOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { LockOutlined } from '@ant-design/icons';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import { ModalQRCode2FA } from './ModalQRCode2FA';
 import AuthController from '~/controllers/AuthController';
@@ -23,12 +21,8 @@ import { Modal2FA, type Modal2FAType } from './Modal2FA';
 
 export function SecurityTab() {
   const [settingsForm] = Form.useForm<ProfileFormValues>();
-  const [passwordForm] = Form.useForm<ProfileFormValues>();
-  const [savingProfile, setSavingProfile] = useState(false);
-  const [savingPassword, setSavingPassword] = useState(false);
   const { user } = useAuthStore();
 
-  const isGoogleUser = false; //!!user?.googleId;
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [qrCodeModalState, setQrCodeModalState] = useState({
     isOpened: false,
@@ -52,33 +46,6 @@ export function SecurityTab() {
       setTwoFactorEnabled(user.enabledTwoFactor);
     }
   }, [settingsForm, user]);
-
-  async function handleSaveProfile(values: ProfileFormValues) {
-    setSavingProfile(true);
-    try {
-      // await AuthController.updateProfile({
-      //   name: values.name,
-      //   phone: values.phone,
-      // });
-      message.success('Perfil atualizado!');
-    } finally {
-      setSavingProfile(false);
-    }
-  }
-
-  async function handleChangePassword(values: ProfileFormValues) {
-    setSavingPassword(true);
-    try {
-      // await AuthController.changePassword({
-      //   currentPassword: values.currentPassword!,
-      //   newPassword: values.newPassword!,
-      // });
-      passwordForm.resetFields();
-      message.success('Senha alterada com sucesso!');
-    } finally {
-      setSavingPassword(false);
-    }
-  }
 
   return (
     <Row gutter={[16, 16]}>
@@ -114,8 +81,8 @@ export function SecurityTab() {
         recoveryCodes={recoveryModalState.recoveryCodes}
       />
       <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
-        <Row gutter={16}>
-          <Col span={12}>
+        <Row gutter={[16, 16]}>
+          <Col span={24} md={12}>
             <Card title="Segurança" style={{ height: '100%' }}>
               <Space orientation="vertical" size="middle" style={{ width: '100%' }}>
                 <Space align="start">
@@ -168,7 +135,7 @@ export function SecurityTab() {
               </Space>
             </Card>
           </Col>
-          <Col span={12}>
+          <Col span={24} md={12}>
             <Card
               title={<Typography.Text type="danger">Zona de perigo</Typography.Text>}
               styles={{

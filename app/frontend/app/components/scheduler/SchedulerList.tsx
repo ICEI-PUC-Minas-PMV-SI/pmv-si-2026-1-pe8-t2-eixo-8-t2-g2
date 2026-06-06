@@ -11,6 +11,9 @@ import {
   message,
   Progress,
   Rate,
+  Divider,
+  Card,
+  Pagination,
 } from 'antd';
 import { useState } from 'react';
 import {
@@ -24,12 +27,7 @@ import {
   StarOutlined,
 } from '@ant-design/icons';
 import type { PaymentMethod } from '~/@types/payment';
-import type {
-  DeliveryType,
-  Scheduler,
-  SchedulerItem,
-  SchedulerStatus,
-} from '~/@types/scheduler';
+import type { DeliveryType, Scheduler, SchedulerStatus } from '~/@types/scheduler';
 import { PaymentMethodMap } from '~/constants/PaymentMethod';
 import DateUtil from '~/utils/DateUtil';
 import { SchedulerStatusTag } from './SchedulerStatusTag';
@@ -43,28 +41,14 @@ import { useAuthStore } from '~/hooks/useAuthStore';
 import { PaymentModal, type RegisterPaymentPayload } from '../payment/PaymentModal';
 import { ReviewModal, type ReviewPayload } from '../review/ReviewModal';
 import ReviewController from '~/controllers/ReviewController';
+import { SchedulerHelper } from '~/helpers/SchedulerHelper';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 // ─── Types estendidos ─────────────────────────────────────────────────────────
 
 type SchedulerWithRelations = Scheduler & {
   payments?: any[];
   review?: { rating: number; comment?: string | null } | null;
-};
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const getOrderTotal = (items: SchedulerItem[]): number => {
-  const total = items.reduce(
-    (acc, item) => acc + (item.priceAtBooking ?? 0) * item.quantity,
-    0,
-  );
-  return Math.round(total * 100) / 100;
-};
-
-const getItemColumnText = (items: SchedulerItem[]) => {
-  const count = items.length;
-  const price = getOrderTotal(items);
-  return `${count} ${count > 1 ? 'itens' : 'item'} · ${NumberUtil.currency(price)} est.`;
 };
 
 const STATUS_TRANSITIONS: Partial<
@@ -94,7 +78,7 @@ function PaymentProgressCell({
   scheduler: SchedulerWithRelations;
   onPayClick: () => void;
 }) {
-  const total = getOrderTotal(scheduler.items);
+  const total = SchedulerHelper.getOrderTotal(scheduler.items);
   const paid =
     Math.round(
       (scheduler.payments ?? []).reduce((acc: number, p: any) => acc + p.amount, 0) * 100,
@@ -253,6 +237,7 @@ export function SchedulerList({
     null,
   );
   const { isAdmin } = useAuthStore();
+  const isMobile = useBreakpoint('md');
 
   const {
     tableProps,
@@ -263,6 +248,7 @@ export function SchedulerList({
     setSorters,
     updateSorter,
     clearSorters,
+    setPage,
   } = schedulerQuery;
 
   const paymentFilters = Object.entries(PaymentMethodMap).map(([value, label]) => ({
@@ -321,6 +307,113 @@ export function SchedulerList({
     }
   };
 
+  const cardList = (
+    <Space orientation="vertical" style={{ width: '100%' }} size={12}>
+      {((tableProps.dataSource as SchedulerWithRelations[]) ?? []).map((record) => (
+        <Card
+          key={record.id}
+          size="small"
+          styles={{ body: { padding: '10px 12px' } }}
+          actions={[
+            record.status !== 'cancelled' &&
+              record.status !== 'completed' &&
+              (isAdmin() || record.status === 'pending') && (
+                <Tooltip title="Editar pedido">
+                  <Button
+                    size="small"
+                    icon={<EditOutlined />}
+                    onClick={() => onEdit(record)}
+                  />
+                </Tooltip>
+              ),
+            record.status !== 'cancelled' && record.status !== 'completed' && (
+              <Tooltip title="Cancelar pedido">
+                <Button
+                  danger
+                  size="small"
+                  icon={<CloseCircleOutlined />}
+                  onClick={() => setCancelledSchedulerId(record.id)}
+                />
+              </Tooltip>
+            ),
+            isAdmin() && (
+              <Button
+                type="primary"
+                size="small"
+                icon={<DollarOutlined />}
+                disabled={/* já quitado */ false}
+                onClick={() => setPaymentScheduler(record)}
+              >
+                Pagar
+              </Button>
+            ),
+          ].filter(Boolean)}
+        >
+          {/* Linha 1 — cliente + status */}
+          <Flex justify="space-between" align="flex-start" gap={8}>
+            <Space orientation="vertical" size={0}>
+              <Typography.Text strong>{record.customer?.name}</Typography.Text>
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                {DateUtil.format(record.scheduledAt)}
+              </Typography.Text>
+            </Space>
+            {isAdmin() ? (
+              <StatusDropdown scheduler={record} onStatusChange={handleStatusChange} />
+            ) : (
+              <SchedulerStatusTag status={record.status} />
+            )}
+          </Flex>
+
+          <Divider style={{ margin: '8px 0' }} />
+
+          {/* Linha 2 — itens resumidos */}
+          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+            {SchedulerHelper.getItemColumnText(record.items)}
+          </Typography.Text>
+
+          <Divider style={{ margin: '8px 0' }} />
+
+          {/* Linha 3 — pagamento + modalidade */}
+          <Flex gap={8} wrap="wrap">
+            {record.paymentMethod && (
+              <Tag style={{ borderRadius: 20 }}>
+                {PaymentMethodMap[record.paymentMethod]}
+              </Tag>
+            )}
+            <DeliveryTag type={record.deliveryType} />
+          </Flex>
+
+          {/* Linha 4 — progresso de pagamento (admin) */}
+          {isAdmin() && (
+            <div style={{ marginTop: 8 }}>
+              <PaymentProgressCell
+                scheduler={record}
+                onPayClick={() => setPaymentScheduler(record)}
+              />
+            </div>
+          )}
+
+          {/* Linha 5 — avaliação (cliente, completed) */}
+          {!isAdmin() && record.status === 'completed' && (
+            <div style={{ marginTop: 8 }}>
+              <ReviewCell
+                scheduler={record}
+                onReviewClick={() => setReviewScheduler(record)}
+              />
+            </div>
+          )}
+        </Card>
+      ))}
+
+      {/* Paginação reutilizada do tableProps */}
+      {tableProps.pagination && (
+        <Flex justify="center" style={{ paddingTop: 8 }}>
+          <Pagination {...tableProps.pagination} simple size="small" onChange={setPage} />
+        </Flex>
+      )}
+    </Space>
+  );
+
   return (
     <>
       <SchedulerCancel
@@ -375,210 +468,237 @@ export function SchedulerList({
           style={{ maxWidth: 260 }}
         />
       </Flex>
-
-      <Table<Scheduler>
-        {...tableProps}
-        style={{ overflowX: 'auto' }}
-        styles={{ content: { cursor: 'pointer' } }}
-        expandable={{
-          expandRowByClick: true,
-          expandedRowRender: (record) => (
-            <Table
-              dataSource={record.items}
-              pagination={false}
-              rowKey={(item) => item.product.id}
-              size="small"
-              columns={[
-                { title: 'Qtd.', dataIndex: 'quantity', width: 60 },
-                { title: 'Produto', render: (_, item) => item.product.name },
-                {
-                  title: 'Customização',
-                  render: (_, item) => (
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      {item.customization || '—'}
-                    </Typography.Text>
-                  ),
-                },
-                {
-                  title: 'Preço est.',
-                  render: (_, item) =>
-                    NumberUtil.currency((item.priceAtBooking ?? 0) * item.quantity),
-                },
-              ]}
-            />
-          ),
-        }}
-        columns={[
-          {
-            hidden: !isAdmin(),
-            fixed: true,
-            title: (
-              <Space>
-                Cliente
-                <SortDropdown
-                  options={[
-                    { key: 'customer_name', label: 'Nome', type: 'string' },
-                    { key: 'customer_date', label: 'Data' },
-                  ]}
-                  activeSorters={params.sorters}
-                  onSelect={updateSorter}
-                  onClear={() => clearSorters(['customer_name', 'customer_date'])}
-                />
-              </Space>
-            ),
-            key: 'customer',
-            render: (_, record) => (
-              <Space direction="vertical" size={2}>
-                <Typography.Text strong>{record.customer.name}</Typography.Text>
-                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                  {DateUtil.format(record.scheduledAt)}
-                </Typography.Text>
-              </Space>
-            ),
-          },
-          {
-            hidden: isAdmin(),
-            title: (
-              <Space>
-                Criado em
-                <SortDropdown
-                  options={[{ key: 'scheduledAt', label: 'Data' }]}
-                  activeSorters={params.sorters}
-                  onSelect={updateSorter}
-                  onClear={() => clearSorters(['scheduledAt'])}
-                />
-              </Space>
-            ),
-            render: (value: Scheduler) =>
-              new Date(value.scheduledAt).toLocaleString().replace(', ', ' às '),
-            key: 'scheduledAt',
-          },
-          Table.EXPAND_COLUMN,
-          {
-            title: 'Itens',
-            key: 'items',
-            minWidth: 130,
-            responsive: ['xl', 'xxl'],
-            render: (_, record) => (
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                {getItemColumnText(record.items)}
-              </Typography.Text>
-            ),
-          },
-          {
-            title: 'Pagamento',
-            dataIndex: 'paymentMethod',
-            filters: paymentFilters,
-            filterMode: 'tree',
-            filteredValue: (params.filters['paymentMethod'] as string[]) || [],
-            onFilter: (v, record) => record.paymentMethod === v,
-            render: (v?: PaymentMethod) =>
-              v ? <Tag style={{ borderRadius: 20 }}>{PaymentMethodMap[v]}</Tag> : '—',
-          },
-          {
-            title: 'Recebimento',
-            key: 'payment_progress',
-            hidden: !isAdmin(),
-            width: 160,
-            render: (_, record) => (
-              <PaymentProgressCell
-                scheduler={record as SchedulerWithRelations}
-                onPayClick={() => setPaymentScheduler(record as SchedulerWithRelations)}
+      {isMobile ? (
+        cardList
+      ) : (
+        <Table<Scheduler>
+          {...tableProps}
+          scroll={{ x: 700 }}
+          style={{ overflowX: 'auto' }}
+          styles={{ content: { cursor: 'pointer' } }}
+          expandable={{
+            expandRowByClick: true,
+            expandedRowRender: (record) => (
+              <Table
+                dataSource={record.items}
+                pagination={false}
+                rowKey={(item) => item.product.id}
+                size="small"
+                columns={[
+                  { title: 'Qtd.', dataIndex: 'quantity', width: 60 },
+                  { title: 'Produto', render: (_, item) => item.product.name },
+                  {
+                    title: 'Customização',
+                    render: (_, item) => (
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                        {item.customization || '—'}
+                      </Typography.Text>
+                    ),
+                  },
+                  {
+                    title: 'Preço est.',
+                    render: (_, item) =>
+                      NumberUtil.currency((item.priceAtBooking ?? 0) * item.quantity),
+                  },
+                ]}
               />
             ),
-          },
-          {
-            title: 'Modalidade',
-            dataIndex: 'deliveryType',
-            filters: deliveryFilters,
-            filterMode: 'tree',
-            filteredValue: (params.filters['deliveryType'] as string[]) || [],
-            onFilter: (v, record) => record.deliveryType === v,
-            render: (v?: DeliveryType) => <DeliveryTag type={v} />,
-          },
-          {
-            title: 'Status',
-            dataIndex: 'status',
-            filters: statusFilters,
-            filterMode: 'tree',
-            filteredValue: (params.filters['status'] as string[]) || [],
-            onFilter: (v, record) => record.status === v,
-            render: (_, record) =>
-              isAdmin() ? (
-                <StatusDropdown scheduler={record} onStatusChange={handleStatusChange} />
-              ) : (
-                <SchedulerStatusTag status={record.status} />
-              ),
-          },
-          // Coluna de avaliação — apenas para clientes, apenas em completed
-          {
-            title: 'Avaliação',
-            key: 'review',
-            hidden: isAdmin(),
-            width: 150,
-            render: (_, record) => {
-              if (record.status !== 'completed') return null;
-              return (
-                <ReviewCell
-                  scheduler={record as SchedulerWithRelations}
-                  onReviewClick={() =>
-                    setReviewScheduler(record as SchedulerWithRelations)
-                  }
-                />
-              );
-            },
-          },
-          {
-            title: 'Ações',
-            width: 100,
-            render: (_, record) => {
-              const canEdit =
-                record.status !== 'cancelled' && record.status !== 'completed';
-              const showEdit = isAdmin() || record.status === 'pending';
-
-              if (record.status === 'cancelled' && record.cancellationReason) {
-                return (
-                  <Tooltip title={`Motivo: ${record.cancellationReason}`}>
-                    <Tag color="red" style={{ borderRadius: 20 }}>
-                      Cancelado
-                    </Tag>
-                  </Tooltip>
-                );
-              }
-
-              return (
-                <Space size={4}>
-                  {canEdit && showEdit && (
-                    <Tooltip title="Editar pedido">
-                      <Button
-                        size="small"
-                        icon={<EditOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEdit(record);
-                        }}
-                      />
-                    </Tooltip>
-                  )}
-                  {canEdit && (
-                    <Tooltip title="Cancelar pedido">
-                      <Button
-                        danger
-                        size="small"
-                        icon={<CloseCircleOutlined />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCancelledSchedulerId(record.id);
-                        }}
-                      />
-                    </Tooltip>
-                  )}
+          }}
+          columns={[
+            {
+              hidden: !isAdmin(),
+              fixed: true,
+              title: (
+                <Space>
+                  Cliente
+                  <SortDropdown
+                    options={[
+                      { key: 'customer_name', label: 'Nome', type: 'string' },
+                      { key: 'customer_date', label: 'Data' },
+                    ]}
+                    activeSorters={params.sorters}
+                    onSelect={updateSorter}
+                    onClear={() => clearSorters(['customer_name', 'customer_date'])}
+                  />
                 </Space>
-              );
+              ),
+              key: 'customer',
+              render: (_, record) => (
+                <Space orientation="vertical" size={0}>
+                  <Typography.Text strong style={{ fontSize: 13 }}>
+                    {record.customer.name}
+                  </Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+                    {DateUtil.format(record.scheduledAt)}
+                  </Typography.Text>
+                </Space>
+              ),
             },
-          },
-        ]}
-      />
+            // {
+            //   hidden: !isAdmin(),
+            //   responsive: ['xs', 'sm'], // só em mobile
+            //   title: 'Pedido',
+            //   key: 'customer_mobile',
+            //   render: (_, record) => (
+            //     <Space orientation="vertical" size={0}>
+            //       <Typography.Text strong style={{ fontSize: 13 }}>
+            //         {record.customer.name}
+            //       </Typography.Text>
+            //       <Typography.Text type="secondary" style={{ fontSize: 11 }}>
+            //         {DateUtil.format(record.scheduledAt)}
+            //       </Typography.Text>
+            //       <SchedulerStatusTag status={record.status} />
+            //     </Space>
+            //   ),
+            // },
+            {
+              hidden: isAdmin(),
+              title: (
+                <Space>
+                  Criado em
+                  <SortDropdown
+                    options={[{ key: 'scheduledAt', label: 'Data' }]}
+                    activeSorters={params.sorters}
+                    onSelect={updateSorter}
+                    onClear={() => clearSorters(['scheduledAt'])}
+                  />
+                </Space>
+              ),
+              render: (value: Scheduler) =>
+                new Date(value.scheduledAt).toLocaleString().replace(', ', ' às '),
+              key: 'scheduledAt',
+            },
+            Table.EXPAND_COLUMN,
+            {
+              title: 'Itens',
+              key: 'items',
+              minWidth: 130,
+              responsive: ['xl', 'xxl'],
+              render: (_, record) => (
+                <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                  {SchedulerHelper.getItemColumnText(record.items)}
+                </Typography.Text>
+              ),
+            },
+            {
+              title: 'Pagamento',
+              dataIndex: 'paymentMethod',
+              filters: paymentFilters,
+              filterMode: 'tree',
+              filteredValue: (params.filters['paymentMethod'] as string[]) || [],
+              onFilter: (v, record) => record.paymentMethod === v,
+              render: (v?: PaymentMethod) =>
+                v ? <Tag style={{ borderRadius: 20 }}>{PaymentMethodMap[v]}</Tag> : '—',
+            },
+            {
+              title: 'Recebimento',
+              key: 'payment_progress',
+              hidden: !isAdmin(),
+              width: 160,
+              render: (_, record) => (
+                <PaymentProgressCell
+                  scheduler={record as SchedulerWithRelations}
+                  onPayClick={() => setPaymentScheduler(record as SchedulerWithRelations)}
+                />
+              ),
+            },
+            {
+              title: 'Modalidade',
+              dataIndex: 'deliveryType',
+              filters: deliveryFilters,
+              filterMode: 'tree',
+              filteredValue: (params.filters['deliveryType'] as string[]) || [],
+              onFilter: (v, record) => record.deliveryType === v,
+              render: (v?: DeliveryType) => <DeliveryTag type={v} />,
+            },
+            {
+              title: 'Status',
+              dataIndex: 'status',
+              responsive: ['md'],
+              filters: statusFilters,
+              filterMode: 'tree',
+              filteredValue: (params.filters['status'] as string[]) || [],
+              onFilter: (v, record) => record.status === v,
+              render: (_, record) =>
+                isAdmin() ? (
+                  <StatusDropdown
+                    scheduler={record}
+                    onStatusChange={handleStatusChange}
+                  />
+                ) : (
+                  <SchedulerStatusTag status={record.status} />
+                ),
+            },
+            // Coluna de avaliação — apenas para clientes, apenas em completed
+            {
+              title: 'Avaliação',
+              key: 'review',
+              hidden: isAdmin(),
+              width: 150,
+              render: (_, record) => {
+                if (record.status !== 'completed') return null;
+                return (
+                  <ReviewCell
+                    scheduler={record as SchedulerWithRelations}
+                    onReviewClick={() =>
+                      setReviewScheduler(record as SchedulerWithRelations)
+                    }
+                  />
+                );
+              },
+            },
+            {
+              title: 'Ações',
+              width: 100,
+              render: (_, record) => {
+                const canEdit =
+                  record.status !== 'cancelled' && record.status !== 'completed';
+                const showEdit = isAdmin() || record.status === 'pending';
+
+                if (record.status === 'cancelled' && record.cancellationReason) {
+                  return (
+                    <Tooltip title={`Motivo: ${record.cancellationReason}`}>
+                      <Tag color="red" style={{ borderRadius: 20 }}>
+                        Cancelado
+                      </Tag>
+                    </Tooltip>
+                  );
+                }
+
+                return (
+                  <Space size={4}>
+                    {canEdit && showEdit && (
+                      <Tooltip title="Editar pedido">
+                        <Button
+                          size="small"
+                          icon={<EditOutlined />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(record);
+                          }}
+                        />
+                      </Tooltip>
+                    )}
+                    {canEdit && (
+                      <Tooltip title="Cancelar pedido">
+                        <Button
+                          danger
+                          size="small"
+                          icon={<CloseCircleOutlined />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCancelledSchedulerId(record.id);
+                          }}
+                        />
+                      </Tooltip>
+                    )}
+                  </Space>
+                );
+              },
+            },
+          ]}
+        />
+      )}
     </>
   );
 }

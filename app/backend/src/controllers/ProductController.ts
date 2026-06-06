@@ -4,10 +4,11 @@ import type {
   ProductRequest,
 } from '../@types/index.js';
 import { ProductService } from '../services/ProductService.js';
-import type {
-  ProductOrderByWithRelationInput,
-  ProductWhereInput,
-} from '../generated/prisma/models.js';
+import type { Prisma } from '../generated/prisma';
+// import type {
+//   ProductOrderByWithRelationInput,
+//   ProductWhereInput,
+// } from '../generated/prisma/models.js';
 import { UserRole } from '../validations/UserValidation.js';
 import { ValidityHelper } from '../helper/ValidityHelper.js';
 
@@ -18,8 +19,8 @@ class ProductController {
   }
   list(req: ProductRequest) {
     const isAdmin = req.user?.role === UserRole.ADMIN;
-    const orderBy = [] as ProductOrderByWithRelationInput[];
-    const filter: ProductWhereInput = isAdmin
+    const orderBy = [] as Prisma.ProductOrderByWithRelationInput[];
+    const filter: Prisma.ProductWhereInput = isAdmin
       ? {}
       : {
           isActive: true,

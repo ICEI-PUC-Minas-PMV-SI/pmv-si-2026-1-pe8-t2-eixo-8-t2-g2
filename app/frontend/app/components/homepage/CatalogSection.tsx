@@ -12,7 +12,7 @@ import {
   Tag,
   Typography,
 } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { PublicCategory } from '~/@types/category';
 import type { PublicProduct } from '~/@types/product';
 import ProductCategoryController from '~/controllers/ProductCategoryController';
@@ -30,7 +30,25 @@ export function CatalogSection({
 }) {
   const screens = Grid.useBreakpoint();
   const { Search } = Input;
+  const [searchInput, setSearchInput] = useState('');
+  const productQuery = useTableQuery<PublicProduct>(
+    'public-products',
+    (params) => ProductController.list<PublicProduct>(params),
+    {
+      initialParams: { pageSize: PAGE_SIZE },
+      persist: false,
+    },
+  );
+  const { tableProps, setSearch, params, setFilters } = productQuery;
   const addItem = useCartStore((state) => state.addItem);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearch(searchInput);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [searchInput, setSearch]);
 
   // ── Categorias via ProductCategoryController ──
   const {
@@ -41,17 +59,6 @@ export function CatalogSection({
 
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
-  // ── Produtos via ProductController + useTableQuery ──
-  const productQuery = useTableQuery<PublicProduct>(
-    'public-products',
-    (params) => ProductController.list<PublicProduct>(params),
-    {
-      initialParams: { pageSize: PAGE_SIZE },
-      persist: false,
-    },
-  );
-
-  const { tableProps, setSearch, params, setFilters } = productQuery;
   const products = (tableProps.dataSource ?? []) as PublicProduct[];
   const total = tableProps.pagination ? ((tableProps.pagination as any).total ?? 0) : 0;
   const currentPage = (tableProps.pagination as any)?.current ?? 1;
@@ -125,8 +132,8 @@ export function CatalogSection({
           <Search
             placeholder="Buscar produtos..."
             allowClear
-            onSearch={(v) => setSearch(v)}
-            onChange={(e) => !e.target.value && setSearch('')}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             style={{ width: 240, marginTop: 4 }}
             prefix={<SearchOutlined />}
           />

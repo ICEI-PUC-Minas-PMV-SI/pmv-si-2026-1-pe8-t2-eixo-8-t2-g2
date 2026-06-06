@@ -26,6 +26,9 @@ import {
 } from '@ant-design/icons';
 import { iconStyle, menu, type MenuItem } from '../menu/Menu';
 import { UserSession } from '~/utils/UserSession';
+import { AppSettingsController } from '~/controllers/AppSettingsController';
+import type { AppSettingsPayload } from '~/@types/app-settings';
+import { useQuery } from '@tanstack/react-query';
 
 type AppSettings = {
   siteName?: string;
@@ -38,19 +41,14 @@ type AppSettings = {
   primaryColor?: string;
 };
 
-const DEFAULT: { settings: AppSettings } = {
-  settings: {
-    siteName: 'Doce & Cia',
-    whatsapp: '5531999999999',
-    contactEmail: 'contato@doceatelier.com.br',
-    serviceHours: 'Seg–Sex 8h–18h · Sáb 8h–14h',
-    address: 'Belo Horizonte, MG',
-    instagram: 'doceatelier',
-  },
-};
 type HeaderProps = { settings?: AppSettings };
-export default function AppHeader(props: HeaderProps = DEFAULT) {
-  const { settings = DEFAULT.settings } = props;
+export default function AppHeader(props: HeaderProps) {
+  const settingsQuery = useQuery<AppSettingsPayload>({
+    queryKey: ['app-settings'],
+    queryFn: () => AppSettingsController.findInfo(),
+    staleTime: 1000 * 60 * 5,
+  });
+  const { settings } = props;
   const [scrolled, setScrolled] = useState(false);
   const { isLogged, user, isAdmin } = useAuthStore();
   const { pathname } = useLocation();
@@ -63,22 +61,24 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
     : menu.filter((currentMenu) => {
         return !currentMenu.role;
       });
-  const sidebarMenu: MenuItem[] = filtredMenu.map((item) => {
-    const { key, label, IconComponent } = item;
-    const isSelected = selectedKey === key;
+  const sidebarMenu: MenuItem[] = isLogged()
+    ? filtredMenu.map((item) => {
+        const { key, label, IconComponent } = item;
+        const isSelected = selectedKey === key;
 
-    return {
-      key,
-      label,
-      icon: <IconComponent style={iconStyle} />,
-      style: {
-        display: 'flex',
-        backgroundColor: isSelected ? '#E06D5B' : 'transparent',
-        color: isSelected ? '#fff' : undefined,
-        fontWeight: isSelected ? 600 : 400,
-      },
-    };
-  });
+        return {
+          key,
+          label,
+          icon: <IconComponent style={iconStyle} />,
+          style: {
+            display: 'flex',
+            backgroundColor: isSelected ? '#E06D5B' : 'transparent',
+            color: isSelected ? '#fff' : undefined,
+            fontWeight: isSelected ? 600 : 400,
+          },
+        };
+      })
+    : [];
   const menuItems = [
     {
       key: 'orders',
@@ -132,9 +132,10 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
         zIndex: 100,
         background: scrolled ? 'rgba(255,255,255,0.96)' : '#fff',
         borderBottom: '1px solid #F0E8E5',
-        padding: '0 24px',
+        padding: isMobile ? '0 12px' : '0 24px',
         backdropFilter: 'blur(8px)',
         transition: 'box-shadow 0.2s',
+        justifyContent: 'space-between',
         boxShadow: scrolled ? '0 2px 16px rgba(0,0,0,0.06)' : 'none',
       }}
     >
@@ -142,7 +143,7 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
         style={{
           maxWidth: isMobile ? 1100 : 'unset',
           margin: isMobile ? '0 auto' : 'unset',
-          height: 48,
+          height: isMobile ? 56 : 64,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -150,28 +151,35 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
       >
         {isMobile && (
           <Button
+            size="large"
             type="text"
             icon={<MenuOutlined />}
             onClick={() => setMobileMenuIsOpen(true)}
           />
+          // <Button
+          //   type="text"
+          //   icon={<MenuOutlined />}
+          //   onClick={() => setMobileMenuIsOpen(true)}
+          // />
         )}
-        <Typography.Title
-          level={4}
+        <Typography.Text
+          // level={4}
+          strong
+          ellipsis
           style={{
-            margin: 0,
             color: '#E06D5B',
-            fontSize: 20,
-            fontWeight: 700,
-            padding: 12,
+            fontSize: isMobile ? 16 : 20,
+            maxWidth: isMobile ? 140 : 250,
             cursor: 'pointer',
           }}
           onClick={goToHome}
         >
-          {settings.siteName ?? 'Confeitaria'}
-        </Typography.Title>
+          {settingsQuery.data?.siteName ?? settings?.siteName ?? ''}
+        </Typography.Text>
         <nav>
           <Space size={0}>
             {['/'].includes(pathname) &&
+              !isMobile &&
               [
                 { label: 'Cardápio', href: '#catalogo' },
                 { label: 'Sobre', href: '#sobre' },
@@ -233,16 +241,17 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
                         .join('')
                         .toUpperCase()}
                     </Avatar>
-
-                    <Typography.Text
-                      strong
-                      style={{
-                        maxWidth: 140,
-                      }}
-                      ellipsis
-                    >
-                      {user?.name}
-                    </Typography.Text>
+                    {!isMobile && (
+                      <Typography.Text
+                        strong
+                        style={{
+                          maxWidth: 140,
+                        }}
+                        ellipsis
+                      >
+                        {user?.name}
+                      </Typography.Text>
+                    )}
                   </Flex>
                 </Dropdown>
               )}

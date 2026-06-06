@@ -1,15 +1,8 @@
 import React, { createContext, useContext, useMemo } from 'react';
 
-import { Button, Card, Image, Input, Space, Table, Typography, Upload } from 'antd';
+import { Button, Card, Input, Space, Table, Typography } from 'antd';
 
-import type { UploadProps } from 'antd';
-
-import {
-  HolderOutlined,
-  PlusOutlined,
-  PictureOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
+import { HolderOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
 
@@ -25,6 +18,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 
 import type { AboutItem } from '~/@types/about';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 interface Props {
   items: AboutItem[];
@@ -101,6 +95,7 @@ function SortableRow(props: any) {
 }
 
 export function AboutItemList({ items, onChange, onDeletePersistedItem }: Props) {
+  const isMobile = useBreakpoint('md');
   const updateItem = (key: string, partial: Partial<AboutItem>) => {
     onChange(
       items.map((item) =>
@@ -157,27 +152,6 @@ export function AboutItemList({ items, onChange, onDeletePersistedItem }: Props)
     onChange(reordered);
   };
 
-  const uploadProps = (record: AboutItem): UploadProps => ({
-    showUploadList: false,
-
-    beforeUpload(file) {
-      const key = record.id || record.tempId || '';
-
-      if (record.icon && record.icon.startsWith('blob:')) {
-        URL.revokeObjectURL(record.icon);
-      }
-
-      const url = URL.createObjectURL(file);
-
-      updateItem(key, {
-        icon: url,
-        file,
-      });
-
-      return false;
-    },
-  });
-
   const columns = [
     {
       width: 60,
@@ -224,41 +198,69 @@ export function AboutItemList({ items, onChange, onDeletePersistedItem }: Props)
   ];
 
   return (
-    <Card
-      title="Diferenciais"
-      extra={
-        <Space>
-          <Typography.Text type="secondary">{items.length}/5</Typography.Text>
+    <Card title={`Diferenciais (${items.length}/5)`}>
+      <Button
+        type="primary"
+        block
+        icon={<PlusOutlined />}
+        onClick={addItem}
+        disabled={items.length >= 5}
+      >
+        Adicionar Item
+      </Button>
+      {isMobile ? (
+        <Space orientation="vertical" style={{ width: '100%' }}>
+          {items.map((item) => {
+            const key = item.id || item.tempId;
 
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={addItem}
-            disabled={items.length >= 5}
-          >
-            Adicionar Item
-          </Button>
+            return (
+              <Card
+                key={key}
+                size="small"
+                extra={
+                  <Button
+                    danger
+                    type="text"
+                    icon={<DeleteOutlined />}
+                    onClick={() => removeItem(item)}
+                  />
+                }
+              >
+                <Input
+                  value={item.text}
+                  placeholder="Digite o texto..."
+                  maxLength={50}
+                  showCount
+                  onChange={(e) =>
+                    updateItem(key!, {
+                      text: e.target.value,
+                    })
+                  }
+                />
+              </Card>
+            );
+          })}
         </Space>
-      }
-    >
-      <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
-        <SortableContext
-          items={items.map((item) => item.id || item.tempId || '')}
-          strategy={verticalListSortingStrategy}
-        >
-          <Table
-            pagination={false}
-            dataSource={items}
-            rowKey={(record) => record.id || record.tempId!}
-            components={{
-              body: {
-                row: SortableRow,
-              },
-            }}
-            columns={columns}
-          />
-        </SortableContext>
-      </DndContext>
+      ) : (
+        <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
+          <SortableContext
+            items={items.map((item) => item.id || item.tempId || '')}
+            strategy={verticalListSortingStrategy}
+          >
+            <Table
+              pagination={false}
+              dataSource={items}
+              rowKey={(record) => record.id || record.tempId!}
+              components={{
+                body: {
+                  row: SortableRow,
+                },
+              }}
+              columns={columns}
+            />
+          </SortableContext>
+        </DndContext>
+      )}
     </Card>
   );
 }

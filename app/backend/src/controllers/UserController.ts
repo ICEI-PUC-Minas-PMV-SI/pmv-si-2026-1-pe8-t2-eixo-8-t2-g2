@@ -1,14 +1,11 @@
 import ms from 'ms';
 import { UserService } from '../services/UserService.js';
 import type { UserCreatePayload, UserFilterKey, UserRequest } from '../@types/index.js';
-import type { User } from '../generated/prisma/client.js';
+import type { User } from '../generated/prisma/default.js';
 import { AppError } from '../error/AppError.js';
 import { HttpCode } from '../utils/HttpCode.js';
 import { OTPUtil } from '../utils/OTPUtil.js';
-import type {
-  UserOrderByWithRelationInput,
-  UserWhereInput,
-} from '../generated/prisma/models.js';
+import type { Prisma } from '../generated/prisma';
 
 class UserController {
   async create(
@@ -21,8 +18,8 @@ class UserController {
     return result;
   }
   list(req: UserRequest) {
-    const orderBy = [] as UserOrderByWithRelationInput[];
-    const filter: UserWhereInput = {};
+    const orderBy = [] as Prisma.UserOrderByWithRelationInput[];
+    const filter: Prisma.UserWhereInput = {};
     const filters = req.filters;
     const sorters = req.sort;
     const search = req.search?.trim();

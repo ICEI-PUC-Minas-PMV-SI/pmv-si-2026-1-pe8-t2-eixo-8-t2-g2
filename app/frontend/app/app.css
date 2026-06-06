@@ -74,32 +74,6 @@ body {
   transform: rotate(-45deg);
 }
 
-/* .ant-menu-item {
-  margin: 0px !important;
-  padding: 0px !important;
-  background-color: transparent !important;
-}
-
-.ant-menu-item.ant-menu-item-selected::before {
-  content: "";
-  height: 100%;
-  margin-right: 8px;
-  border-radius: 0px 6px 6px 0px !important;
-  border-left: solid 5px var(--ant-color-primary);
-}
-
-.ant-menu-item.ant-menu-item-selected:last-child {
-  border-radius: 0 8px 8px 0 !important;
-}
-
-.ant-menu-item.ant-menu-item-selected>* {
-  background-color: var(--ant-color-primary);
-  height: 100%;
-  margin: 0 !important;
-  padding-left: 12px !important;
-} */
-
-
 .delivery-today-item {
   cursor: pointer;
   transition:

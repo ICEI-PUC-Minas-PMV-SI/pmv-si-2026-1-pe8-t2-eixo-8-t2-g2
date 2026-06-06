@@ -1,4 +1,14 @@
-import { Button, Card, Drawer, Form, message, Segmented, Space, Tooltip } from 'antd';
+import {
+  Button,
+  Card,
+  Drawer,
+  Flex,
+  Form,
+  message,
+  Segmented,
+  Space,
+  Tooltip,
+} from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import type { CreateScheduler, Scheduler, SchedulerItem } from '~/@types/scheduler';
 import SchedulerController from '~/controllers/SchedulerController';
@@ -162,33 +172,37 @@ export function SchedulerTab() {
       <Card
         title="Pedidos"
         extra={
-          <Space>
+          <Flex wrap="wrap" gap={8} justify="flex-end">
             <Tooltip
               title={
                 unsyncedSchedulerState.count > 0
-                  ? `Há ${unsyncedSchedulerState.count} pedidos não sincronizados`
-                  : 'Todos os pedidos estão sincronizados'
+                  ? `${unsyncedSchedulerState.count} pedidos não sincronizados`
+                  : 'Todos sincronizados'
               }
             >
               <Button
                 hidden={!isAdmin()}
                 loading={unsyncedSchedulerState.loading}
                 disabled={unsyncedSchedulerState.count === 0}
+                size="small" // ← menor em mobile
               >
-                Sincronizar Agenda
+                Sincronizar
               </Button>
             </Tooltip>
+
             <Segmented
               value={scheduleView}
               onChange={(value) => setScheduleView(value as 'list' | 'calendar')}
               options={[
-                { label: 'Lista', value: 'list', icon: <EyeOutlined /> },
-                { label: 'Calendário', value: 'calendar', icon: <CalendarOutlined /> },
+                { value: 'list', icon: <EyeOutlined /> }, // sem label — só ícone
+                { value: 'calendar', icon: <CalendarOutlined /> },
               ]}
             />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
+              size="small"
               onClick={() => {
                 form.resetFields();
                 setIsEditMode(false);
@@ -197,7 +211,7 @@ export function SchedulerTab() {
             >
               Novo pedido
             </Button>
-          </Space>
+          </Flex>
         }
       >
         {scheduleView === 'list' ? (

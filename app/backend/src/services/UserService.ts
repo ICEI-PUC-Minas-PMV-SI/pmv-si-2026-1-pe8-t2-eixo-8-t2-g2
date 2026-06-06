@@ -4,14 +4,15 @@ import { HttpCode } from '../utils/HttpCode.js';
 import { OTPUtil } from '../utils/OTPUtil.js';
 import { SMTP } from '../utils/SMTP.js';
 import type { PaginationParams, UserCreatePayload } from '../@types/index.js';
-import { Prisma } from '../db/Prisma.js';
+import { Prisma as PrismaDB } from '../db/Prisma.js';
 import { AppError } from '../error/AppError.js';
 import { OTPTemplate } from '../templates/email/OTPTemplate.js';
-import type {
-  UserOrderByWithRelationInput,
-  UserSelect,
-  UserWhereInput,
-} from '../generated/prisma/models.js';
+// import type {
+//   UserOrderByWithRelationInput,
+//   UserSelect,
+//   UserWhereInput,
+// } from '../generated/prisma/models.js';
+import type { Prisma } from '../generated/prisma';
 import { PasswordResetTemplate } from '../templates/email/PasswordResetTemplate.js';
 import { ResponseUtil } from '../utils/ResponseUtil.js';
 import { Text } from '../utils/Text.js';
@@ -29,7 +30,7 @@ class UserService {
     user: UserCreatePayload,
     { createCustomer }: { createCustomer?: boolean } = {},
   ) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const alreadyExists = await prisma.user.findFirst({
       where: {
         OR: [{ email: user.email }, { phone: user.phone }],
@@ -88,11 +89,11 @@ class UserService {
     return createdUser;
   }
 
-  async find(params: UserWhereInput, customSelect: UserSelect = {}) {
+  async find(params: Prisma.UserWhereInput, customSelect: Prisma.UserSelect = {}) {
     if (!params.id && !params.email) {
       throw new AppError('Falha ao buscar informações do usuário', HttpCode.BAD_REQUEST);
     }
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const { password, ...searchParams } = params;
     const user = await prisma.user.findFirst({
       where: searchParams,
@@ -115,11 +116,11 @@ class UserService {
   }
 
   async list(
-    filter?: UserWhereInput,
-    orderBy?: UserOrderByWithRelationInput[],
+    filter?: Prisma.UserWhereInput,
+    orderBy?: Prisma.UserOrderByWithRelationInput[],
     pagination?: PaginationParams,
   ) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const where = filter ? filter : {};
     const pageParams = pagination || {};
     const [users, total] = await Promise.all([
@@ -141,7 +142,7 @@ class UserService {
   }
 
   async delete(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
 
     await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
@@ -206,7 +207,7 @@ class UserService {
       enabledTwoFactor?: boolean;
     },
   ) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const dataToUpdate: Partial<UserCreatePayload> = { ...data };
 
     if (data.password) {
@@ -225,7 +226,7 @@ class UserService {
     return updatedUser;
   }
   async updateOTPSecret(userId: string, otpSecret: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     await prisma.user.update({
       where: { id: userId },
       data: { otpSecret },
@@ -260,7 +261,7 @@ class UserService {
     });
   }
   async updatePassword(email: string, newPassword: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const password = await Crypt.hash(newPassword);
     await prisma.user.update({
       where: { email },
@@ -268,7 +269,7 @@ class UserService {
     });
   }
   async generateUserRecoveryCodes(userId: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const codes = await OTPUtil.generateRecoveryCodes(8);
     await prisma.recoveryCode.createMany({
       data: codes.map((code) => ({ codeHash: code.hash, userId })),
@@ -276,7 +277,7 @@ class UserService {
     return codes.map(({ code }) => code);
   }
   async isValidRecoveryCode(userId: string, recoveryCode: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const result = await prisma.recoveryCode.findUnique({
       where: {
         codeHash: OTPUtil.hashRecoveryCode(recoveryCode),
@@ -292,7 +293,7 @@ class UserService {
     return !result?.used;
   }
   async deleteRecoveryCodes(userId: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     await prisma.recoveryCode.deleteMany({
       where: {
         userId,
@@ -300,7 +301,7 @@ class UserService {
     });
   }
   async changeRole(id: string, role: 'admin' | 'customer') {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     if (role === 'customer') {
       const count = await prisma.user.count({
         where: {

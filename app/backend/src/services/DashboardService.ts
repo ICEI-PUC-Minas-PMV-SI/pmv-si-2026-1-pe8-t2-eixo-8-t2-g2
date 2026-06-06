@@ -333,13 +333,13 @@ class DashboardService {
     P.id,
     P.name,
     P.price,
-    SUM(SI.quantity) as quantity,
-    SUM(SI.quantity * SI.priceAtBooking) as revenue
-  FROM SchedulerItem SI
-  INNER JOIN Product P
-    ON SI.productId = P.id
-  GROUP BY P.id, P.name
-  ORDER BY SUM(SI.quantity) DESC
+    SUM(SI."quantity") as quantity,
+    SUM(SI."quantity" * SI."priceAtBooking") as revenue
+  FROM "SchedulerItem" SI
+  INNER JOIN "Product" P
+    ON SI."productId" = P.id
+  GROUP BY P.id, P.name, P.price
+  ORDER BY SUM(SI."quantity") DESC
   LIMIT ${count}
 `;
     const schedulerItemSum = await prisma.schedulerItem.aggregate({

@@ -159,7 +159,7 @@ export function IntegrationsTab() {
         }
       />
 
-      <Card loading={integrationsQuery.isLoading}>
+      {/* <Card loading={integrationsQuery.isLoading}>
         <Row align="middle" justify="space-between">
           <Col>
             <Space orientation="vertical" size={0}>
@@ -175,7 +175,7 @@ export function IntegrationsTab() {
             <Switch checked={useSameGoogleAccount} onChange={setUseSameGoogleAccount} />
           </Col>
         </Row>
-      </Card>
+      </Card> */}
 
       {useSameGoogleAccount ? (
         <Card
@@ -276,7 +276,7 @@ export function IntegrationsTab() {
                   })
                 }
               >
-                Testar Configurações
+                Testar
               </Button>
             </Space>
           </Form>

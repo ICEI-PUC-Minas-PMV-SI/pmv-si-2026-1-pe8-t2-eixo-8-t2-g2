@@ -1,4 +1,15 @@
-import { Badge, Button, Empty, Flex, List, Popover, Space, Tag, Typography } from 'antd';
+import {
+  Badge,
+  Button,
+  Drawer,
+  Empty,
+  Flex,
+  List,
+  Popover,
+  Space,
+  Tag,
+  Typography,
+} from 'antd';
 import {
   DeleteOutlined,
   MinusOutlined,
@@ -9,6 +20,7 @@ import { useMemo, useState } from 'react';
 import NumberUtil from '~/utils/NumberUtil';
 import { useCartStore } from '~/hooks/useCartStore';
 import { useNavigation } from '~/hooks/useNavigation';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 const { Text } = Typography;
 
@@ -19,6 +31,7 @@ export function CartPreview() {
   const incrementItem = useCartStore((state) => state.incrementItem);
   const decrementItem = useCartStore((state) => state.decrementItem);
   const removeItem = useCartStore((state) => state.removeItem);
+  const isMobile = useBreakpoint('md');
 
   const totalItems = useMemo(
     () => items.reduce((total, item) => total + item.quantity, 0),
@@ -31,7 +44,12 @@ export function CartPreview() {
   );
 
   const content = (
-    <div style={{ width: 360, maxWidth: 'calc(100vw - 32px)' }}>
+    <div
+      style={{
+        width: isMobile ? 'calc(100vw - 24px)' : 360,
+        maxWidth: 360,
+      }}
+    >
       <Flex justify="space-between" align="center" style={{ marginBottom: 12 }}>
         <div>
           <div style={{ fontWeight: 700 }}>Carrinho</div>
@@ -101,13 +119,33 @@ export function CartPreview() {
     </div>
   );
 
+  // if (isMobile) {
+  //   return (
+  //     <>
+  //       <Badge count={totalItems}>
+  //         <Button icon={<ShoppingCartOutlined />} onClick={() => setOpen(true)} />
+  //       </Badge>
+
+  //       <Drawer
+  //         title="Carrinho"
+  //         placement="bottom"
+  //         size="70vh"
+  //         open={open}
+  //         onClose={() => setOpen(false)}
+  //       >
+  //         {content}
+  //       </Drawer>
+  //     </>
+  //   );
+  // }
+
   return (
     <Popover
       trigger="click"
       open={open}
       onOpenChange={setOpen}
       content={content}
-      placement="bottomRight"
+      placement={isMobile ? 'bottom' : 'bottomRight'}
       arrow={false}
     >
       <Badge count={totalItems} size="small" overflowCount={99}>

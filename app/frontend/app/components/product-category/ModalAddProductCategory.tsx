@@ -124,6 +124,7 @@ type ComponentProps = {
 export function ModalAddProductCategory(props: ComponentProps) {
   const { isOpened, onClose, editingCategory } = props;
   const isEditing = !!editingCategory;
+  const [selectedPreset, setSelectedPreset] = useState<string>();
 
   const [hasValidity, setHasValidity] = useState(false);
   const [isAnnual, setIsAnnual] = useState(false);
@@ -148,10 +149,22 @@ export function ModalAddProductCategory(props: ComponentProps) {
         setIsAnnual(validity === 'annual');
 
         if (validity === 'annual') {
+          const start = dayjs(editingCategory.startsAt);
+          const end = dayjs(editingCategory.endsAt);
           categoryForm.setFieldsValue({
             validityAnnualStart: dayjs(editingCategory.startsAt),
             validityAnnualEnd: dayjs(editingCategory.endsAt),
           });
+          const matchedPreset = PRESET_PERIODS.find((preset) => {
+            return (
+              start.date() === preset.start.day &&
+              start.month() + 1 === preset.start.month &&
+              end.date() === preset.end.day &&
+              end.month() + 1 === preset.end.month
+            );
+          });
+
+          setSelectedPreset(matchedPreset?.label);
         } else {
           categoryForm.setFieldsValue({
             validityFixedRange: [
@@ -168,12 +181,16 @@ export function ModalAddProductCategory(props: ComponentProps) {
       categoryForm.resetFields();
       setHasValidity(false);
       setIsAnnual(false);
+      setSelectedPreset(undefined);
     }
   }, [editingCategory, isOpened]);
 
   const applyPreset = (preset: PresetPeriod) => {
+    setSelectedPreset(preset.label);
+
     setHasValidity(true);
     setIsAnnual(true);
+
     categoryForm.setFieldsValue({
       validityAnnualStart: presetToDayjs(preset.start),
       validityAnnualEnd: presetToDayjs(preset.end),
@@ -277,7 +294,11 @@ export function ModalAddProductCategory(props: ComponentProps) {
                 checked={hasValidity}
                 onChange={(checked) => {
                   setHasValidity(checked);
-                  if (!checked) setIsAnnual(false);
+
+                  if (!checked) {
+                    setIsAnnual(false);
+                    setSelectedPreset(undefined);
+                  }
                 }}
                 checkedChildren="Com vigência"
                 unCheckedChildren="Sem vigência"
@@ -288,7 +309,13 @@ export function ModalAddProductCategory(props: ComponentProps) {
             <Form.Item label="Repetição anual">
               <Switch
                 checked={isAnnual}
-                onChange={setIsAnnual}
+                onChange={(checked) => {
+                  setIsAnnual(checked);
+
+                  if (!checked) {
+                    setSelectedPreset(undefined);
+                  }
+                }}
                 checkedChildren="Repete todo ano"
                 unCheckedChildren="Data fixa"
               />
@@ -309,6 +336,7 @@ export function ModalAddProductCategory(props: ComponentProps) {
                   >
                     <DatePicker
                       style={{ width: '100%' }}
+                      inputReadOnly
                       format="DD/MM"
                       picker="date"
                       renderExtraFooter={() => null}
@@ -353,6 +381,7 @@ export function ModalAddProductCategory(props: ComponentProps) {
                 {PRESET_PERIODS.map((preset) => (
                   <Tooltip key={preset.label} title={preset.tooltip}>
                     <Tag
+                      color={selectedPreset === preset.label ? 'blue' : undefined}
                       style={{
                         cursor: 'pointer',
                         userSelect: 'none',

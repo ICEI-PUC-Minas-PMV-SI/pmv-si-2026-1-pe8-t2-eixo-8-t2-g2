@@ -1,21 +1,25 @@
 import { useState } from 'react';
 import { Skeleton } from 'antd';
 import { PictureOutlined } from '@ant-design/icons';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 type ProductImageProps = {
   src?: string;
   alt: string;
+  width?: number | string;
+  height?: number | string;
 };
 
-export function ProductImage({ src, alt }: ProductImageProps) {
+export function ProductImage({ src, alt, width = 120, height = 82 }: ProductImageProps) {
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
-
+  const isMobile = useBreakpoint('md');
+  const sizePreset = isMobile ? { width: 80, height: 60 } : { width: 120, height: 82 };
+  const size = { height: height || sizePreset.height, width: width || sizePreset.width };
   if (!src) {
     return (
       <div
         style={{
-          width: 120,
-          height: 82,
+          ...size,
           display: 'grid',
           placeItems: 'center',
           background: '#f5f5f5',
@@ -30,8 +34,7 @@ export function ProductImage({ src, alt }: ProductImageProps) {
   return (
     <div
       style={{
-        width: 120,
-        height: 82,
+        ...size,
         position: 'relative',
         overflow: 'hidden',
         borderRadius: 12,
@@ -42,8 +45,7 @@ export function ProductImage({ src, alt }: ProductImageProps) {
         <Skeleton.Image
           active
           style={{
-            width: 120,
-            height: 82,
+            ...size,
           }}
         />
       )}

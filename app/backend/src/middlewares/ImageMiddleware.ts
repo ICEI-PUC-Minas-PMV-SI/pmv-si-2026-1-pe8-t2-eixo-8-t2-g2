@@ -1,7 +1,7 @@
 import type { FileFilterCallback } from 'multer';
 import multer from 'multer';
 import type { Request } from 'express';
-import { Image, type ResizeOptions } from '../utils/Image';
+import { Image, type ResizeOptions } from '../utils/Image.js';
 
 const ALLOWED_MIME = new Set([
   'image/jpeg',

@@ -6,17 +6,23 @@ import type {
   SchedulerUpdatePayload,
 } from '../@types/index.js';
 import { SchedulerService, type CreatedScheduler } from '../services/SchedulerService.js';
+// import type {
+//   SchedulerOrderByWithRelationInput,
+//   SchedulerWhereInput,
+// } from '../generated/prisma/models.js';
 import type {
-  SchedulerOrderByWithRelationInput,
-  SchedulerWhereInput,
-} from '../generated/prisma/models.js';
-import { GoogleApi, INTEGRATION } from '../integration/GoogleApi.js';
-import { UserRole } from '../validations/UserValidation.js';
-import type {
+  Prisma,
   DeliveryType,
   PaymentMethod,
   SchedulerStatus,
-} from '../generated/prisma/enums.js';
+} from '../generated/prisma';
+import { GoogleApi, INTEGRATION } from '../integration/GoogleApi.js';
+import { UserRole } from '../validations/UserValidation.js';
+// import type {
+// DeliveryType,
+// PaymentMethod,
+// SchedulerStatus,
+// } from '../generated/prisma/enums.js';
 import { CustomerService } from '../services/CustomerService.js';
 import { GoogleCalendarApi } from '../integration/GoogleCalendarApi.js';
 import { Logger } from '../logger/Logger.js';
@@ -40,8 +46,10 @@ class SchedulerController {
     if (!isAdmin) {
       customer = await CustomerService.findByUserId(userId);
     }
-    const orderBy = [] as SchedulerOrderByWithRelationInput[];
-    const filter: SchedulerWhereInput = isAdmin ? {} : { customerId: customer?.id || '' };
+    const orderBy = [] as Prisma.SchedulerOrderByWithRelationInput[];
+    const filter: Prisma.SchedulerWhereInput = isAdmin
+      ? {}
+      : { customerId: customer?.id || '' };
     const filters = req.filters;
     const sorters = req.sort;
     const search = req.search?.trim();

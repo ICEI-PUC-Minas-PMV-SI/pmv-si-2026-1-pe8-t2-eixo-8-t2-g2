@@ -10,6 +10,7 @@ import {
   Avatar,
   Tooltip,
   message,
+  Pagination,
 } from 'antd';
 import {
   EyeOutlined,
@@ -24,15 +25,18 @@ import DateUtil from '~/utils/DateUtil';
 import ReviewController, { type ReviewRecord } from '~/controllers/ReviewController';
 import { RATING_COLOR } from '~/constants/Colors';
 import { SummaryCards } from './SummaryCards';
+import { ReviewCard } from './ReviewCard';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
+import { useTableQuery } from '~/hooks/useTableQuery';
 
 export function ReviewTab() {
-  const [search, setSearch] = useState('');
   const queryClient = useQueryClient();
+  const isMobile = useBreakpoint('md');
 
-  const { data: reviews = [], isLoading } = useQuery({
-    queryKey: ['admin-reviews'],
-    queryFn: () => ReviewController.listAll(),
-  });
+  const { tableProps, setPage, setSearch, params } = useTableQuery<ReviewRecord>(
+    'admin-reviews',
+    (params) => ReviewController.list<ReviewRecord>(params),
+  );
 
   const toggleFeatured = useMutation({
     mutationFn: ({ id, featured }: { id: string; featured: boolean }) =>
@@ -43,15 +47,15 @@ export function ReviewTab() {
     onError: () => message.error('Erro ao atualizar destaque.'),
   });
 
-  const filtered = reviews.filter((r) => {
-    const q = search.toLowerCase();
-    return (
-      !q ||
-      r.customer.name.toLowerCase().includes(q) ||
-      r.comment?.toLowerCase().includes(q) ||
-      r.scheduler.items.some((i) => i.product.name.toLowerCase().includes(q))
-    );
-  });
+  // const filtered = reviews.filter((r) => {
+  //   const q = search.toLowerCase();
+  //   return (
+  //     !q ||
+  //     r.customer.name.toLowerCase().includes(q) ||
+  //     r.comment?.toLowerCase().includes(q) ||
+  //     r.scheduler.items.some((i) => i.product.name.toLowerCase().includes(q))
+  //   );
+  // });
 
   const columns: ColumnsType<ReviewRecord> = [
     {
@@ -106,12 +110,15 @@ export function ReviewTab() {
             </Tag>
           </Flex>
           {r.comment && (
-            <Typography.Text
-              style={{ fontSize: 12, color: '#595959', fontStyle: 'italic' }}
-              ellipsis={{ tooltip: r.comment }}
+            <Typography.Paragraph
+              ellipsis={{
+                rows: 2,
+                expandable: true,
+                symbol: 'Ver mais',
+              }}
             >
-              "{r.comment}"
-            </Typography.Text>
+              {r.comment}
+            </Typography.Paragraph>
           )}
         </Flex>
       ),
@@ -119,7 +126,6 @@ export function ReviewTab() {
     {
       title: 'Pedido',
       key: 'order',
-      responsive: ['lg'],
       render: (_, r) => {
         const items = r.scheduler.items;
         const label = items[0]
@@ -163,7 +169,7 @@ export function ReviewTab() {
   return (
     <Flex vertical style={{ padding: '24px 0' }}>
       {/* Cards de resumo */}
-      <SummaryCards reviews={reviews} />
+      <SummaryCards reviews={tableProps.dataSource || []} />
 
       {/* Tabela */}
       <Card
@@ -173,31 +179,70 @@ export function ReviewTab() {
           body: { padding: 0 },
         }}
         title={
-          <Flex justify="space-between" align="center" wrap="wrap" gap={8}>
+          <Flex justify="space-between" align="center" wrap="wrap" gap={12}>
             <Typography.Text strong style={{ fontSize: 13 }}>
               Todas as avaliações
             </Typography.Text>
             <Input
               placeholder="Buscar por cliente, comentário ou produto..."
               prefix={<SearchOutlined style={{ color: '#8C8C8C' }} />}
-              value={search}
+              value={params.search}
               onChange={(e) => setSearch(e.target.value)}
               allowClear
-              style={{ width: 300 }}
+              style={{ width: '100%', maxWidth: 320 }}
             />
           </Flex>
         }
       >
-        <Table<ReviewRecord>
-          rowKey="id"
-          loading={isLoading}
-          dataSource={filtered}
-          columns={columns}
-          pagination={{ pageSize: 10, showSizeChanger: false }}
-          size="middle"
-          rowClassName={(r) => (r.featured ? 'review-row-featured' : '')}
-          style={{ '--featured-bg': '#FFFBF9' } as React.CSSProperties}
-        />
+        {/* <Segmented
+          // value={filter}
+          // onChange={setFilter}
+          options={[
+            { label: 'Todas', value: 'all' },
+            { label: '⭐ 5 estrelas', value: '5' },
+            { label: 'Homepage', value: 'featured' },
+            { label: 'Com comentário', value: 'comment' },
+          ]}
+        /> */}
+        {isMobile ? (
+          <Flex vertical gap={12} style={{ padding: 16 }}>
+            {tableProps.dataSource?.map((review) => (
+              <ReviewCard
+                key={review.id}
+                review={review}
+                loading={toggleFeatured.isPending}
+                onToggle={(checked) =>
+                  toggleFeatured.mutate({
+                    id: review.id,
+                    featured: checked,
+                  })
+                }
+              />
+            ))}
+            {tableProps.pagination && (
+              <Flex justify="center" style={{ paddingTop: 8 }}>
+                <Pagination
+                  {...tableProps.pagination}
+                  simple
+                  size="small"
+                  onChange={setPage}
+                />
+              </Flex>
+            )}
+          </Flex>
+        ) : (
+          <Table<ReviewRecord>
+            {...tableProps}
+            // rowKey="id"
+            // loading={isLoading}
+            // dataSource={filtered}
+            columns={columns}
+            // pagination={{ pageSize: 10, showSizeChanger: false }}
+            size="middle"
+            // rowClassName={(r) => (r.featured ? 'review-row-featured' : '')}
+            // style={{ '--featured-bg': '#FFFBF9' } as React.CSSProperties}
+          />
+        )}
       </Card>
 
       {/* Estilo inline para linha destacada */}

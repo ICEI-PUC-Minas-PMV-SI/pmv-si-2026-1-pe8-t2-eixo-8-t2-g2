@@ -1,9 +1,12 @@
 import type { AppSettingsPayload } from '~/@types/app-settings';
 import Request from '~/utils/Request';
+import TextUtil from '~/utils/TextUtil';
 
 class AppSettingsController {
   save(payload: AppSettingsPayload) {
-    return Request.post('/app-settings', payload);
+    const data = { ...payload };
+    data.whatsapp = TextUtil.unformatPhone(data.whatsapp);
+    return Request.post('/app-settings', data);
   }
   find() {
     return Request.get<AppSettingsPayload>('/app-settings');

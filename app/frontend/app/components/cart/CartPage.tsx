@@ -23,11 +23,13 @@ import DateUtil from '~/utils/DateUtil';
 import type { CreateScheduler } from '~/@types/scheduler';
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 const { Text, Title } = Typography;
 
 export function CartPage() {
   const items = useCartStore((state) => state.items);
+  const isMobile = useBreakpoint('md');
   const clearCart = useCartStore((state) => state.clearCart);
   const incrementItem = useCartStore((state) => state.incrementItem);
   const decrementItem = useCartStore((state) => state.decrementItem);
@@ -106,9 +108,23 @@ export function CartPage() {
   };
 
   return (
-    <Space orientation="vertical" size="large" style={{ width: '100%', padding: 16 }}>
+    <Space
+      orientation="vertical"
+      size="large"
+      style={{
+        width: '100%',
+        padding: 16,
+        paddingBottom: isMobile ? 90 : 16,
+      }}
+    >
       <Card>
-        <Flex justify="space-between" align="center" gap="middle" wrap>
+        <Flex
+          justify="space-between"
+          align={isMobile ? 'stretch' : 'start'}
+          gap="middle"
+          wrap
+          vertical={isMobile}
+        >
           <div>
             <Title level={3} style={{ marginBottom: 4 }}>
               Carrinho de compras
@@ -129,76 +145,84 @@ export function CartPage() {
               </Card>
             ) : (
               items.map((item) => {
-                const subtotalItem = item.quantity * item.product.price;
                 return (
                   <Card key={item.product.id}>
-                    <Flex gap="middle" vertical={false} align="start">
+                    <Flex
+                      gap="middle"
+                      vertical={isMobile}
+                      align={isMobile ? 'stretch' : 'start'}
+                    >
                       <div
                         style={{
-                          width: 96,
-                          height: 96,
+                          width: isMobile ? '100%' : 96,
+                          height: isMobile ? 180 : 96,
                           borderRadius: 16,
                           overflow: 'hidden',
                           background: '#f5f5f5',
                           flexShrink: 0,
                         }}
                       >
-                        {item.product.imageUrl ? (
+                        {item.product.imageUrl && (
                           <Image
                             src={item.product.imageUrl}
                             alt={item.product.name}
-                            width={96}
-                            height={96}
+                            width="100%"
+                            height="100%"
                             style={{ objectFit: 'cover' }}
                             preview={false}
                           />
-                        ) : null}
+                        )}
                       </div>
 
-                      <Space
-                        orientation="vertical"
-                        style={{ flex: 1, minWidth: 0 }}
-                        size={4}
-                      >
+                      <Flex vertical style={{ flex: 1 }} gap={4}>
                         <Text strong style={{ fontSize: 16 }}>
                           {item.product.name}
                         </Text>
+
                         {item.product.description && (
                           <Text type="secondary">{item.product.description}</Text>
                         )}
-                        <Text>
-                          Unitário: {NumberUtil.currency(item.product.price)} | Subtotal:{' '}
-                          {NumberUtil.currency(subtotalItem)}
-                        </Text>
-                      </Space>
 
-                      <Space orientation="vertical" align="end" size={8}>
-                        <InputNumber
-                          min={1}
-                          value={item.quantity}
-                          onChange={(value) =>
-                            setItemQuantity(item.product.id, Number(value || 1))
-                          }
-                        />
-                        <Space>
-                          <Button
-                            icon={<DeleteOutlined />}
-                            danger
-                            onClick={() => removeItem(item.product.id)}
-                          >
-                            Remover
-                          </Button>
+                        <Text>Unitário: {NumberUtil.currency(item.product.price)}</Text>
+
+                        <Text strong>
+                          Subtotal:{' '}
+                          {NumberUtil.currency(item.product.price * item.quantity)}
+                        </Text>
+                      </Flex>
+
+                      <Flex vertical gap={8} align={isMobile ? 'stretch' : 'end'}>
+                        <Space.Compact>
                           <Button onClick={() => decrementItem(item.product.id)}>
                             -
                           </Button>
+
+                          <InputNumber
+                            min={1}
+                            controls={false}
+                            value={item.quantity}
+                            style={{ width: 70 }}
+                            onChange={(value) =>
+                              setItemQuantity(item.product.id, Number(value || 1))
+                            }
+                          />
+
                           <Button
                             type="primary"
                             onClick={() => incrementItem(item.product.id)}
                           >
                             +
                           </Button>
-                        </Space>
-                      </Space>
+                        </Space.Compact>
+
+                        <Button
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={() => removeItem(item.product.id)}
+                        >
+                          Remover
+                        </Button>
+                      </Flex>
                     </Flex>
                   </Card>
                 );
@@ -207,49 +231,77 @@ export function CartPage() {
           </Space>
         </Col>
 
-        <Col xs={24} lg={8}>
-          <Card>
-            <Title level={4}>Resumo</Title>
-            <Divider />
-            <Space orientation="vertical" style={{ width: '100%' }} size={8}>
-              <Flex justify="space-between">
-                <Text>Itens</Text>
-                <Text strong>{totalItems}</Text>
-              </Flex>
-              <Flex justify="space-between">
-                <Text>Subtotal</Text>
-                <Text strong>{NumberUtil.currency(subtotal)}</Text>
-              </Flex>
-            </Space>
-            <Divider />
-            <Space orientation="vertical" style={{ width: '100%' }}>
-              <Button
-                type="primary"
-                block
-                disabled={items.length === 0}
-                onClick={openCheckout}
-              >
-                Continuar para checkout
-              </Button>
-              <Button block danger onClick={clearCart} disabled={items.length === 0}>
-                Limpar carrinho
-              </Button>
-            </Space>
-          </Card>
-        </Col>
+        {!isMobile && (
+          <Col lg={8}>
+            <Card>
+              <Title level={4}>Resumo</Title>
+              <Divider />
+              <Space orientation="vertical" style={{ width: '100%' }} size={8}>
+                <Flex justify="space-between">
+                  <Text>Itens</Text>
+                  <Text strong>{totalItems}</Text>
+                </Flex>
+                <Flex justify="space-between">
+                  <Text>Subtotal</Text>
+                  <Text strong>{NumberUtil.currency(subtotal)}</Text>
+                </Flex>
+              </Space>
+              <Divider />
+              <Space orientation="vertical" style={{ width: '100%' }}>
+                <Button
+                  type="primary"
+                  block
+                  disabled={items.length === 0}
+                  onClick={openCheckout}
+                >
+                  Continuar para checkout
+                </Button>
+                <Button block danger onClick={clearCart} disabled={items.length === 0}>
+                  Limpar carrinho
+                </Button>
+              </Space>
+            </Card>
+          </Col>
+        )}
       </Row>
+      {isMobile && items.length > 0 && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: '#fff',
+            padding: 12,
+            borderTop: '1px solid #f0f0f0',
+            zIndex: 1000,
+            boxShadow: '0 -2px 8px rgba(0,0,0,0.08)',
+          }}
+        >
+          <Flex justify="space-between">
+            <div>
+              <Text strong>{NumberUtil.currency(subtotal)}</Text>
+            </div>
 
+            <Button type="primary" onClick={openCheckout}>
+              Finalizar pedido
+            </Button>
+          </Flex>
+        </div>
+      )}
       <Drawer
-        size="large"
         title="Finalizar pedido"
         open={checkoutOpen}
+        placement={isMobile ? 'bottom' : 'right'}
+        size="large"
         onClose={() => {
           form.resetFields();
           setCheckoutOpen(false);
         }}
-        extra={
-          <Space>
+        footer={
+          <Flex gap={8}>
             <Button
+              block
               onClick={() => {
                 form.resetFields();
                 setCheckoutOpen(false);
@@ -257,10 +309,16 @@ export function CartPage() {
             >
               Cancelar
             </Button>
-            <Button type="primary" loading={savingCheckout} onClick={handleCheckoutSave}>
+
+            <Button
+              block
+              type="primary"
+              loading={savingCheckout}
+              onClick={handleCheckoutSave}
+            >
               Confirmar pedido
             </Button>
-          </Space>
+          </Flex>
         }
       >
         <SchedulerForm form={form} />

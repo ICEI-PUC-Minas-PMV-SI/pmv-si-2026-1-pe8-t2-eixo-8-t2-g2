@@ -1,9 +1,10 @@
 import type { ProductCategoryCreatePayload } from '../@types/index.js';
 import type { ProductCategoryRequest } from '../@types/product-category.js';
-import type {
-  CategoryOrderByWithRelationInput,
-  CategoryWhereInput,
-} from '../generated/prisma/models.js';
+import type { Prisma } from '../generated/prisma';
+// import type {
+//   CategoryOrderByWithRelationInput,
+//   CategoryWhereInput,
+// } from '../generated/prisma/models.js';
 import { ValidityHelper } from '../helper/ValidityHelper.js';
 import { ProductCategoryService } from '../services/ProductCategoryService.js';
 
@@ -13,12 +14,12 @@ class ProductCategoryController {
     return result;
   }
   list(req: ProductCategoryRequest) {
-    const orderBy = [] as CategoryOrderByWithRelationInput[];
+    const orderBy = [] as Prisma.CategoryOrderByWithRelationInput[];
     const sorters = req.sort;
     const isAdmin = req.user?.role === 'admin';
     const validityFilter = isAdmin ? {} : ValidityHelper.buildValidityFilter();
     const isActiveFilter = isAdmin ? {} : { isActive: true };
-    const filter = { ...validityFilter, ...isActiveFilter } as CategoryWhereInput;
+    const filter = { ...validityFilter, ...isActiveFilter } as Prisma.CategoryWhereInput;
     const search = req.search?.trim();
     if (sorters) {
       sorters.forEach((sort) => {
