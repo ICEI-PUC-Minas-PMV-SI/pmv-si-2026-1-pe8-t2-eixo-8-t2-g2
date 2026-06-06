@@ -475,7 +475,9 @@ export function SchedulerList({
           {...tableProps}
           scroll={{ x: 700 }}
           style={{ overflowX: 'auto' }}
-          styles={{ content: { cursor: 'pointer' } }}
+          styles={{
+            content: { cursor: 'pointer' },
+          }}
           expandable={{
             expandRowByClick: true,
             expandedRowRender: (record) => (
