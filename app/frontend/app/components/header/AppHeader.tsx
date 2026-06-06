@@ -26,6 +26,9 @@ import {
 } from '@ant-design/icons';
 import { iconStyle, menu, type MenuItem } from '../menu/Menu';
 import { UserSession } from '~/utils/UserSession';
+import { AppSettingsController } from '~/controllers/AppSettingsController';
+import type { AppSettingsPayload } from '~/@types/app-settings';
+import { useQuery } from '@tanstack/react-query';
 
 type AppSettings = {
   siteName?: string;
@@ -38,19 +41,14 @@ type AppSettings = {
   primaryColor?: string;
 };
 
-const DEFAULT: { settings: AppSettings } = {
-  settings: {
-    siteName: 'Doce & Cia',
-    whatsapp: '5531999999999',
-    contactEmail: 'contato@doceatelier.com.br',
-    serviceHours: 'Seg–Sex 8h–18h · Sáb 8h–14h',
-    address: 'Belo Horizonte, MG',
-    instagram: 'doceatelier',
-  },
-};
 type HeaderProps = { settings?: AppSettings };
-export default function AppHeader(props: HeaderProps = DEFAULT) {
-  const { settings = DEFAULT.settings } = props;
+export default function AppHeader(props: HeaderProps) {
+  const settingsQuery = useQuery<AppSettingsPayload>({
+    queryKey: ['app-settings'],
+    queryFn: () => AppSettingsController.findInfo(),
+    staleTime: 1000 * 60 * 5,
+  });
+  const { settings } = props;
   const [scrolled, setScrolled] = useState(false);
   const { isLogged, user, isAdmin } = useAuthStore();
   const { pathname } = useLocation();
@@ -176,7 +174,7 @@ export default function AppHeader(props: HeaderProps = DEFAULT) {
           }}
           onClick={goToHome}
         >
-          {settings.siteName ?? 'Confeitaria'}
+          {settingsQuery.data?.siteName ?? settings?.siteName ?? ''}
         </Typography.Text>
         <nav>
           <Space size={0}>

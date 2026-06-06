@@ -1,11 +1,14 @@
 import type { ReviewCreatePayload } from '../@types/review.js';
-import { Prisma } from '../db/Prisma.js';
+import { Prisma as PrismaDB } from '../db/Prisma.js';
 import { AppError } from '../error/AppError.js';
 import { HttpCode } from '../utils/HttpCode.js';
+import type { Prisma } from '../generated/prisma';
+import type { PaginationParams } from '../@types/pagination.js';
+import { ResponseUtil } from '../utils/ResponseUtil.js';
 
 class ReviewService {
   async create(userId: string, data: ReviewCreatePayload) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const { schedulerId, rating, comment = null } = data;
     const customer = await prisma.customer.findUnique({
       where: {
@@ -39,7 +42,7 @@ class ReviewService {
   }
 
   async find(id: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
 
     const about = await prisma.aboutInfo.findUnique({
       where: { id },
@@ -56,7 +59,7 @@ class ReviewService {
   }
 
   async ignoreReview(userId: string, schedulerIds: string[]) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const customer = await prisma.customer.findUnique({
       where: {
         userId,
@@ -74,28 +77,43 @@ class ReviewService {
       },
     });
   }
-  async list(featured?: boolean) {
-    const prisma = await Prisma.getClient();
-    return prisma.review.findMany({
-      ...(featured !== undefined && { take: 3 }),
-      where: featured !== undefined ? { featured } : {},
-      include: {
-        customer: true,
-        scheduler: {
-          include: {
-            items: {
-              include: {
-                product: true,
+
+  async list(
+    filter?: Prisma.ReviewWhereInput,
+    orderBy?: Prisma.ReviewOrderByWithRelationInput[],
+    pagination?: PaginationParams,
+  ) {
+    const prisma = await PrismaDB.getClient();
+    const where = filter ? filter : {};
+    const pageParams = pagination || {};
+    const [reviews, total] = await Promise.all([
+      prisma.review.findMany({
+        where,
+        orderBy: orderBy && orderBy.length > 0 ? orderBy : { createdAt: 'desc' },
+        include: {
+          customer: true,
+          scheduler: {
+            include: {
+              items: {
+                include: {
+                  product: true,
+                },
               },
+              customer: false,
             },
-            customer: false,
           },
         },
-      },
-    });
+      }),
+      prisma.review.count({ where }),
+    ]);
+    return {
+      data: reviews,
+      total,
+      ...ResponseUtil.handlePageParams(pageParams, total),
+    };
   }
   async getPending(userId: string) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     const customer = await prisma.customer.findUnique({
       where: {
         userId,
@@ -113,7 +131,7 @@ class ReviewService {
     });
   }
   async changeFeatured(reviewId: string, featured: boolean) {
-    const prisma = await Prisma.getClient();
+    const prisma = await PrismaDB.getClient();
     return prisma.review.update({
       data: {
         featured,

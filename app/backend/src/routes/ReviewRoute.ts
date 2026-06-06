@@ -1,5 +1,10 @@
 import { type Router } from 'express';
-import type { Response, AboutRequest, GenericRequest } from '../@types/index.js';
+import type {
+  Response,
+  AboutRequest,
+  GenericRequest,
+  ReviewRequest,
+} from '../@types/index.js';
 import { UserScopeMiddleware } from '../middlewares/UserScopeMiddleware.js';
 import { ReviewValidation } from '../validations/ReviewValidation.js';
 import { ReviewController } from '../controllers/ReviewController.js';
@@ -26,17 +31,22 @@ class ReviewRoute {
       },
     );
 
-    router.get('/review', async (_req: AboutRequest, res: Response) => {
-      const result = await ReviewController.list();
-      res.json({ data: result });
+    // router.get('/review', async (_req: ReviewRequest, res: Response) => {
+    //   const result = await ReviewController.list();
+    //   res.json({ data: result });
+    // });
+
+    router.post('/review-list', async (req: ReviewRequest, res: Response) => {
+      const result = await ReviewController.list(req);
+      res.json(result);
     });
 
-    router.get('/review/featured', async (_req: AboutRequest, res: Response) => {
+    router.get('/review/featured', async (_req: ReviewRequest, res: Response) => {
       const result = await ReviewController.listFeatured();
-      res.json({ data: result });
+      res.json(result);
     });
 
-    router.get('/review/pending', async (req: AboutRequest, res: Response) => {
+    router.get('/review/pending', async (req: ReviewRequest, res: Response) => {
       const userId = req.user?.id || '';
       const result = await ReviewController.getPending(userId);
       res.json(result);
@@ -46,7 +56,7 @@ class ReviewRoute {
       '/review/:id/featured',
       UserScopeMiddleware.adminOnly(),
       ReviewValidation.changeFeatured(),
-      async (req: AboutRequest, res: Response) => {
+      async (req: ReviewRequest, res: Response) => {
         const id = req.params.id as string;
         const result = await ReviewController.changeFeatured(id, req.body.featured);
         res.json(result);

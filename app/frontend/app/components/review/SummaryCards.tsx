@@ -3,7 +3,11 @@ import { RATING_COLOR } from '~/constants/Colors';
 import ReviewController, { type ReviewRecord } from '~/controllers/ReviewController';
 import { StarFilled, HomeOutlined } from '@ant-design/icons';
 
-export function SummaryCards({ reviews }: { reviews: ReviewRecord[] }) {
+export function SummaryCards({
+  reviews,
+}: {
+  reviews: ReviewRecord[] | readonly ReviewRecord[];
+}) {
   const avg = ReviewController.averageRating(reviews);
   const featured = reviews.filter((r) => r.featured).length;
   const dist = [5, 4, 3, 2, 1].map((star) => ({

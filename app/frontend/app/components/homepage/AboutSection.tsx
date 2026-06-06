@@ -1,5 +1,5 @@
 import { Col, Flex, Grid, Row, Tag, Typography } from 'antd';
-import type { About, AboutInfo } from '~/@types/about';
+import type { About } from '~/@types/about';
 import { CheckCircleOutlined } from '@ant-design/icons';
 
 export function AboutSection({ about }: { about: About }) {

@@ -1,5 +1,6 @@
 import type { PendingScheduler, Scheduler } from '~/@types/scheduler';
 import type { ReviewPayload } from '~/components/review/ReviewModal';
+import type { TableParams } from '~/hooks/useTableQuery';
 import Request from '~/utils/Request';
 
 export type ReviewRecord = {
@@ -44,10 +45,14 @@ class ReviewController {
     return Request.get<{ data: ReviewRecord[] }>('/review').then((r) => r.data);
   }
 
+  async list<T>(params: TableParams) {
+    return Request.getTableData<T>('/review-list', params);
+  }
+
   async listFeatured(): Promise<ReviewRecord[]> {
     return Request.get<{ data: ReviewRecord[] }>('/review/featured').then((r) => r.data);
   }
-  
+
   /**
    * Admin: toggle de destaque para homepage.
    * PATCH /review/:id/featured
@@ -60,9 +65,10 @@ class ReviewController {
     return ['', 'Muito ruim', 'Ruim', 'Regular', 'Bom', 'Excelente'][r] ?? '';
   }
 
-  averageRating(reviews: ReviewRecord[]): number {
+  averageRating(reviews: ReviewRecord[] | readonly ReviewRecord[]): number {
     if (!reviews.length) return 0;
-    return reviews.reduce((a, r) => a + r.rating, 0) / reviews.length;
+    const reviewsClone = [...reviews];
+    return reviewsClone.reduce((a, r) => a + r.rating, 0) / reviewsClone.length;
   }
 }
 

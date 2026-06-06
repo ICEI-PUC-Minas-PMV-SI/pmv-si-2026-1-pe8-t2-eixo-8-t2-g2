@@ -49,3 +49,12 @@ export type ProductCategoryFilter = {
 };
 
 export type ProductCategorySort = 'name';
+
+export type ReviewFilter = {
+  comment: string;
+  rating: number;
+  featured: boolean;
+};
+
+export type ReviewSort = 'rating';
+export type ReviewFilterKey = keyof ReviewFilter;

@@ -1,4 +1,5 @@
 export type AppSettingsPayload = {
+  siteName?: string;
   whatsapp: string;
   contactEmail: string;
   serviceHours: string;

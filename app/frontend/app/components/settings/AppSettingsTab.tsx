@@ -86,7 +86,7 @@ export function AppSettingsTab() {
     >
       <Space orientation="vertical" size={16} style={{ width: '100%' }}>
         {/* INFORMAÇÕES GERAIS */}
-        {/* <Card title="Informações Gerais">
+        <Card title="Informações Gerais">
           <Row gutter={16}>
             <Col xs={24} md={12}>
               <Form.Item
@@ -103,15 +103,15 @@ export function AppSettingsTab() {
               </Form.Item>
             </Col>
 
-            <Col xs={24} md={12}>
+            {/* <Col xs={24} md={12}>
               <Form.Item label="Logo" name="logo" extra="PNG ou JPG até 2MB">
                 <Upload beforeUpload={() => false} maxCount={1} listType="picture">
                   <Button icon={<UploadOutlined />}>Fazer upload da logo</Button>
                 </Upload>
               </Form.Item>
-            </Col>
+            </Col> */}
           </Row>
-        </Card> */}
+        </Card>
 
         {/* ATENDIMENTO */}
         <Card title="Atendimento">
