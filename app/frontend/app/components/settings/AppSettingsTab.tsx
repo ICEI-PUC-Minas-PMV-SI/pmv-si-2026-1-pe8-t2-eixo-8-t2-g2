@@ -62,7 +62,10 @@ export function AppSettingsTab() {
   useEffect(() => {
     if (settingsQuery.data) {
       form.setFieldsValue({
-        whatsapp: settingsQuery.data.whatsapp,
+        siteName: settingsQuery.data.siteName,
+        whatsapp: settingsQuery.data.whatsapp
+          ? TextUtil.formatPhone(settingsQuery.data.whatsapp)
+          : '',
         contactEmail: settingsQuery.data.contactEmail,
         serviceHours: settingsQuery.data.serviceHours,
         address: settingsQuery.data.address,
@@ -77,6 +80,7 @@ export function AppSettingsTab() {
       layout="vertical"
       onFinish={handleSave}
       initialValues={{
+        siteName: '',
         whatsapp: '',
         contactEmail: '',
         serviceHours: '',

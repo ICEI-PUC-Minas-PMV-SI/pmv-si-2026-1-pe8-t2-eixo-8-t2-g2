@@ -43,22 +43,13 @@ class IntegrationsRoute {
       const code = req.query.code;
       try {
         await IntegrationsController.handleWebhookToken(code, 'calendar');
-        res.send(`
-          <script>
-            window.opener.postMessage(
-              { type: 'GOOGLE_AUTH_SUCCESS', integration: 'calendar' },
-              '*'
-            );
-            window.close();
-          </script>
-        `);
+        res.redirect(
+          `${process.env.FRONTEND_URL}/app/settings/callback?integration=calendar&status=success`,
+        );
       } catch (err) {
-        ResponseUtil.handleError(
-          res,
-          new AppError(
-            'Error occurred while authenticating with Google',
-            HttpCode.INTERNAL_SERVER_ERROR,
-          ),
+        this.logger.error('Error handling Google webhook', { error: err });
+        res.redirect(
+          `${process.env.FRONTEND_URL}/app/settings/callback?integration=calendar&status=error`,
         );
       }
     });
@@ -91,23 +82,13 @@ class IntegrationsRoute {
       const code = req.query.code;
       try {
         await IntegrationsController.handleWebhookToken(code, 'all');
-        res.send(`
-          <script>
-            window.opener.postMessage(
-              { type: 'GOOGLE_AUTH_SUCCESS', integration: 'all' },
-              '*'
-            );
-            window.close();
-          </script>
-        `);
+        res.redirect(
+          `${process.env.FRONTEND_URL}/app/settings/callback?integration=all&status=success`,
+        );
       } catch (err) {
         this.logger.error('Error handling Google webhook', { error: err });
-        ResponseUtil.handleError(
-          res,
-          new AppError(
-            'Error occurred while authenticating with Google',
-            HttpCode.INTERNAL_SERVER_ERROR,
-          ),
+        res.redirect(
+          `${process.env.FRONTEND_URL}/app/settings/callback?integration=all&status=error`,
         );
       }
     });

@@ -16,6 +16,7 @@ import { CartPage } from './components/cart/CartPage';
 import { UserPage } from './components/user/UserPage';
 import { AboutUsPage } from './components/about-us/AboutUsPage';
 import { ReviewsPage } from './components/review/ReviewsPage';
+import { GoogleAuthCallback } from './components/settings/GoogleAuthCallback';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/app/scheduler" element={<SchedulerPage />} />
           <Route path="/app/product" element={<ProductPage />} />
           <Route path="/app/settings" element={<SettingsPage />} />
+          <Route path="/app/settings/callback" element={<GoogleAuthCallback />} />
           <Route path="/app/about" element={<AboutUsPage />} />
           <Route path="/app/cost-calculator" element={<CostCalculator />} />
           <Route path="/app/cart" element={<CartPage />} />

@@ -9,7 +9,7 @@ class Popup {
     const popup = window.open(
       url,
       'googleAuth',
-      `width=${width},height=${height},left=${left},top=${top}`,
+      `popup=yes,width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`,
     );
 
     return popup;

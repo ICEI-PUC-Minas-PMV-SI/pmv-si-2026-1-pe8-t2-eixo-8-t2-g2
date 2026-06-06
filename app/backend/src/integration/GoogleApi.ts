@@ -48,7 +48,10 @@ class GoogleApi {
   };
 
   async getClient(integration: IntegrationType) {
-    const redirectUri = `${Env.getServerUrl()}${this.config[integration].redirectUri}`;
+    const webhookUrl = process.env.GOOGLE_WEBHOOK_URL;
+    const redirectUri = webhookUrl
+      ? webhookUrl
+      : `${Env.getServerUrl()}${this.config[integration].redirectUri}`;
     const result = await IntegrationsService.find(integration);
     if (result) {
       const clientSecret = Crypt.decrypt(result.encryptedClientSecret);
