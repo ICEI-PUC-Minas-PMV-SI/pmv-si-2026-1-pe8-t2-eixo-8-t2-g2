@@ -36,4 +36,4 @@ Como conclusão, verificou-se que a adoção de soluções tecnológicas, como a
 | ETAPA 2         |[Plano de Inteligência Competitiva (IC)](docs/plano-IC.md) <br> |
 | ETAPA 3         |[Desenvolvimento de alternativas de soluções de SI](docs/desenvolvimento-soluções.md) <br> |
 | ETAPA 4         |[Planejamento Estratégico de TI](docs/planejamento-estratégico.md) <br> |
-| ETAPA 5         |[Apresentação](docs/implantação-apresentação.md) <br> |
+| ETAPA 5         |[Apresentação](docs/Apresentação_TCC.pdf) <br> |
