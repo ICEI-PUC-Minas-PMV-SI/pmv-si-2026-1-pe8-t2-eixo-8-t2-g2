@@ -75,6 +75,7 @@ Com base nos requisitos funcionais e nas histórias de usuário documentadas no 
 
 Figura 3 - Quadro-Resumo
 <img width="948" height="364" alt="image" src="https://github.com/user-attachments/assets/dbba9cba-83c3-4d4c-8362-825e1c2ff014" />
+
 Fonte: Elaborado pelos autores (2026).
 
 ## Levantamento de Requisitos e Modelagem Inicial
@@ -187,11 +188,13 @@ Dessa forma, conclui-se que o sistema apresenta alta viabilidade técnica, em fu
 ### Diagrama de Casos de Uso
 Figura 4 - Diagrama de Casos de Uso
 <img width="585" height="573" alt="image" src="https://github.com/user-attachments/assets/e57ed2b0-5d18-43d4-baa9-90ee1e2dc884" />
+
 Fonte: Elaborado pelos autores (2026).
 
 ### Modelo Relacional
 Figura 5 - Modelo Relacional
 <img width="761" height="564" alt="image" src="https://github.com/user-attachments/assets/8abe1dcb-509c-4c2a-badb-4e98b537d0ae" />
+
 Fonte: Elaborado pelos autores (2026).
 
 ## Protótipo e Planejamento da Arquitetura
