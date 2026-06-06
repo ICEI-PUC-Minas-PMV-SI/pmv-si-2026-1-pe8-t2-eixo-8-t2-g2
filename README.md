@@ -1,4 +1,4 @@
-# Doces & Cia
+# Doce & Cia
 
 `CURSO: Sistemas de Informação`
 
