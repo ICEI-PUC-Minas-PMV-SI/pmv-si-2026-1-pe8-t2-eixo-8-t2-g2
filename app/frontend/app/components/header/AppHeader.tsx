@@ -156,14 +156,8 @@ export default function AppHeader(props: HeaderProps) {
             icon={<MenuOutlined />}
             onClick={() => setMobileMenuIsOpen(true)}
           />
-          // <Button
-          //   type="text"
-          //   icon={<MenuOutlined />}
-          //   onClick={() => setMobileMenuIsOpen(true)}
-          // />
         )}
         <Typography.Text
-          // level={4}
           strong
           ellipsis
           style={{

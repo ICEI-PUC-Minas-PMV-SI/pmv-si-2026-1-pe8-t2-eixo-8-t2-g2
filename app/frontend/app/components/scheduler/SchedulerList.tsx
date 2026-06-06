@@ -536,23 +536,6 @@ export function SchedulerList({
                 </Space>
               ),
             },
-            // {
-            //   hidden: !isAdmin(),
-            //   responsive: ['xs', 'sm'], // só em mobile
-            //   title: 'Pedido',
-            //   key: 'customer_mobile',
-            //   render: (_, record) => (
-            //     <Space orientation="vertical" size={0}>
-            //       <Typography.Text strong style={{ fontSize: 13 }}>
-            //         {record.customer.name}
-            //       </Typography.Text>
-            //       <Typography.Text type="secondary" style={{ fontSize: 11 }}>
-            //         {DateUtil.format(record.scheduledAt)}
-            //       </Typography.Text>
-            //       <SchedulerStatusTag status={record.status} />
-            //     </Space>
-            //   ),
-            // },
             {
               hidden: isAdmin(),
               title: (

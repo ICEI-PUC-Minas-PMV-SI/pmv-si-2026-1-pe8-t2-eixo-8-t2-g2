@@ -126,10 +126,9 @@ class SchedulerService {
     const invalidItems = scheduledTo
       ? this.isValidItemsByLeadTime(new Date(scheduledTo), productsList)
       : [];
-    if (invalidItems.length > 0 && false) {
-      //temp ignore
+    if (invalidItems.length > 0) {
       throw new AppError(
-        `Some items do not meet the booking lead time requirements`,
+        `Pedido não foi registrado pois alguns itens precisam de uma antecedencia maior do que a previsão de entrega/retirada`,
         HttpCode.BAD_REQUEST,
         {
           invalidItems: invalidItems.map((item) => ({

@@ -24,6 +24,7 @@ export function CropModal({
   const [rotation, setRotation] = useState(0);
   const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [loading, setLoading] = useState(false);
+  const [cropperReady, setCropperReady] = useState(false);
 
   const onCropComplete = useCallback((_: Area, pixelCrop: Area) => {
     setCroppedArea(pixelCrop);
@@ -51,6 +52,9 @@ export function CropModal({
     <Modal
       open={open}
       onCancel={onCancel}
+      afterOpenChange={(visible) => {
+        setCropperReady(visible);
+      }}
       footer={null}
       width={600}
       title={
@@ -74,23 +78,25 @@ export function CropModal({
     >
       {/* Área de crop */}
       <div style={{ position: 'relative', height: 340, background: '#1A1A1A' }}>
-        <Cropper
-          image={imageSrc}
-          crop={crop}
-          zoom={zoom}
-          rotation={rotation}
-          aspect={aspect}
-          onCropChange={setCrop}
-          onZoomChange={setZoom}
-          onCropComplete={onCropComplete}
-          style={{
-            containerStyle: { borderRadius: 0 },
-            cropAreaStyle: {
-              border: '2px solid #E06D5B',
-              boxShadow: '0 0 0 9999px rgba(0,0,0,0.55)',
-            },
-          }}
-        />
+        {cropperReady && (
+          <Cropper
+            image={imageSrc}
+            crop={crop}
+            zoom={zoom}
+            rotation={rotation}
+            aspect={aspect}
+            onCropChange={setCrop}
+            onZoomChange={setZoom}
+            onCropComplete={onCropComplete}
+            style={{
+              containerStyle: { borderRadius: 0 },
+              cropAreaStyle: {
+                border: '2px solid #E06D5B',
+                boxShadow: '0 0 0 9999px rgba(0,0,0,0.55)',
+              },
+            }}
+          />
+        )}
       </div>
 
       {/* Controles */}

@@ -119,26 +119,6 @@ export function CartPreview() {
     </div>
   );
 
-  // if (isMobile) {
-  //   return (
-  //     <>
-  //       <Badge count={totalItems}>
-  //         <Button icon={<ShoppingCartOutlined />} onClick={() => setOpen(true)} />
-  //       </Badge>
-
-  //       <Drawer
-  //         title="Carrinho"
-  //         placement="bottom"
-  //         size="70vh"
-  //         open={open}
-  //         onClose={() => setOpen(false)}
-  //       >
-  //         {content}
-  //       </Drawer>
-  //     </>
-  //   );
-  // }
-
   return (
     <Popover
       trigger="click"

@@ -50,7 +50,6 @@ export function CatalogSection({
     return () => clearTimeout(timeout);
   }, [searchInput, setSearch]);
 
-  // ── Categorias via ProductCategoryController ──
   const {
     tableProps: { dataSource: rawCategories = [] },
   } = useTableQuery<PublicCategory>('public-categories', (params) =>
@@ -63,7 +62,6 @@ export function CatalogSection({
   const total = tableProps.pagination ? ((tableProps.pagination as any).total ?? 0) : 0;
   const currentPage = (tableProps.pagination as any)?.current ?? 1;
 
-  // Ao mudar de categoria, filtra pelo slug via filters do hook
   const handleCategoryChange = (key: string) => {
     setActiveCategory(key);
     setFilters(key !== 'all' ? ({ categoryId: key } as any) : ({} as any));
@@ -185,7 +183,7 @@ export function CatalogSection({
                       [],
                       { currentDataSource: [], action: 'paginate' },
                     );
-                    // Scroll suave de volta ao catálogo
+
                     document
                       .getElementById('catalogo')
                       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });

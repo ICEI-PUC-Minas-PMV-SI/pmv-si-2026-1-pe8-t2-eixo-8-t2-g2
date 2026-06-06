@@ -48,11 +48,6 @@ export type SchedulerStatus =
   | 'cancelled';
 
 export type SchedulerItem = {
-  // orderIndex: number;
-  // quantity: number;
-  // priceAtBooking: number | null;
-  // durationMinutes: number | null;
-  // product: Pick<Product, 'id' | 'name' | 'price' | 'description'>;
   id: string;
   schedulerId: string;
   productId: string;

@@ -35,6 +35,8 @@ import TextArea from 'antd/es/input/TextArea';
 import { useEffect, useState } from 'react';
 import TextUtil from '~/utils/TextUtil';
 import CustomerController from '~/controllers/CustomerController';
+import { Duration } from '~/utils/Duration';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 type ComponentProps = {
   form: FormInstance<any>;
@@ -49,10 +51,25 @@ export function SchedulerForm({ form }: ComponentProps) {
   const { isAdmin, getUserShortname } = useAuthStore();
   const [isSearchingCustomer, setIsSearchingCustomer] = useState(false);
   const [isCustomerNameDisabled, setIsCustomerNameDisabled] = useState(true);
-  const isMobile = !Grid.useBreakpoint().lg;
+  const scheduledTo = Form.useWatch('scheduledTo', form);
+  const isMobile = useBreakpoint('md');
   const [phoneSearchTimeout, setPhoneSearchTimeout] = useState<ReturnType<
     typeof setTimeout
   > | null>(null);
+
+  const getUnavailableLeadMinutes = (product: Product) => {
+    if (!scheduledTo || !product.bookingLeadMinutes) {
+      return null;
+    }
+
+    const minutesUntilDelivery = dayjs(scheduledTo).diff(dayjs(), 'minute');
+
+    if (minutesUntilDelivery < product.bookingLeadMinutes) {
+      return product.bookingLeadMinutes;
+    }
+
+    return null;
+  };
 
   const handleCustomerPhoneChange = (e: React.InputEvent<HTMLInputElement>) => {
     const input = e.currentTarget;
@@ -86,14 +103,12 @@ export function SchedulerForm({ form }: ComponentProps) {
         if (customer) {
           form.setFieldValue('customerName', customer.name);
 
-          // AQUI
           form.setFieldValue('customerId', customer.id);
 
           setIsCustomerNameDisabled(true);
         } else {
           form.setFieldValue('customerName', '');
 
-          // AQUI
           form.setFieldValue('customerId', null);
 
           setIsCustomerNameDisabled(false);
@@ -288,7 +303,6 @@ export function SchedulerForm({ form }: ComponentProps) {
                     <div style={{ padding: '4px 0' }}>
                       <Car style={{ fontSize: 24 }} />
                       <div style={{ fontSize: 14 }}>Entrega</div>
-                      {/* <div style={{ fontSize: 12, color: '#888' }}>Enviamos até você</div> */}
                     </div>
                   ),
                   value: 'delivery',
@@ -305,14 +319,49 @@ export function SchedulerForm({ form }: ComponentProps) {
             <Space orientation="vertical" style={{ width: '100%' }}>
               {fields.map(({ key, name, ...rest }) => (
                 <>
-                  <Row gutter={8} key={key} align="bottom">
-                    <Col flex={1}>
+                  <Row gutter={[8, 8]} key={key} align="top">
+                    <Col span={isMobile ? 24 : undefined} flex={isMobile ? undefined : 1}>
                       <Form.Item
                         {...rest}
                         label="Produto"
-                        name={[name, 'productId']}
-                        rules={[{ required: true, message: 'Informe o produto' }]}
                         style={{ marginBottom: 0 }}
+                        name={[name, 'productId']}
+                        rules={[
+                          { required: true, message: 'Informe o produto' },
+                          {
+                            validator: (_, value) => {
+                              if (!value || !scheduledTo) {
+                                return Promise.resolve();
+                              }
+
+                              const product = productOptions.find((p) => p.id === value);
+
+                              if (!product) {
+                                return Promise.resolve();
+                              }
+
+                              const leadMinutes = getUnavailableLeadMinutes(product);
+
+                              if (leadMinutes) {
+                                const duration = Duration.parse(leadMinutes);
+
+                                return Promise.reject(
+                                  new Error(
+                                    `Este produto exige ${
+                                      duration.days > 0 ? `${duration.days} dia(s) ` : ''
+                                    }${
+                                      duration.hours > 0
+                                        ? `${duration.hours} hora(s) `
+                                        : ''
+                                    }${duration.minutes > 0 ? `${duration.minutes} minuto(s)` : ''} de antecedência.`,
+                                  ),
+                                );
+                              }
+
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
                       >
                         <Select
                           placeholder="Selecione o produto"
@@ -320,17 +369,36 @@ export function SchedulerForm({ form }: ComponentProps) {
                             filterOption: false,
                             onSearch: setProductSearch,
                           }}
-                          options={productOptions.map((p) => ({
-                            label: p.name,
-                            value: p.id,
-                          }))}
+                          options={productOptions.map((p) => {
+                            const leadMinutes = getUnavailableLeadMinutes(p);
+                            const duration = leadMinutes
+                              ? Duration.parse(leadMinutes)
+                              : null;
+
+                            return {
+                              value: p.id,
+                              disabled: !!leadMinutes,
+                              label: leadMinutes ? (
+                                <>
+                                  {p.name}
+                                  <span style={{ color: '#999' }}>
+                                    {' '}
+                                    (mín. {duration?.days ? `${duration.days}d ` : ''}
+                                    {duration?.hours ?? 0}h{duration?.minutes ?? 0}min)
+                                  </span>
+                                </>
+                              ) : (
+                                p.name
+                              ),
+                            };
+                          })}
                           notFoundContent={
                             isFetchingProduct ? <Spin size="small" /> : 'Sem resultados'
                           }
                         />
                       </Form.Item>
                     </Col>
-                    <Col>
+                    <Col xs={12} sm={4}>
                       <Form.Item
                         {...rest}
                         label="Qtd."
@@ -338,15 +406,18 @@ export function SchedulerForm({ form }: ComponentProps) {
                         initialValue={1}
                         style={{ marginBottom: 0 }}
                       >
-                        <InputNumber min={1} style={{ width: 80 }} />
+                        <InputNumber min={1} style={{ width: '100%' }} />
                       </Form.Item>
                     </Col>
-                    <Col>
-                      <Button
-                        icon={<DeleteOutlined />}
-                        danger
-                        onClick={() => remove(name)}
-                      />
+                    <Col xs={12} sm={2}>
+                      <Form.Item label=" ">
+                        <Button
+                          style={{ width: '100%' }}
+                          icon={<DeleteOutlined />}
+                          danger
+                          onClick={() => remove(name)}
+                        />
+                      </Form.Item>
                     </Col>
                   </Row>
                   <Row key={key + '_order_customization'} align="middle">

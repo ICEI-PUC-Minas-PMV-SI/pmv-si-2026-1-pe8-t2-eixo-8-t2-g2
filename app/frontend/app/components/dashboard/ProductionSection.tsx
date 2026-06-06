@@ -18,8 +18,6 @@ import DashboardController, {
 import { Colors } from '~/constants/Colors';
 import type { ColumnsType } from 'antd/es/table';
 
-// ─── Estilos compartilhados ───────────────────────────────────────────────────
-
 const cardStyle: React.CSSProperties = {
   borderRadius: 12,
   border: '1px solid #f0f0f0',
@@ -30,8 +28,6 @@ const cardStyle: React.CSSProperties = {
 const cardHeaderStyles = {
   header: { borderBottom: '1px solid #f5f5f5', padding: '12px 16px' },
 };
-
-// ─── Configuração visual por tipo de alerta ───────────────────────────────────
 
 const ALERT_CONFIG = {
   error: {
@@ -59,8 +55,6 @@ const ALERT_CONFIG = {
     badgeColor: '#1677FF',
   },
 } as const;
-
-// ─── AlertCard ────────────────────────────────────────────────────────────────
 
 function AlertCard({
   alert,
@@ -149,8 +143,6 @@ function AlertCard({
   );
 }
 
-// ─── EmptyAlerts ──────────────────────────────────────────────────────────────
-
 function EmptyAlerts() {
   return (
     <div
@@ -189,8 +181,6 @@ function EmptyAlerts() {
   );
 }
 
-// ─── Colunas da tabela ────────────────────────────────────────────────────────
-
 const productColumns: ColumnsType<TopProducts> = [
   {
     title: 'Produto',
@@ -226,8 +216,6 @@ const productColumns: ColumnsType<TopProducts> = [
     ),
   },
 ];
-
-// ─── ProductionSection ────────────────────────────────────────────────────────
 
 type ComponentProps = {
   onClick: (alert: DashboardAlert) => void;

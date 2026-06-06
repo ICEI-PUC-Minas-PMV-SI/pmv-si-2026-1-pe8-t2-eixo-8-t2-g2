@@ -63,7 +63,6 @@ export function KpiSection() {
             loading={todaySummary.isLoading}
             title="Em produção"
             value={todaySummary.data?.inProgress || 0}
-            // suffix=" pedidos"
             icon={<FireOutlined />}
             color={Colors.progress}
           />

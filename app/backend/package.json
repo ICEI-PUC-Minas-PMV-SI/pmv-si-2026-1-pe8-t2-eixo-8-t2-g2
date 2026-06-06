@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc && tsc-alias",
-    "vercel-build": "npm run build",
+    "vercel-build": "npm run db:generate && npm run build",
     "format": "prettier --write \"src/**/*.{ts,js,json,md,css,scss,html}\"",
     "format:check": "prettier --check \"src/**/*.{ts,js,json,md,css,scss,html}\"",
     "db:generate": "prisma generate",

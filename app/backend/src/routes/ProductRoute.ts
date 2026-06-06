@@ -40,6 +40,7 @@ class ProductRoute {
       ImageMiddleware.resizeImage(),
       async (req: any, res) => {
         const payload = { ...req.body };
+        delete payload.hasImage;
         delete payload.id;
         if (typeof payload.categories === 'string') {
           payload.categories = JSON.parse(payload.categories);

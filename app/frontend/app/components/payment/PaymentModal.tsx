@@ -31,8 +31,6 @@ import {
 } from '../icon/components';
 import { useBreakpoint } from '~/hooks/useBreakpoint';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export type PaymentType = 'deposit' | 'remainder';
 
 export type RegisterPaymentPayload = {
@@ -57,8 +55,6 @@ type ComponentProps = {
   onConfirm: (payload: RegisterPaymentPayload) => Promise<void>;
   scheduler: Scheduler & { payments?: Payment[] };
 };
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const PAYMENT_OPTIONS = [
   {
@@ -201,8 +197,6 @@ function PaymentStatusBadge({
   );
 }
 
-// ─── PaymentModal ─────────────────────────────────────────────────────────────
-
 export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentProps) {
   const [form] = Form.useForm();
 
@@ -244,7 +238,6 @@ export function PaymentModal({ open, onClose, onConfirm, scheduler }: ComponentP
     onClose();
   };
 
-  // Steps visuais
   const stepItems = [
     {
       title: 'Sinal',

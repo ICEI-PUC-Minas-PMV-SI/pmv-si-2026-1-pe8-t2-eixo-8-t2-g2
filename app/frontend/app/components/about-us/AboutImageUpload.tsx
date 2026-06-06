@@ -33,6 +33,10 @@ export function AboutImageUpload({ currentImageUrl, onCrop }: Props) {
     };
   }, [currentImageUrl]);
 
+  useEffect(() => {
+    setPreviewUrl(currentImageUrl ?? null);
+  }, [currentImageUrl]);
+
   const handleFileSelect = (file: File) => {
     const allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/avif'];
     if (!allowed.includes(file.type)) {

@@ -18,8 +18,6 @@ import DateUtil from '~/utils/DateUtil';
 import { PaymentMethodMap } from '~/constants/PaymentMethod';
 import { SchedulerConstant } from '~/constants/SchedulerConstant';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type OrderItem = {
   id: string;
   quantity: number;
@@ -46,8 +44,6 @@ type ComponentProps = {
   onClose: () => void;
   alert?: DashboardAlert | null;
 };
-
-// ─── Helpers visuais ──────────────────────────────────────────────────────────
 
 const ALERT_HEADER = {
   error: {
@@ -134,8 +130,6 @@ function whatsappHref(phone?: string | null) {
   const number = cleaned.startsWith('55') ? cleaned : `55${cleaned}`;
   return `https://wa.me/${number}`;
 }
-
-// ─── OrderCard ────────────────────────────────────────────────────────────────
 
 function OrderCard({ order, index }: { order: AlertOrder; index: number }) {
   const wa = whatsappHref(order.customer.phone);
@@ -306,8 +300,6 @@ function OrderCard({ order, index }: { order: AlertOrder; index: number }) {
     </div>
   );
 }
-
-// ─── AlertModal ───────────────────────────────────────────────────────────────
 
 export function AlertModal({ isOpened, onClose, alert }: ComponentProps) {
   if (!alert) return null;

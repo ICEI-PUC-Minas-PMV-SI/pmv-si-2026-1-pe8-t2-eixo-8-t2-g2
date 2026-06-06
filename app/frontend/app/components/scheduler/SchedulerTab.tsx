@@ -122,7 +122,13 @@ export function SchedulerTab() {
 
   const handleSave = async () => {
     try {
-      const values = await form.validateFields();
+      const values = await form.validateFields().catch(() => {
+        return { error: new Error('Preencha corretamente o formulário') };
+      });
+      if (values.error) {
+        message.error(values.error.message);
+        return;
+      }
       const items: SchedulerItem[] = (values.items ?? []).map((it: any, idx: number) => ({
         id: it.productId,
         quantity: it.quantity ?? 1,

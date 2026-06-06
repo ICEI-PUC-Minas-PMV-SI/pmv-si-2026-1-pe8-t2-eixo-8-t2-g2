@@ -44,15 +44,6 @@ type ComponentProps = {
   onClick: (order: Scheduler) => void;
 };
 
-// const leadTimes = [
-//   { name: 'Bolo decorado', horas: 72 },
-//   { name: 'Torta', horas: 72 },
-//   { name: 'Brigadeiro gourmet', horas: 48 },
-//   { name: 'Cupcake personalizado', horas: 48 },
-//   { name: 'Bolo no pote', horas: 24 },
-//   { name: 'Pronta entrega', horas: 0 },
-// ];
-
 export function Planning({ onClick }: ComponentProps) {
   const [agendaFilter, setAgendaFilter] = useState<'Todos' | 'Entrega' | 'Retirada'>(
     'Todos',

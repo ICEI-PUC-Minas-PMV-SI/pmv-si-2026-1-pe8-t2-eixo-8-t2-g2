@@ -32,7 +32,6 @@ interface DashboardAlert {
   orders: any[];
 }
 
-// ─── Shared styles ────────────────────────────────────────────────────────────
 const cardStyle: React.CSSProperties = {
   borderRadius: 12,
   border: '1px solid #f0f0f0',
@@ -43,7 +42,6 @@ const cardHeaderStyles = {
   header: { borderBottom: '1px solid #f5f5f5', padding: '12px 16px' },
 };
 
-// ─── Dashboard ────────────────────────────────────────────────────────────────
 export function DashboardPage() {
   const [alertState, setAlertState] = useState({
     isOpened: false as boolean,

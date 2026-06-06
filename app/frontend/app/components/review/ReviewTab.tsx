@@ -231,17 +231,7 @@ export function ReviewTab() {
             )}
           </Flex>
         ) : (
-          <Table<ReviewRecord>
-            {...tableProps}
-            // rowKey="id"
-            // loading={isLoading}
-            // dataSource={filtered}
-            columns={columns}
-            // pagination={{ pageSize: 10, showSizeChanger: false }}
-            size="middle"
-            // rowClassName={(r) => (r.featured ? 'review-row-featured' : '')}
-            // style={{ '--featured-bg': '#FFFBF9' } as React.CSSProperties}
-          />
+          <Table<ReviewRecord> {...tableProps} columns={columns} size="middle" />
         )}
       </Card>
 

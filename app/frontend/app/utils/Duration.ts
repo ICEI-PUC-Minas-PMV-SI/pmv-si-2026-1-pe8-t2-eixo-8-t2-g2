@@ -13,12 +13,12 @@ export interface DurationType {
   minutes?: number;
 }
 
-const ONE_HOUR_IN_MINUTES = 60 * 24;
+const ONE_DAY_IN_MINUTES = 60 * 24;
 
 class Duration {
   parse(minutes: number) {
-    const days = Math.floor(minutes / ONE_HOUR_IN_MINUTES);
-    const remainingMinutes = minutes % ONE_HOUR_IN_MINUTES;
+    const days = Math.floor(minutes / ONE_DAY_IN_MINUTES);
+    const remainingMinutes = minutes % ONE_DAY_IN_MINUTES;
     const hours = Math.floor(remainingMinutes / 60);
 
     return {
@@ -36,12 +36,12 @@ class Duration {
     return Number((minutes / 60).toFixed(2));
   }
   toTimePickerValue(minutes: number) {
-    const hours = Math.floor(minutes / ONE_HOUR_IN_MINUTES);
+    const hours = Math.floor(minutes / ONE_DAY_IN_MINUTES);
 
     return dayjs()
       .startOf('day')
       .hour(hours)
-      .minute(minutes % ONE_HOUR_IN_MINUTES);
+      .minute(minutes % ONE_DAY_IN_MINUTES);
   }
   fromTimePickerValue(value?: dayjs.Dayjs) {
     if (!value) return 0;
