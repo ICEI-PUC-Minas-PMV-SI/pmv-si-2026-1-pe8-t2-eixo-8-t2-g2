@@ -214,7 +214,8 @@ Figura 9 - Tela de confirmação da recuperação de senha
 Figura 10 - Pop-up de *logout*
 <img width="689" height="130" alt="image" src="https://github.com/user-attachments/assets/ad9e42f1-ef33-4e88-803c-2238db0234bd" />
 
-Figura 11 - *Footer* 
+Figura 11 - *Footer*
+
 <img width="555" height="110" alt="image" src="https://github.com/user-attachments/assets/d60465eb-df23-4fba-922c-7d0e73b48314" />
 
 ### Telas acessíveis apenas para o usuário administrador
@@ -276,6 +277,7 @@ Figura 29 - Tela de detalhamento dos produtos adicionados ao carrinho de compras
 <img width="477" height="674" alt="image" src="https://github.com/user-attachments/assets/3bb4451e-23c5-4ce5-8299-763dfb784fd2" />
 
 Figura 30 - Tela de histórico de pedidos
+
 <img width="484" height="195" alt="image" src="https://github.com/user-attachments/assets/8b5d3539-4e69-4cc5-bbe2-1637d382135e" />
 
 Figura 31 - Tela de histórico de pedidos com o detalhamento do pedido selecionado
