@@ -23,6 +23,7 @@ import { SchedulerConstant } from '~/constants/SchedulerConstant';
 import { useAuthStore } from '~/hooks/useAuthStore';
 import dayjs from 'dayjs';
 import TextUtil from '~/utils/TextUtil';
+import { useBreakpoint } from '~/hooks/useBreakpoint';
 
 export function SchedulerTab() {
   const schedulerQuery = useTableQuery<Scheduler>('scheduler', (params) =>
@@ -32,6 +33,8 @@ export function SchedulerTab() {
     tableProps: { dataSource: schedulers = [], pagination },
     forceRefetch,
   } = schedulerQuery;
+
+  const isMobile = useBreakpoint('md');
 
   const [scheduleView, setScheduleView] = useState<'list' | 'calendar'>('list');
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -209,7 +212,7 @@ export function SchedulerTab() {
                 setDrawerOpen(true);
               }}
             >
-              Novo pedido
+              {isMobile ? 'Novo' : 'Novo pedido'}
             </Button>
           </Flex>
         }
