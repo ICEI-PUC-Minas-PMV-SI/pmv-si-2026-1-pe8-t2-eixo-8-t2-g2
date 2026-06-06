@@ -31,16 +31,26 @@ class UserService {
     { createCustomer }: { createCustomer?: boolean } = {},
   ) {
     const prisma = await PrismaDB.getClient();
-    const alreadyExists = await prisma.user.findFirst({
-      where: {
-        OR: [{ email: user.email }, { phone: user.phone }],
-      },
-    });
-    if (alreadyExists) {
-      throw new AppError(
-        'E-mail e/ou telefone já está cadastrado para outro usuário',
-        HttpCode.BAD_REQUEST,
-      );
+    const where: Prisma.UserWhereInput = {};
+    if (user.email || user.phone) {
+      where.OR = [];
+      if (user.email) {
+        where.OR.push({ email: user.email });
+      }
+      if (user.phone) {
+        where.OR.push({ phone: user.phone });
+      }
+    }
+    if (where.OR) {
+      const alreadyExists = await prisma.user.findFirst({
+        where,
+      });
+      if (alreadyExists) {
+        throw new AppError(
+          'E-mail e/ou telefone já está cadastrado para outro usuário',
+          HttpCode.BAD_REQUEST,
+        );
+      }
     }
     const { email, name, phone, address, password, googleId = null } = user;
     let pass = null;

@@ -11,7 +11,7 @@ export function GoogleButton() {
     if (!window.google || !divRef.current) return;
     window.google.accounts.id.initialize({
       client_id:
-        '389422613020-8edt94go4c0lpnv44ejk8p8d6sagjk9u.apps.googleusercontent.com',
+        '45213146734-5qcu99i8pqd5i2d58cm53e8hcto9tcl4.apps.googleusercontent.com',
       callback: (response: any) => {
         queryClient.clear();
         AuthController.authGoogle({ token: response.credential }).then(goToHome);
