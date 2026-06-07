@@ -1,33 +1,32 @@
-# This CITATION.cff file was generated with cffinit.
-# Visit https://bit.ly/cffinit to generate yours today!
-
-cff-version: 1.2.0
-title: Web Application Template
-message: >-
-  Repositório padrão para o Eixo 1 - Projeto 1: Aplicações
-  Web da PUC Minas.
-type: software
+cff-version: 1.0.1
+message: Please cite this software using these metadata.
+title: Doce & Cia
 authors:
-  - given-names: Aluno 1
-    family-names: Nome Completo
-    email: aluno@pucminas.br
+  - family-names: de Carvalho
+    given-names: Alisson Anderson
+  - family-names: Guimarães Xavier
+    given-names: Gabriel Víctor
+  - family-names: de Almeida
+    given-names: Iago Oliveira
+  - family-names: de Souza
+    given-names: Jussara Ribeiro
+  - family-names: Bastos Rocha
+    given-names: Laura Luana
+  - family-names: Alves Soares
+    given-names: Paolla
+  - family-names: dos Santos
+    given-names: Samara Mariah
+  - name-suffix: Professora
     affiliation: PUC Minas
-  - given-names: Hugo
-    name-particle: 'B '
-    family-names: de Paula
-    name-suffix: Prof.
-    email: hugo@pucminas.br
-    affiliation: PUC Minas
-    orcid: 'https://orcid.org/0000-0002-6193-3205'
-repository-code: >-
-  https://github.com/ICEI-PUC-Minas-PMV-SI/WebApplicationProject-Template
-abstract: >-
-  Descrever resumidamente, em um ou dois parágrafos, o
-  projeto que foi desenvolvido.
+    family-names: Fernandes Queiroz
+    given-names: Dra. Simone
 keywords:
-  - Desenvolvimento Web
-  - HTML
-  - CSS
-  - JavaScript
-  - Template
-date-released: '2024-06-23'
+  - sistemas de informação
+  - gestão de pedidos
+  - confeitaria artesanal
+  - processos organizacionais
+  - pequenos negócios
+repository-code: https://github.com/ICEI-PUC-Minas-PMV-SI/pmv-si-2026-1-pe8-t2-eixo-8-t2-g2
+license: CC-BY-4.0
+version: 1.0.0
+date-released: 2026-06-07
